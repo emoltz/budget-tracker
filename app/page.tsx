@@ -8,11 +8,11 @@ export default function Home() {
     return (
         <>
             <RootLayout>
-                <div className={styles.container}>
-                    <Text h1>
-                        Hello world!
-                    </Text>
-                </div>
+
+                <Text>
+                    Hello world!
+                </Text>
+
             </RootLayout>
         </>
     )
