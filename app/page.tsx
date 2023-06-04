@@ -2,14 +2,25 @@
 import Image from 'next/image'
 import styles from './page.module.css'
 import RootLayout from "@/app/layout";
-import {Container, Text} from "@nextui-org/react";
+import {Text} from "@nextui-org/react";
+import {Button} from 'antd';
 
 export default function Home() {
+
     return (
         <>
             <RootLayout>
-
-                <Text>
+                <Button
+                    type={"primary"}
+                >
+                    Click me!
+                </Button>
+                <Text
+                    css={{
+                        color: '$blue800',
+                        fontSize:'$sm',
+                    }}
+                >
                     Hello world!
                 </Text>
 
