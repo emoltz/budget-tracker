@@ -2,17 +2,19 @@
 import Image from 'next/image'
 import styles from './page.module.css'
 import RootLayout from "@/app/layout";
-import {Container, Text} from "@nextui-org/react";
+import {Button} from 'antd';
 
 export default function Home() {
+
     return (
         <>
             <RootLayout>
-                <div className={styles.container}>
-                    <Text h1>
-                        Hello world!
-                    </Text>
-                </div>
+                <Button
+                    type={"primary"}
+                >
+                    Click me!
+                </Button>
+
             </RootLayout>
         </>
     )
