@@ -2,24 +2,29 @@
 import { useEffect } from 'react';
 import {Button} from 'antd';
 // @ts-ignore
-import {auth} from "@/lib/firebase";
+import {auth, saveUserToDatabase} from "@/lib/firebase";
 import {GoogleAuthProvider, signInWithPopup} from "firebase/auth";
+import GoogleButton from "react-google-button";
 
 export default function LoginButton(){
     const signInWithGoogle = async () => {
         // @ts-ignore
         if (typeof window !== 'undefined' && auth) {
             const provider = new GoogleAuthProvider();
-            await signInWithPopup(auth, provider);
+            const result = await signInWithPopup(auth, provider);
             // TODO send to backend too
+            const user = result.user;
+            if (user){
+                await saveUserToDatabase(user);
+            }
         }
     }
 
     return (
-        <Button
+        <GoogleButton
             onClick={signInWithGoogle}
         >
             Signin with Google
-        </Button>
+        </GoogleButton>
     )
 }
