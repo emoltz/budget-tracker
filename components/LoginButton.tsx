@@ -12,7 +12,6 @@ export default function LoginButton(){
         if (typeof window !== 'undefined' && auth) {
             const provider = new GoogleAuthProvider();
             const result = await signInWithPopup(auth, provider);
-            // TODO send to backend too
             const user = result.user;
             if (user){
                 await saveUserToDatabase(user);
@@ -23,8 +22,7 @@ export default function LoginButton(){
     return (
         <GoogleButton
             onClick={signInWithGoogle}
-        >
-            Signin with Google
-        </GoogleButton>
+        />
+
     )
 }
