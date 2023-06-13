@@ -2,6 +2,7 @@
 
 import { Typography } from 'antd';
 import { InputNumber } from 'antd';
+import BudgetWidget from '@/components/BudgetWidget';
 
 const { Title } = Typography;
 
@@ -32,6 +33,19 @@ export default function Budgets() {
             <div>
                 Welcome to the budgets page!
             </div>
+            {categories.map((category) => {
+                return (
+                    <BudgetWidget
+                        key={category}
+                        category={category}/>
+                )
+            })}
+
+
+
+
+
+
             <div style={categoryStyles}>
                 <Title level={4}>{categories[0]}</Title>
                 <InputNumber min={0} defaultValue={0} />
