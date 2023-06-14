@@ -5,8 +5,8 @@ import {Button} from "@mantine/core";
 export default function Home() {
 
     return (
-        <>
+        <RootLayout>
                 <Button>Hello</Button>
-        </>
+        </RootLayout>
     )
 }
