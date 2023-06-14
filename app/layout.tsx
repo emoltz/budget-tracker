@@ -28,10 +28,13 @@ export default function RootLayout({
                 withGlobalStyles
                 withNormalizeCSS>
                 <html lang="en">
+                {/*TODO link ANTd style sheet cdn*/}
                 <AuthProvider>
 
                     <body>
+
                     {children}
+
                     </body>
                 </AuthProvider>
                 </html>
