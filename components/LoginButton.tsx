@@ -2,6 +2,7 @@
 import {useEffect, useState} from 'react';
 import dynamic from 'next/dynamic';
 import {Button, Checkbox, Form, Input} from 'antd';
+
 import {createUserWithEmailAndPassword, signInWithEmailAndPassword, Auth} from "firebase/auth";
 // @ts-ignore
 import {auth, saveUserToDatabase} from "@/lib/firebase";
