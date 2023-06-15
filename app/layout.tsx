@@ -1,8 +1,10 @@
 "use client";
 import {AuthProvider} from "@/app/context";
 import {CacheProvider} from "@emotion/react";
-import {useEmotionCache, MantineProvider} from "@mantine/core";
+import {useEmotionCache, MantineProvider, Pagination} from "@mantine/core";
 import {useServerInsertedHTML} from "next/navigation";
+import {NextUIProvider} from "@nextui-org/react";
+import Next = Pagination.Next;
 
 export default function RootLayout({
                                        children,
@@ -28,12 +30,15 @@ export default function RootLayout({
                 withGlobalStyles
                 withNormalizeCSS>
                 <html lang="en">
-                <AuthProvider>
+                {/*TODO link ANTd style sheet cdn*/}
+                    <AuthProvider>
 
-                    <body>
-                    {children}
-                    </body>
-                </AuthProvider>
+                        <body>
+
+                        {children}
+
+                        </body>
+                    </AuthProvider>
                 </html>
             </MantineProvider>
         </CacheProvider>
