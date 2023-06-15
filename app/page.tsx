@@ -1,7 +1,7 @@
 "use client";
 import RootLayout from "@/app/layout";
 import {Button} from "@mantine/core";
-import {Link} from "@nextui-org/react";
+import Link from "next/link";
 
 export default function Home() {
 
@@ -13,7 +13,6 @@ export default function Home() {
             <Button
                 variant={"light"}
             >
-
                 <Link href="/login">Login</Link>
             </Button>
             </div>
