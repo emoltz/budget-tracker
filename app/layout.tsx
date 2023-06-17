@@ -1,11 +1,20 @@
 "use client";
 import {AuthProvider} from "@/app/context";
 import {CacheProvider} from "@emotion/react";
-import {useEmotionCache, MantineProvider, Pagination, Navbar} from "@mantine/core";
+import {
+    useEmotionCache,
+    MantineProvider,
+    ColorSchemeProvider,
+    ColorScheme,
+    ActionIcon,
+    useMantineColorScheme
+} from "@mantine/core";
+import {IconSun, IconMoonStars} from "@tabler/icons-react";
 import {useServerInsertedHTML} from "next/navigation";
 import {NextUIProvider} from "@nextui-org/react";
 import {ChakraProvider} from "@chakra-ui/react";
 import NavBar from "@/components/NavBar";
+import {useState} from "react";
 
 export default function RootLayout({
                                        children,
@@ -25,27 +34,38 @@ export default function RootLayout({
     ));
 
 
+    const [colorScheme, setColorScheme] = useState<ColorScheme>('light');
+    const toggleColorScheme = (value?: ColorScheme) =>
+        setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
+
     return (
         <CacheProvider value={cache}>
-            <MantineProvider
-                withGlobalStyles
-                withNormalizeCSS>
-                <html lang="en">
-                {/*TODO link ANTd style sheet cdn*/}
-                <AuthProvider>
-                    <body>
-                    <ChakraProvider>
+            <ColorSchemeProvider
+                colorScheme={colorScheme}
+                toggleColorScheme={toggleColorScheme}
 
-                        <NavBar>
-                            {children}
+            >
+                <MantineProvider
+                    theme={{colorScheme}}
+                    withGlobalStyles
+                    withNormalizeCSS>
+                    <html lang="en">
+                    {/*TODO link ANTd style sheet cdn*/}
+                    <AuthProvider>
+                        <body>
+                        <ChakraProvider>
 
-                        </NavBar>
+                            <NavBar>
+                                {children}
 
-                    </ChakraProvider>
-                    </body>
-                </AuthProvider>
-                </html>
-            </MantineProvider>
+                            </NavBar>
+
+                        </ChakraProvider>
+                        </body>
+                    </AuthProvider>
+                    </html>
+                </MantineProvider>
+            </ColorSchemeProvider>
         </CacheProvider>
 
 
