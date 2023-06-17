@@ -1,4 +1,5 @@
 import React, {ReactNode} from 'react';
+import Link from "next/link";
 import {
     IconButton,
     Avatar,
@@ -9,7 +10,7 @@ import {
     VStack,
     Icon,
     useColorModeValue,
-    Link,
+
     Drawer,
     DrawerContent,
     Text,
@@ -38,12 +39,14 @@ import {ReactText} from 'react';
 interface LinkItemProps {
     name: string;
     icon: IconType;
+    link: string;
 }
 
 const LinkItems: Array<LinkItemProps> = [
-    {name: 'Dashboard', icon: FiHome},
-    {name: 'Expenses', icon: FiTrendingUp},
-    {name: 'Settings', icon: FiSettings},
+    {name: 'Dashboard', icon: FiHome, link: '/'},
+    {name: 'Expenses', icon: FiTrendingUp, link: '/budgets'},
+    {name: 'Login', icon: FiCompass, link: '/login'},
+    {name: 'Settings', icon: FiSettings, link: '/settings'},
 ];
 
 
@@ -100,7 +103,7 @@ const SidebarContent = ({onClose, ...rest}: SidebarProps) => {
                 <CloseButton display={{base: 'flex', md: 'none'}} onClick={onClose}/>
             </Flex>
             {LinkItems.map((link) => (
-                <NavItem key={link.name} icon={link.icon}>
+                <NavItem key={link.name} icon={link.icon} link={link.link}>
                     {link.name}
                 </NavItem>
             ))}
@@ -111,11 +114,12 @@ const SidebarContent = ({onClose, ...rest}: SidebarProps) => {
 interface NavItemProps extends FlexProps {
     icon: IconType;
     children: ReactText;
+    link: string;
 }
 
-const NavItem = ({icon, children, ...rest}: NavItemProps) => {
+const NavItem = ({icon, link, children, ...rest}: NavItemProps) => {
     return (
-        <Link href="#" style={{textDecoration: 'none'}} _focus={{boxShadow: 'none'}}>
+        <Link href={link} style={{textDecoration: 'none'}} _focus={{boxShadow: 'none'}}>
             <Flex
                 align="center"
                 p="4"
