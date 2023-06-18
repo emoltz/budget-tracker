@@ -1,179 +1,271 @@
-import React, {ReactNode} from 'react';
-import Link from "next/link";
 import {
-    IconButton,
-    Avatar,
-    Box,
-    CloseButton,
-    Flex,
-    HStack,
-    VStack,
-    Icon,
-    useColorModeValue,
-
-    Drawer,
-    DrawerContent,
+    createStyles,
+    Header,
+    HoverCard,
+    Group,
+    Button,
+    UnstyledButton,
     Text,
-    useDisclosure,
-    BoxProps,
-    FlexProps,
-    Menu,
-    MenuButton,
-    MenuDivider,
-    MenuItem,
-    MenuList,
-} from '@chakra-ui/react';
+    SimpleGrid,
+    ThemeIcon,
+    Anchor,
+    Divider,
+    Center,
+    Box,
+    Burger,
+    Drawer,
+    Collapse,
+    ScrollArea,
+    rem,
+} from '@mantine/core';
+import '../app/globals.css';
+import Link from 'next/link';
+import {useDisclosure} from '@mantine/hooks';
 import {
-    FiHome,
-    FiTrendingUp,
-    FiCompass,
-    FiStar,
-    FiSettings,
-    FiMenu,
-    FiBell,
-    FiChevronDown,
-} from 'react-icons/fi';
-import {IconType} from 'react-icons';
-import {ReactText} from 'react';
+    IconNotification,
+    IconCode,
+    IconBook,
+    IconChartPie3,
+    IconFingerprint,
+    IconCoin,
+    IconChevronDown,
+} from '@tabler/icons-react';
 
-interface LinkItemProps {
-    name: string;
-    icon: IconType;
-    link: string;
-}
+const useStyles = createStyles((theme) => ({
+    link: {
+        display: 'flex',
+        alignItems: 'center',
+        height: '100%',
+        paddingLeft: theme.spacing.md,
+        paddingRight: theme.spacing.md,
+        textDecoration: 'none',
+        color: theme.colorScheme === 'dark' ? theme.white : theme.black,
+        fontWeight: 500,
+        fontSize: theme.fontSizes.sm,
 
-const LinkItems: Array<LinkItemProps> = [
-    {name: 'Dashboard', icon: FiHome, link: '/'},
-    {name: 'Budgets', icon: FiTrendingUp, link: '/budgets'},
-    {name: 'Login', icon: FiCompass, link: '/login'},
-    {name: 'Settings', icon: FiSettings, link: '/settings'},
+        [theme.fn.smallerThan('sm')]: {
+            height: rem(42),
+            display: 'flex',
+            alignItems: 'center',
+            width: '100%',
+        },
+
+        ...theme.fn.hover({
+            backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
+        }),
+    },
+
+    subLink: {
+        width: '100%',
+        padding: `${theme.spacing.xs} ${theme.spacing.md}`,
+        borderRadius: theme.radius.md,
+
+        ...theme.fn.hover({
+            backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.colors.gray[0],
+        }),
+
+        '&:active': theme.activeStyles,
+    },
+
+    dropdownFooter: {
+        backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.colors.gray[0],
+        margin: `calc(${theme.spacing.md} * -1)`,
+        marginTop: theme.spacing.sm,
+        padding: `${theme.spacing.md} calc(${theme.spacing.md} * 2)`,
+        paddingBottom: theme.spacing.xl,
+        borderTop: `${rem(1)} solid ${
+            theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.colors.gray[1]
+        }`,
+    },
+
+    hiddenMobile: {
+        [theme.fn.smallerThan('sm')]: {
+            display: 'none',
+        },
+    },
+
+    hiddenDesktop: {
+        [theme.fn.largerThan('sm')]: {
+            display: 'none',
+        },
+    },
+}));
+
+const mockdata = [
+    {
+        icon: IconCode,
+        title: 'Open source',
+        description: 'This Pokémon’s cry is very loud and distracting',
+    },
+    {
+        icon: IconCoin,
+        title: 'Free for everyone',
+        description: 'The fluid of Smeargle’s tail secretions changes',
+    },
+    {
+        icon: IconBook,
+        title: 'Documentation',
+        description: 'Yanma is capable of seeing 360 degrees without',
+    },
+    {
+        icon: IconFingerprint,
+        title: 'Security',
+        description: 'The shell’s rounded shape and the grooves on its.',
+    },
+    {
+        icon: IconChartPie3,
+        title: 'Analytics',
+        description: 'This Pokémon uses its flying ability to quickly chase',
+    },
+    {
+        icon: IconNotification,
+        title: 'Notifications',
+        description: 'Combusken battles with the intensely hot flames it spews',
+    },
 ];
 
+export default function NavBar() {
+    const [drawerOpened, {toggle: toggleDrawer, close: closeDrawer}] = useDisclosure(false);
+    const [linksOpened, {toggle: toggleLinks}] = useDisclosure(false);
+    const {classes, theme} = useStyles();
 
-export default function NavBar({children}: { children: ReactNode }) {
-    const {isOpen, onOpen, onClose} = useDisclosure();
+    const links = mockdata.map((item) => (
+        <UnstyledButton className={classes.subLink} key={item.title}>
+            <Group noWrap align="flex-start">
+                <ThemeIcon size={34} variant="default" radius="md">
+                    <item.icon size={rem(22)} color={theme.fn.primaryColor()}/>
+                </ThemeIcon>
+                <div>
+                    <Text size="sm" fw={500}>
+                        {item.title}
+                    </Text>
+                    <Text size="xs" color="dimmed">
+                        {item.description}
+                    </Text>
+                </div>
+            </Group>
+        </UnstyledButton>
+    ));
+
     return (
-        <Box minH="100vh" bg={useColorModeValue('gray.100', 'gray.900')}>
-            <SidebarContent
-                onClose={() => onClose}
-                display={{base: 'none', md: 'block'}}
-            />
+        <Box pb={120}>
+            <Header height={60} px="md">
+                <Group position="apart" sx={{height: '100%'}}>
+                    <Link href={"/"}>
+
+                        Argonaut
+                    </Link>
+
+                    <Group sx={{height: '100%'}} spacing={0} className={classes.hiddenMobile}>
+                        <a href="#" className={classes.link}>
+                            Home
+                        </a>
+                        <HoverCard width={600} position="bottom" radius="md" shadow="md" withinPortal>
+                            <HoverCard.Target>
+                                <a href="#" className={classes.link}>
+                                    <Center inline>
+                                        <Box component="span" mr={5}>
+                                            Features
+                                        </Box>
+                                        <IconChevronDown size={16} color={theme.fn.primaryColor()}/>
+                                    </Center>
+                                </a>
+                            </HoverCard.Target>
+
+                            <HoverCard.Dropdown sx={{overflow: 'hidden'}}>
+                                <Group position="apart" px="md">
+                                    <Text fw={500}>Features</Text>
+                                    <Anchor href="#" fz="xs">
+                                        View all
+                                    </Anchor>
+                                </Group>
+
+                                <Divider
+                                    my="sm"
+                                    mx="-md"
+                                    color={theme.colorScheme === 'dark' ? 'dark.5' : 'gray.1'}
+                                />
+
+                                <SimpleGrid cols={2} spacing={0}>
+                                    {links}
+                                </SimpleGrid>
+
+                                <div className={classes.dropdownFooter}>
+                                    <Group position="apart">
+                                        <div>
+                                            <Text fw={500} fz="sm">
+                                                Get started
+                                            </Text>
+                                            <Text size="xs" color="dimmed">
+                                                Their food sources have decreased, and their numbers
+                                            </Text>
+                                        </div>
+                                        <Button variant="default">Get started</Button>
+                                    </Group>
+                                </div>
+                            </HoverCard.Dropdown>
+                        </HoverCard>
+                        <a href="#" className={classes.link}>
+                            Budgets
+                        </a>
+                        <a href="#" className={classes.link}>
+                            Settings
+                        </a>
+                    </Group>
+
+                    <Group className={classes.hiddenMobile}>
+                        <Link href={"/login"}>
+
+                            <Button variant="default">Log in</Button>
+                        </Link>
+
+                    </Group>
+
+                    <Burger opened={drawerOpened} onClick={toggleDrawer} className={classes.hiddenDesktop}/>
+                </Group>
+            </Header>
+
             <Drawer
-                autoFocus={false}
-                isOpen={isOpen}
-                placement="left"
-                onClose={onClose}
-                returnFocusOnClose={false}
-                onOverlayClick={onClose}
-                size="full">
-                <DrawerContent>
-                    <SidebarContent onClose={onClose}/>
-                </DrawerContent>
+                opened={drawerOpened}
+                onClose={closeDrawer}
+                size="100%"
+                padding="md"
+                title="Navigation"
+                className={classes.hiddenDesktop}
+                zIndex={1000000}
+            >
+                <ScrollArea h={`calc(100vh - ${rem(60)})`} mx="-md">
+                    <Divider my="sm" color={theme.colorScheme === 'dark' ? 'dark.5' : 'gray.1'}/>
+
+                    <a href="#" className={classes.link}>
+                        Home
+                    </a>
+                    <UnstyledButton className={classes.link} onClick={toggleLinks}>
+                        <Center inline>
+                            <Box component="span" mr={5}>
+                                Features
+                            </Box>
+                            <IconChevronDown size={16} color={theme.fn.primaryColor()}/>
+                        </Center>
+                    </UnstyledButton>
+                    <Collapse in={linksOpened}>{links}</Collapse>
+                    <a href="#" className={classes.link}>
+                        Learn
+                    </a>
+                    <a href="#" className={classes.link}>
+                        Academy
+                    </a>
+
+                    <Divider my="sm" color={theme.colorScheme === 'dark' ? 'dark.5' : 'gray.1'}/>
+
+                    <Group position="center" grow pb="xl" px="md">
+                        <Button variant="default">Log in</Button>
+                        <Button
+
+                        >Sign up</Button>
+                    </Group>
+                </ScrollArea>
             </Drawer>
-            {/* mobilenav */}
-            <MobileNav display={{base: 'flex', md: 'none'}} onOpen={onOpen}/>
-            <Box ml={{base: 0, md: 60}} p="4">
-                {children}
-            </Box>
         </Box>
     );
 }
-
-interface SidebarProps extends BoxProps {
-    onClose: () => void;
-}
-
-const SidebarContent = ({onClose, ...rest}: SidebarProps) => {
-    return (
-        <Box
-            bg={useColorModeValue('white', 'gray.900')}
-            borderRight="1px"
-            borderRightColor={useColorModeValue('gray.200', 'gray.700')}
-            w={{base: 'full', md: 60}}
-            pos="fixed"
-            h="full"
-            {...rest}>
-            <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
-                <Text
-                    fontSize="2xl"
-                    fontFamily="monospace"
-                    fontWeight="bold">
-                    Argonaut
-                </Text>
-                <CloseButton display={{base: 'flex', md: 'none'}} onClick={onClose}/>
-            </Flex>
-            {LinkItems.map((link) => (
-                <NavItem key={link.name} icon={link.icon} link={link.link}>
-                    {link.name}
-                </NavItem>
-            ))}
-        </Box>
-    );
-};
-
-interface NavItemProps extends FlexProps {
-    icon: IconType;
-    children: ReactText;
-    link: string;
-}
-
-const NavItem = ({icon, link, children, ...rest}: NavItemProps) => {
-    return (
-        <Link href={link} style={{textDecoration: 'none'}}>
-            <Flex
-                align="center"
-                p="4"
-                mx="4"
-                borderRadius="lg"
-                role="group"
-                cursor="pointer"
-                _hover={{
-                    bg: 'cyan.400',
-                    color: 'white',
-                }}
-                {...rest}>
-                {icon && (
-                    <Icon
-                        mr="4"
-                        fontSize="16"
-                        _groupHover={{
-                            color: 'white',
-                        }}
-                        as={icon}
-                    />
-                )}
-                {children}
-            </Flex>
-        </Link>
-    );
-};
-
-interface MobileProps extends FlexProps {
-    onOpen: () => void;
-}
-
-const MobileNav = ({onOpen, ...rest}: MobileProps) => {
-    return (
-        <Flex
-            ml={{base: 0, md: 60}}
-            px={{base: 4, md: 24}}
-            height="20"
-            alignItems="center"
-            bg={useColorModeValue('white', 'gray.900')}
-            borderBottomWidth="1px"
-            borderBottomColor={useColorModeValue('gray.200', 'gray.700')}
-            justifyContent="flex-start"
-            {...rest}>
-            <IconButton
-                variant="outline"
-                onClick={onOpen}
-                aria-label="open menu"
-                icon={<FiMenu/>}
-            />
-
-            <Text fontSize="2xl" ml="8" fontFamily="monospace" fontWeight="bold">
-                Argonaut
-            </Text>
-        </Flex>
-    );
-};
