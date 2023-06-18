@@ -1,4 +1,5 @@
 "use client";
+import './globals.css';
 import {useEffect, useState} from 'react';
 import {Button} from "@mantine/core";
 import {getCategories} from '@/lib/firebase';
@@ -32,6 +33,10 @@ export default function Home() {
                     <div key={index}>{category}</div>
                 ))}
             </div>
+
+            <h1 className="text-3xl font-bold underline">
+                with tailwind!
+            </h1>
         </>
     )
 }
