@@ -1,22 +1,36 @@
 "use client";
-import RootLayout from "@/app/layout";
-import BudgetByCategory from "@/components/BudgetByCategory";
+import {useEffect, useState} from 'react';
 import {Button} from "@mantine/core";
-import Link from "next/link";
+import {getCategories} from '@/lib/firebase';
+import {collection, getDocs, getFirestore} from 'firebase/firestore';
+import {useAuth} from "@/app/context";
+import {User} from "firebase/auth";
+
 
 export default function Home() {
+    const user: User = useAuth();
+    const [categories, setCategories] = useState<string[]>([]);
+
+    useEffect(() => {
+        const data = async () => {
+            if (user) {
+                return await getCategories(user);
+            }
+            return [];
+        }
+        data().then((data) => {
+            setCategories(data!);
+        });
+    }, [user])
+
 
     return (
         <>
-            <Button>Hello</Button>
+            <h2>Your Categories:</h2>
             <div>
-
-            <Button
-                variant={"light"}
-            >
-                <Link href="/login">Login</Link>
-            </Button>
-            <BudgetByCategory></BudgetByCategory>
+                {categories.map((category, index) => (
+                    <div key={index}>{category}</div>
+                ))}
             </div>
         </>
     )
