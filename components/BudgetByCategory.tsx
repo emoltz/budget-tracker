@@ -1,26 +1,37 @@
-import {Flex, Button} from '@mantine/core';
-import PropTypes from 'prop-types';
+import {Flex, Button, TextInput} from '@mantine/core';
+import { JsxElement } from 'typescript';
+import { IoFastFoodOutline } from "react-icons/io5";
+import {
+    FiHome,
+    FiTrendingUp,
+    FiCompass,
+    FiStar,
+    FiSettings,
+    FiMenu,
+    FiBell,
+    FiChevronDown,
+} from 'react-icons/fi';
 
-
-export default function BudgetByCategory(): JSX.Element {
+export default function BudgetByCategory(props): JSX.Element {
     return (
         <>
-            <h1>Budgets</h1>
             <Flex
                 mih={50}
-                bg="rgba(0, 0, 0, .3)"
+                bg="rgba(0, 150, 255, 0.8)"
                 gap="md"
                 justify="flex-start"
                 align="center"
                 direction="row"
                 wrap="wrap"
                 >
-                <p>Tester</p>
-                <Button>Button 2</Button>
-                <Button>Button 3</Button>
-                <Button>Button 1</Button>
-                <Button>Button 2</Button>
-                <Button>Button 3</Button>
+                <IoFastFoodOutline></IoFastFoodOutline>
+                <p>{props.name}</p>
+
+                <TextInput
+                    type="number"
+                    placeholder="1000"
+                    label="Budget amount"
+                    />
             </Flex>
         </>
     )
