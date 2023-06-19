@@ -216,7 +216,7 @@ export default function NavBar() {
                     <Group className={classes.hiddenMobile}>
                         <Link href={"/login"}>
 
-                            <Button variant="default">Log in</Button>
+                            <Button variant="light">Log in</Button>
                         </Link>
 
                     </Group>
