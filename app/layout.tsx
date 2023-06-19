@@ -53,14 +53,14 @@ export default function RootLayout({
                     {/*TODO link ANTd style sheet cdn*/}
                     <AuthProvider>
                         <body>
-                        <ChakraProvider>
+                        {/*<ChakraProvider>*/}
 
                             <NavBar />
                                 {children}
 
                             {/*</NavBar>*/}
 
-                        </ChakraProvider>
+                        {/*</ChakraProvider>*/}
                         </body>
                     </AuthProvider>
                     </html>
