@@ -13,8 +13,10 @@ import {IconSun, IconMoonStars} from "@tabler/icons-react";
 import {useServerInsertedHTML} from "next/navigation";
 import {NextUIProvider} from "@nextui-org/react";
 import {ChakraProvider} from "@chakra-ui/react";
+import "./globals.css";
 import NavBar from "@/components/NavBar";
 import {useState} from "react";
+import Footer from "@/components/Footer";
 
 export default function RootLayout({
                                        children,
@@ -38,6 +40,18 @@ export default function RootLayout({
     const toggleColorScheme = (value?: ColorScheme) =>
         setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
 
+
+    const footerLinks = [
+        {
+            link: "link1",
+            label: "GitHub"
+
+        },
+        {
+            link: "link2",
+            label: "About"
+        }
+    ]
     return (
         <CacheProvider value={cache}>
             <ColorSchemeProvider
@@ -47,18 +61,26 @@ export default function RootLayout({
                 <MantineProvider
                     theme={{colorScheme}}
                     withGlobalStyles
-                    withNormalizeCSS>
+                    withNormalizeCSS
+                >
                     <html lang="en">
-                    {/*TODO link ANTd style sheet cdn*/}
                     <AuthProvider>
                         <body>
                         {/*<ChakraProvider>*/}
+                        <div
+                            className={"flex bg-gray-50"}
+                        >
+                            <NavBar/>
+                            <main
+                                // className={"flex-1 bg-white min-h-screen"}
+                                className={"flex-1"}
+                            >
+                                {children}
+                            </main>
 
-                        <NavBar/>
-                        {children}
+                        </div>
 
-                        {/*</NavBar>*/}
-
+                        <Footer links={footerLinks}/>
                         {/*</ChakraProvider>*/}
                         </body>
                     </AuthProvider>
@@ -66,7 +88,5 @@ export default function RootLayout({
                 </MantineProvider>
             </ColorSchemeProvider>
         </CacheProvider>
-
-
     )
 }

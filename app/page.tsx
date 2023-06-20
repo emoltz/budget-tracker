@@ -7,6 +7,7 @@ import {useAuth} from "@/app/context";
 import {User} from "firebase/auth";
 import {Container, Button, Grid, SimpleGrid, Skeleton, useMantineTheme, rem} from '@mantine/core';
 import MyCategories from "@/components/MyCategories";
+import ThemeSwitcher from "@/components/ThemeSwitcher";
 
 const PRIMARY_COL_HEIGHT = rem(300);
 
@@ -42,6 +43,7 @@ export default function Home() {
                     </Grid>
                 </SimpleGrid>
             </Container>
+
         </>
     )
 }
