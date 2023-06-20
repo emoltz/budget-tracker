@@ -10,6 +10,10 @@ import {
     IconReceipt2,
     IconSwitchHorizontal,
     IconLogout,
+    IconChartPie3,
+    IconChartAreaLine,
+    IconMoneybag,
+    IconDashboard,
 } from '@tabler/icons-react';
 import Link from 'next/link';
 
@@ -70,9 +74,10 @@ const useStyles = createStyles((theme) => ({
 }));
 
 const data = [
-    {link: '/', label: 'Dashboard', icon: IconBellRinging},
+    {link: '/', label: 'Dashboard', icon: IconDashboard},
+    {link: '#', label: 'Analysis', icon: IconChartAreaLine},
     {link: '/expenses', label: 'Expenses', icon: IconReceipt2},
-    {link: '/budgets', label: 'Budgets', icon: IconDatabaseImport},
+    {link: '/budgets', label: 'Budgets', icon: IconMoneybag},
     {link: '/settings', label: 'Settings', icon: IconSettings},
 ];
 
