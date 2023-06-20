@@ -157,9 +157,9 @@ export default function NavBar() {
                     </Link>
 
                     <Group sx={{height: '100%'}} spacing={0} className={classes.hiddenMobile}>
-                        <a href="#" className={classes.link}>
+                        <Link href="/" className={classes.link}>
                             Home
-                        </a>
+                        </Link>
                         <HoverCard width={600} position="bottom" radius="md" shadow="md" withinPortal>
                             <HoverCard.Target>
                                 <a href="#" className={classes.link}>
@@ -205,9 +205,9 @@ export default function NavBar() {
                                 </div>
                             </HoverCard.Dropdown>
                         </HoverCard>
-                        <a href="#" className={classes.link}>
+                        <Link href="/budgets" className={classes.link}>
                             Budgets
-                        </a>
+                        </Link>
                         <a href="#" className={classes.link}>
                             Settings
                         </a>
@@ -237,9 +237,9 @@ export default function NavBar() {
                 <ScrollArea h={`calc(100vh - ${rem(60)})`} mx="-md">
                     <Divider my="sm" color={theme.colorScheme === 'dark' ? 'dark.5' : 'gray.1'}/>
 
-                    <a href="#" className={classes.link}>
+                    <Link href="/" className={classes.link}>
                         Home
-                    </a>
+                    </Link>
                     <UnstyledButton className={classes.link} onClick={toggleLinks}>
                         <Center inline>
                             <Box component="span" mr={5}>
