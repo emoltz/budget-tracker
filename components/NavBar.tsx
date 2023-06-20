@@ -1,271 +1,130 @@
+import {useState} from 'react';
+import {createStyles, Navbar, Group, Code, getStylesRef, rem} from '@mantine/core';
 import {
-    createStyles,
-    Header,
-    HoverCard,
-    Group,
-    Button,
-    UnstyledButton,
-    Text,
-    SimpleGrid,
-    ThemeIcon,
-    Anchor,
-    Divider,
-    Center,
-    Box,
-    Burger,
-    Drawer,
-    Collapse,
-    ScrollArea,
-    rem,
-} from '@mantine/core';
-import '../app/globals.css';
-import Link from 'next/link';
-import {useDisclosure} from '@mantine/hooks';
-import {
-    IconNotification,
-    IconCode,
-    IconBook,
-    IconChartPie3,
+    IconBellRinging,
     IconFingerprint,
-    IconCoin,
-    IconChevronDown,
+    IconKey,
+    IconSettings,
+    Icon2fa,
+    IconDatabaseImport,
+    IconReceipt2,
+    IconSwitchHorizontal,
+    IconLogout,
+    IconChartPie3,
+    IconChartAreaLine,
+    IconMoneybag,
+    IconDashboard,
 } from '@tabler/icons-react';
+import Link from 'next/link';
+
 
 const useStyles = createStyles((theme) => ({
-    link: {
-        display: 'flex',
-        alignItems: 'center',
-        height: '100%',
-        paddingLeft: theme.spacing.md,
-        paddingRight: theme.spacing.md,
-        textDecoration: 'none',
-        color: theme.colorScheme === 'dark' ? theme.white : theme.black,
-        fontWeight: 500,
-        fontSize: theme.fontSizes.sm,
-
-        [theme.fn.smallerThan('sm')]: {
-            height: rem(42),
-            display: 'flex',
-            alignItems: 'center',
-            width: '100%',
-        },
-
-        ...theme.fn.hover({
-            backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
-        }),
-    },
-
-    subLink: {
-        width: '100%',
-        padding: `${theme.spacing.xs} ${theme.spacing.md}`,
-        borderRadius: theme.radius.md,
-
-        ...theme.fn.hover({
-            backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.colors.gray[0],
-        }),
-
-        '&:active': theme.activeStyles,
-    },
-
-    dropdownFooter: {
-        backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.colors.gray[0],
-        margin: `calc(${theme.spacing.md} * -1)`,
-        marginTop: theme.spacing.sm,
-        padding: `${theme.spacing.md} calc(${theme.spacing.md} * 2)`,
-        paddingBottom: theme.spacing.xl,
-        borderTop: `${rem(1)} solid ${
-            theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.colors.gray[1]
+    header: {
+        paddingBottom: theme.spacing.md,
+        marginBottom: `calc(${theme.spacing.md} * 1.5)`,
+        borderBottom: `${rem(1)} solid ${
+            theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2]
         }`,
     },
 
-    hiddenMobile: {
-        [theme.fn.smallerThan('sm')]: {
-            display: 'none',
+    footer: {
+        paddingTop: theme.spacing.md,
+        marginTop: theme.spacing.md,
+        borderTop: `${rem(1)} solid ${
+            theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2]
+        }`,
+    },
+
+    link: {
+        ...theme.fn.focusStyles(),
+        display: 'flex',
+        alignItems: 'center',
+        textDecoration: 'none',
+        fontSize: theme.fontSizes.sm,
+        color: theme.colorScheme === 'dark' ? theme.colors.dark[1] : theme.colors.gray[7],
+        padding: `${theme.spacing.xs} ${theme.spacing.sm}`,
+        borderRadius: theme.radius.sm,
+        fontWeight: 500,
+
+        '&:hover': {
+            backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
+            color: theme.colorScheme === 'dark' ? theme.white : theme.black,
+
+            [`& .${getStylesRef('icon')}`]: {
+                color: theme.colorScheme === 'dark' ? theme.white : theme.black,
+            },
         },
     },
 
-    hiddenDesktop: {
-        [theme.fn.largerThan('sm')]: {
-            display: 'none',
+    linkIcon: {
+        ref: getStylesRef('icon'),
+        color: theme.colorScheme === 'dark' ? theme.colors.dark[2] : theme.colors.gray[6],
+        marginRight: theme.spacing.sm,
+    },
+
+    linkActive: {
+        '&, &:hover': {
+            backgroundColor: theme.fn.variant({variant: 'light', color: theme.primaryColor}).background,
+            color: theme.fn.variant({variant: 'light', color: theme.primaryColor}).color,
+            [`& .${getStylesRef('icon')}`]: {
+                color: theme.fn.variant({variant: 'light', color: theme.primaryColor}).color,
+            },
         },
     },
 }));
 
-const mockdata = [
-    {
-        icon: IconCode,
-        title: 'Open source',
-        description: 'This Pokémon’s cry is very loud and distracting',
-    },
-    {
-        icon: IconCoin,
-        title: 'Free for everyone',
-        description: 'The fluid of Smeargle’s tail secretions changes',
-    },
-    {
-        icon: IconBook,
-        title: 'Documentation',
-        description: 'Yanma is capable of seeing 360 degrees without',
-    },
-    {
-        icon: IconFingerprint,
-        title: 'Security',
-        description: 'The shell’s rounded shape and the grooves on its.',
-    },
-    {
-        icon: IconChartPie3,
-        title: 'Analytics',
-        description: 'This Pokémon uses its flying ability to quickly chase',
-    },
-    {
-        icon: IconNotification,
-        title: 'Notifications',
-        description: 'Combusken battles with the intensely hot flames it spews',
-    },
+const data = [
+    {link: '/', label: 'Dashboard', icon: IconDashboard},
+    {link: '#', label: 'Analysis', icon: IconChartAreaLine},
+    {link: '/expenses', label: 'Expenses', icon: IconReceipt2},
+    {link: '/budgets', label: 'Budgets', icon: IconMoneybag},
+    {link: '/settings', label: 'Settings', icon: IconSettings},
 ];
 
 export default function NavBar() {
-    const [drawerOpened, {toggle: toggleDrawer, close: closeDrawer}] = useDisclosure(false);
-    const [linksOpened, {toggle: toggleLinks}] = useDisclosure(false);
-    const {classes, theme} = useStyles();
+    const {classes, cx} = useStyles();
+    const [active, setActive] = useState('Dashboard');
 
-    const links = mockdata.map((item) => (
-        <UnstyledButton className={classes.subLink} key={item.title}>
-            <Group noWrap align="flex-start">
-                <ThemeIcon size={34} variant="default" radius="md">
-                    <item.icon size={rem(22)} color={theme.fn.primaryColor()}/>
-                </ThemeIcon>
-                <div>
-                    <Text size="sm" fw={500}>
-                        {item.title}
-                    </Text>
-                    <Text size="xs" color="dimmed">
-                        {item.description}
-                    </Text>
-                </div>
-            </Group>
-        </UnstyledButton>
+    const links = data.map((item) => (
+        <Link
+            className={cx(classes.link, {[classes.linkActive]: item.label === active})}
+            href={item.link}
+            key={item.label}
+            onClick={(event) => {
+
+                setActive(item.label);
+            }}
+        >
+            <item.icon className={classes.linkIcon} stroke={1.5}/>
+            <span>{item.label}</span>
+        </Link>
     ));
 
     return (
-        <Box pb={120}>
-            <Header height={60} px="md">
-                <Group position="apart" sx={{height: '100%'}}>
-                    <Link href={"/"}>
-
-                        Argonaut
-                    </Link>
-
-                    <Group sx={{height: '100%'}} spacing={0} className={classes.hiddenMobile}>
-                        <Link href="/" className={classes.link}>
-                            Home
-                        </Link>
-                        <HoverCard width={600} position="bottom" radius="md" shadow="md" withinPortal>
-                            <HoverCard.Target>
-                                <a href="#" className={classes.link}>
-                                    <Center inline>
-                                        <Box component="span" mr={5}>
-                                            Features
-                                        </Box>
-                                        <IconChevronDown size={16} color={theme.fn.primaryColor()}/>
-                                    </Center>
-                                </a>
-                            </HoverCard.Target>
-
-                            <HoverCard.Dropdown sx={{overflow: 'hidden'}}>
-                                <Group position="apart" px="md">
-                                    <Text fw={500}>Features</Text>
-                                    <Anchor href="#" fz="xs">
-                                        View all
-                                    </Anchor>
-                                </Group>
-
-                                <Divider
-                                    my="sm"
-                                    mx="-md"
-                                    color={theme.colorScheme === 'dark' ? 'dark.5' : 'gray.1'}
-                                />
-
-                                <SimpleGrid cols={2} spacing={0}>
-                                    {links}
-                                </SimpleGrid>
-
-                                <div className={classes.dropdownFooter}>
-                                    <Group position="apart">
-                                        <div>
-                                            <Text fw={500} fz="sm">
-                                                Get started
-                                            </Text>
-                                            <Text size="xs" color="dimmed">
-                                                Their food sources have decreased, and their numbers
-                                            </Text>
-                                        </div>
-                                        <Button variant="default">Get started</Button>
-                                    </Group>
-                                </div>
-                            </HoverCard.Dropdown>
-                        </HoverCard>
-                        <Link href="/budgets" className={classes.link}>
-                            Budgets
-                        </Link>
-                        <a href="#" className={classes.link}>
-                            Settings
-                        </a>
-                    </Group>
-
-                    <Group className={classes.hiddenMobile}>
-                        <Link href={"/login"}>
-
-                            <Button variant="light">Log in</Button>
-                        </Link>
-
-                    </Group>
-
-                    <Burger opened={drawerOpened} onClick={toggleDrawer} className={classes.hiddenDesktop}/>
+        <Navbar
+            width={{sm: 300}} p="md"
+        >
+            <Navbar.Section grow>
+                <Group className={classes.header} position="apart">
+                    Argonaut
+                    <Code sx={{fontWeight: 700}}>v0.1</Code>
                 </Group>
-            </Header>
+                {links}
 
-            <Drawer
-                opened={drawerOpened}
-                onClose={closeDrawer}
-                size="100%"
-                padding="md"
-                title="Navigation"
-                className={classes.hiddenDesktop}
-                zIndex={1000000}
-            >
-                <ScrollArea h={`calc(100vh - ${rem(60)})`} mx="-md">
-                    <Divider my="sm" color={theme.colorScheme === 'dark' ? 'dark.5' : 'gray.1'}/>
+            </Navbar.Section>
 
-                    <Link href="/" className={classes.link}>
-                        Home
-                    </Link>
-                    <UnstyledButton className={classes.link} onClick={toggleLinks}>
-                        <Center inline>
-                            <Box component="span" mr={5}>
-                                Features
-                            </Box>
-                            <IconChevronDown size={16} color={theme.fn.primaryColor()}/>
-                        </Center>
-                    </UnstyledButton>
-                    <Collapse in={linksOpened}>{links}</Collapse>
-                    <a href="#" className={classes.link}>
-                        Learn
-                    </a>
-                    <a href="#" className={classes.link}>
-                        Academy
-                    </a>
+            <Navbar.Section className={classes.footer}>
 
-                    <Divider my="sm" color={theme.colorScheme === 'dark' ? 'dark.5' : 'gray.1'}/>
+                <Link href="/login" className={classes.link} >
+                    <IconFingerprint className={classes.linkIcon} stroke={1.5}/>
+                    <span>My Profile</span>
+                </Link>
 
-                    <Group position="center" grow pb="xl" px="md">
-                        <Button variant="default">Log in</Button>
-                        <Button
-
-                        >Sign up</Button>
-                    </Group>
-                </ScrollArea>
-            </Drawer>
-        </Box>
+                <Link href="/login" className={classes.link}>
+                    <IconLogout className={classes.linkIcon} stroke={1.5}/>
+                    <span>Logout</span>
+                </Link>
+            </Navbar.Section>
+        </Navbar>
     );
 }
