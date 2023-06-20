@@ -11,6 +11,7 @@ import {
     FiBell,
     FiChevronDown,
 } from 'react-icons/fi';
+import {Category} from "@/lib/Interfaces";
 
 export default function BudgetByCategory(props: any): JSX.Element {
     // TODO add category interface
