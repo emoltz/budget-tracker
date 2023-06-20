@@ -43,7 +43,6 @@ export default function RootLayout({
             <ColorSchemeProvider
                 colorScheme={colorScheme}
                 toggleColorScheme={toggleColorScheme}
-
             >
                 <MantineProvider
                     theme={{colorScheme}}
@@ -55,10 +54,10 @@ export default function RootLayout({
                         <body>
                         {/*<ChakraProvider>*/}
 
-                            <NavBar />
-                                {children}
+                        <NavBar/>
+                        {children}
 
-                            {/*</NavBar>*/}
+                        {/*</NavBar>*/}
 
                         {/*</ChakraProvider>*/}
                         </body>
