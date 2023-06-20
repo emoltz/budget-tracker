@@ -1,6 +1,7 @@
 'use client';
 import BudgetByCategory from "@/components/BudgetByCategory";
 
+
 export default function Budgets() {
     let categories=['Food/Drink','Groceries','Activities','Personal Items','Transportation',
     'Home', 'Health'];

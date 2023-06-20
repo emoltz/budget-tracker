@@ -12,7 +12,8 @@ import {
     FiChevronDown,
 } from 'react-icons/fi';
 
-export default function BudgetByCategory(props): JSX.Element {
+export default function BudgetByCategory(props: any): JSX.Element {
+    // TODO add category interface
     return (
         <>
             <Flex
