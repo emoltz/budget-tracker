@@ -18,6 +18,7 @@ export default function Budgets() {
     // Dummy data
     const Categories: Category[] = [
         {
+            id: "1",
             month: "January",
             budget: 1000,
             category_name: "Food",
@@ -25,6 +26,7 @@ export default function Budgets() {
             spent: 500,
         },
         {
+            id: "2",
             month: "February",
             budget: 1500,
             category_name: "Rent",
@@ -32,6 +34,7 @@ export default function Budgets() {
             spent: 1200,
         },
         {
+            id: "3",
             month: "March",
             budget: 800,
             category_name: "Entertainment",
@@ -39,6 +42,7 @@ export default function Budgets() {
             spent: 600,
         },
         {
+            id: "4",
             month: "April",
             budget: 2000,
             category_name: "Transportation",
@@ -46,6 +50,7 @@ export default function Budgets() {
             spent: 1800,
         },
         {
+            id: "5",
             month: "May",
             budget: 1200,
             category_name: "Utilities",
