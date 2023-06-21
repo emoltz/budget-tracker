@@ -1,6 +1,7 @@
 import Expenses from "@/components/Expenses";
 import {Expense} from "@/lib/Interfaces";
 
+
 export default function page() {
     interface TableSelectionProps {
         data: { avatar: string; name: string; email: string; job: string; id: string }[];
@@ -134,6 +135,10 @@ export default function page() {
 
     return (
         <>
+            <div
+                className={"text-2xl font-bold text-gray-800"}
+            >
+                    Expenses</div>
             <Expenses data={data}/>
         </>
     )
