@@ -1,4 +1,5 @@
 export interface Category {
+    id: string;
     month: string;
     budget: number;
     category_name: string;
@@ -6,7 +7,8 @@ export interface Category {
     spent: number;
 }
 
-export interface Expenses{
+export interface Expense{
+    id: string;
     amount: number;
     category: string;
     description: string;
