@@ -20,7 +20,7 @@ interface Properties {
 
 export default function Expenses({data}: Properties) {
     const {classes, cx} = useStyles();
-    const [selection, setSelection] = useState(['1']);
+    const [selection, setSelection] = useState(['']);
     const toggleRow = (id: string) =>
         setSelection((current) =>
             current.includes(id) ? current.filter((item) => item !== id) : [...current, id]
