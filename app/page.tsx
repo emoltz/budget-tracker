@@ -19,15 +19,13 @@ export default function Home() {
 
     return (
         <>
-
-
             <Container my="md">
                 <SimpleGrid cols={2} spacing="md" breakpoints={[{maxWidth: 'sm', cols: 1}]}>
 
-            <div>
-                <MyCategories/>
+                    <div>
 
-            </div>
+
+                    </div>
 
                     <Grid gutter="md">
                         <Grid.Col>
