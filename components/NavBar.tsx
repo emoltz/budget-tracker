@@ -73,7 +73,7 @@ const useStyles = createStyles((theme) => ({
 
 const data = [
     {link: '/', label: 'Dashboard', icon: IconDashboard},
-    {link: '#', label: 'Analysis', icon: IconChartAreaLine},
+    {link: '/analysis', label: 'Analysis', icon: IconChartAreaLine},
     {link: '/expenses', label: 'Expenses', icon: IconReceipt2},
     {link: '/budgets', label: 'Budgets', icon: IconMoneybag},
     {link: '/settings', label: 'Settings', icon: IconSettings},
