@@ -10,6 +10,7 @@ import {
     IconDashboard,
     IconArrowLeft,
     IconArrowRight,
+    IconArrowsExchange,
 } from '@tabler/icons-react';
 import Link from 'next/link';
 
@@ -119,7 +120,7 @@ export default function NavBar() {
                     {!collapsed && <span>Argonaut</span>}
                     <Code sx={{fontWeight: 700}}>v0.1</Code>
                     <div onClick={() => setCollapsed(!collapsed)}>
-                        {collapsed ? <IconArrowRight/> : <IconArrowLeft/>}
+                        <IconArrowsExchange/>
                     </div>
                 </Group>
                 {links}
