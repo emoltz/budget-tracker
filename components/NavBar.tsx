@@ -1,22 +1,17 @@
 import {useState} from 'react';
 import {createStyles, Navbar, Group, Code, getStylesRef, rem} from '@mantine/core';
 import {
-    IconBellRinging,
     IconFingerprint,
-    IconKey,
     IconSettings,
-    Icon2fa,
-    IconDatabaseImport,
     IconReceipt2,
-    IconSwitchHorizontal,
     IconLogout,
-    IconChartPie3,
     IconChartAreaLine,
     IconMoneybag,
     IconDashboard,
+    IconArrowLeft,
+    IconArrowRight,
 } from '@tabler/icons-react';
 import Link from 'next/link';
-
 
 const useStyles = createStyles((theme) => ({
     header: {
@@ -45,6 +40,7 @@ const useStyles = createStyles((theme) => ({
         padding: `${theme.spacing.xs} ${theme.spacing.sm}`,
         borderRadius: theme.radius.sm,
         fontWeight: 500,
+        minWidth: '40px',
 
         '&:hover': {
             backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
@@ -60,6 +56,7 @@ const useStyles = createStyles((theme) => ({
         ref: getStylesRef('icon'),
         color: theme.colorScheme === 'dark' ? theme.colors.dark[2] : theme.colors.gray[6],
         marginRight: theme.spacing.sm,
+        minWidth: '24px',
     },
 
     linkActive: {
@@ -82,6 +79,10 @@ const data = [
 ];
 
 export default function NavBar() {
+    // COLLAPSE
+    const [collapsed, setCollapsed] = useState(false);
+
+
     const {classes, cx} = useStyles();
     const [active, setActive] = useState('Dashboard');
 
@@ -96,18 +97,30 @@ export default function NavBar() {
             }}
         >
             <item.icon className={classes.linkIcon} stroke={1.5}/>
-            <span>{item.label}</span>
+            {!collapsed && <span>{item.label}</span>}
         </Link>
     ));
 
     return (
         <Navbar
-            width={{sm: 300}} p="md"
+            style={{
+                width: collapsed ? '60px' : '300px',
+            }}
+
+            width={{
+                default: collapsed ? 60 : 100, // set default width for all screen sizes
+                sm: collapsed ? 80 : 300, // override width for small screens and up
+                md: collapsed ? 80 : 300, // override width for medium screens and up
+            }}
+            p="md"
         >
             <Navbar.Section grow>
                 <Group className={classes.header} position="apart">
-                    Argonaut
+                    {!collapsed && <span>Argonaut</span>}
                     <Code sx={{fontWeight: 700}}>v0.1</Code>
+                    <div onClick={() => setCollapsed(!collapsed)}>
+                        {collapsed ? <IconArrowRight/> : <IconArrowLeft/>}
+                    </div>
                 </Group>
                 {links}
 
@@ -115,14 +128,14 @@ export default function NavBar() {
 
             <Navbar.Section className={classes.footer}>
 
-                <Link href="/login" className={classes.link} >
+                <Link href="/login" className={classes.link}>
                     <IconFingerprint className={classes.linkIcon} stroke={1.5}/>
-                    <span>My Profile</span>
+                    {!collapsed && <span>My Profile</span>}
                 </Link>
 
                 <Link href="/login" className={classes.link}>
                     <IconLogout className={classes.linkIcon} stroke={1.5}/>
-                    <span>Logout</span>
+                    {!collapsed && <span>Logout</span>}
                 </Link>
             </Navbar.Section>
         </Navbar>
