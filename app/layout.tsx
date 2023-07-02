@@ -64,6 +64,10 @@ export default function RootLayout({
                     withNormalizeCSS
                 >
                     <html lang="en">
+                    <head>
+                        <meta charSet="utf-8"/>
+
+                    </head>
                     <AuthProvider>
                         <body>
                         {/*<ChakraProvider>*/}
