@@ -15,8 +15,12 @@ import {
     SimpleGrid,
     Skeleton,
     useMantineTheme,
+    Input,
+    NumberInput,
     rem,
-    Paper
+    Menu,
+    Select,
+    Paper, MultiSelect
 } from '@mantine/core';
 import {useDisclosure} from '@mantine/hooks';
 import MyCategories from "@/components/MyCategories";
@@ -38,6 +42,15 @@ import {
 import {
     FaTrain,
 } from "react-icons/fa"
+import {
+    IconSettings,
+    IconSearch,
+    IconPhoto,
+    IconMessageCircle,
+    IconTrash,
+    IconArrowsLeftRight
+} from '@tabler/icons-react';
+
 
 const PRIMARY_COL_HEIGHT = rem(500);
 
@@ -95,7 +108,6 @@ const CustomButtons = () => {
     const [buttons, setButtons] = useState([]);
     const [opened, {open, close}] = useDisclosure(false);
 
-
     return (
         <>
             <div className={"text-2xl"}>
@@ -126,30 +138,53 @@ const CustomButtons = () => {
 
                 </Group>
             </div>
-            <Modal
-                opened={opened}
-                onClose={close}
-                title={"Add new button"}
+            <div
+                style={{
+                    paddingLeft: '200px'
+                }}
             >
-                {/*    MODAL CONTENT*/}
-                <div>
-                    Button Name:
 
-                </div>
-                <div>
-                    Button Icon:
+                <Modal
+                    size={"xl"}
+                    zIndex={1000}
+                    opened={opened}
+                    onClose={close}
+                    title={"Add new button"}
+                >
+                    {/*    MODAL CONTENT*/}
+                    <Text>
+                        Button Name:
+                        <Input/>
+                    </Text>
 
-                </div>
-                <div>
-                    Button Color:
-                </div>
-                <div>
-                    Expense Category:
-                </div>
-                <div>
-                    Expense Amount:
-                </div>
-            </Modal>
+                    <Text>
+                        Button Icon:
+
+                    </Text>
+
+                    <Text>
+                        Button Color:
+                        <ColorPicker/>
+
+                    </Text>
+                    <Text>
+                        Expense Category:
+                    </Text>
+                    <Text>
+                        Price
+                        <NumberInput
+
+                            defaultValue={0}
+                            parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
+                            formatter={(value) =>
+                                !Number.isNaN(parseFloat(value))
+                                    ? `$ ${value}`.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',')
+                                    : '$ '
+                            }
+                        />
+                    </Text>
+                </Modal>
+            </div>
 
 
         </>
@@ -193,4 +228,35 @@ const RightColumn = () => {
 
         </Paper>
     )
+}
+
+const ColorPicker = () => {
+    const data = [
+        // colors
+        {value: 'cyan', label: 'Cyan'},
+        {value: 'blue', label: 'Blue'},
+        {value: 'gray', label: 'Gray'},
+        {value: 'red', label: 'Red'},
+        {value: 'yellow', label: 'Yellow'},
+        {value: 'teal', label: 'Teal'},
+        {value: 'indigo', label: 'Indigo'},
+        {value: 'green', label: 'Green'},
+        {value: 'pink', label: 'Pink'},
+        {value: 'purple', label: 'Purple'},
+        //TODO put actual thumbnails with colors also (see Mantine documentation)
+    ]
+
+    return (
+        <Select data={data}
+                placeholder={"Select a Color"}
+                maxDropdownHeight={100}
+                transitionProps={{duration: 150, transition: 'pop-top-left', timingFunction: 'ease'}}
+                dropdownComponent={"div"}
+                searchable
+                clearable
+
+                nothingFound={"We can't do that color :("}
+        />
+    )
+
 }

@@ -17,6 +17,7 @@ import "./globals.css";
 import NavBar from "@/components/NavBar";
 import {useState} from "react";
 import Footer from "@/components/Footer";
+import Head from "next/head";
 
 export default function RootLayout({
                                        children,
@@ -64,10 +65,10 @@ export default function RootLayout({
                     withNormalizeCSS
                 >
                     <html lang="en">
-                    <head>
+                    <Head>
                         <meta charSet="utf-8"/>
 
-                    </head>
+                    </Head>
                     <AuthProvider>
                         <body>
                         {/*<ChakraProvider>*/}
