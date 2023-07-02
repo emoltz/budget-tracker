@@ -50,6 +50,8 @@ import {
     IconTrash,
     IconArrowsLeftRight
 } from '@tabler/icons-react';
+import {Spacer} from "@nextui-org/react";
+import {Category} from "@/lib/Interfaces";
 
 
 const PRIMARY_COL_HEIGHT = rem(500);
@@ -169,6 +171,9 @@ const CustomButtons = () => {
                     </Text>
                     <Text>
                         Expense Category:
+                        <CategoryPicker
+
+                        />
                     </Text>
                     <Text>
                         Price
@@ -183,6 +188,13 @@ const CustomButtons = () => {
                             }
                         />
                     </Text>
+                    <Spacer y={1}/>
+                    <Button
+                        variant={"light"}
+                        color={"cyan"}
+                    onClick={close}>
+                        Save
+                    </Button>
                 </Modal>
             </div>
 
@@ -259,4 +271,27 @@ const ColorPicker = () => {
         />
     )
 
+}
+
+
+const CategoryPicker = ()  => {
+    const user = useAuth();
+
+    // const data = userCategories.map((category) => category.category_name);
+    // TODO add ability to create category from here!
+    const data = [
+        "hello",
+        "world"
+    ]
+
+    return (
+        <Select data={data}
+                placeholder={"Select a category"}
+                maxDropdownHeight={160}
+                transitionProps={{duration: 150, transition: 'pop-top-left', timingFunction: 'ease'}}
+                dropdownComponent={"div"}
+                searchable
+                clearable
+        />
+    )
 }
