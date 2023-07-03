@@ -52,15 +52,22 @@ import {
 } from '@tabler/icons-react';
 import {Spacer} from "@nextui-org/react";
 import {Category} from "@/lib/Interfaces";
-
+import Head from "next/head";
+import PleaseLogin from "@/components/PleaseLogin";
+import LoginMantine from "@/components/LoginMantine";
 
 const PRIMARY_COL_HEIGHT = rem(500);
+
 
 export default function Home() {
     const theme = useMantineTheme();
     const SECONDARY_COL_HEIGHT = `calc(${PRIMARY_COL_HEIGHT} / 2 - ${theme.spacing.md} / 2)`;
 
     const user: User = useAuth();
+    if (!user) {
+        // If there are any errors with hydration, this is the issue! Just comment out this `if` statement
+        return <LoginMantine/>;
+    }
 
     return (
         <>
@@ -192,7 +199,7 @@ const CustomButtons = () => {
                     <Button
                         variant={"light"}
                         color={"cyan"}
-                    onClick={close}>
+                        onClick={close}>
                         Save
                     </Button>
                 </Modal>
@@ -274,7 +281,7 @@ const ColorPicker = () => {
 }
 
 
-const CategoryPicker = ()  => {
+const CategoryPicker = () => {
     const user = useAuth();
 
     // const data = userCategories.map((category) => category.category_name);

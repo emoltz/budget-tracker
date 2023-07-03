@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import {createStyles, Navbar, Group, Code, getStylesRef, rem} from '@mantine/core';
+import {createStyles, Navbar, Group, Code, getStylesRef, rem, Button} from '@mantine/core';
 import {
     IconFingerprint,
     IconSettings,
@@ -13,6 +13,7 @@ import {
     IconArrowsExchange,
 } from '@tabler/icons-react';
 import Link from 'next/link';
+import {auth} from "@/lib/firebase";
 
 const useStyles = createStyles((theme) => ({
     header: {
@@ -123,7 +124,11 @@ export default function NavBar() {
                         <IconArrowsExchange/>
                     </div>
                 </Group>
-                {links}
+                {links.map((link) => (
+                    <div key={link.key}>
+                        {link}
+                    </div>
+                ))}
 
             </Navbar.Section>
 
@@ -136,7 +141,10 @@ export default function NavBar() {
 
                 <Link href="/login" className={classes.link}>
                     <IconLogout className={classes.linkIcon} stroke={1.5}/>
-                    {!collapsed && <span>Logout</span>}
+                    {!collapsed && <div onClick={() => {
+                        auth!.signOut();
+                        console.log("logged out");
+                    }}>Logout</div>}
                 </Link>
             </Navbar.Section>
         </Navbar>
