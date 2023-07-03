@@ -1,7 +1,7 @@
 "use client";
 import './globals.css';
 import React, {useEffect, useState} from 'react';
-import {getCategories} from '@/lib/firebase';
+import {getCategories, useCategories} from '@/lib/firebase';
 import {collection, getDocs, getFirestore} from 'firebase/firestore';
 import {useAuth} from "@/app/context";
 import {User} from "firebase/auth";
@@ -52,22 +52,19 @@ import {
 } from '@tabler/icons-react';
 import {Spacer} from "@nextui-org/react";
 import {Category} from "@/lib/Interfaces";
-import Head from "next/head";
-import PleaseLogin from "@/components/PleaseLogin";
 import LoginMantine from "@/components/LoginMantine";
 
 const PRIMARY_COL_HEIGHT = rem(500);
-
 
 export default function Home() {
     const theme = useMantineTheme();
     const SECONDARY_COL_HEIGHT = `calc(${PRIMARY_COL_HEIGHT} / 2 - ${theme.spacing.md} / 2)`;
 
     const user: User = useAuth();
-    if (!user) {
-        // If there are any errors with hydration, this is the issue! Just comment out this `if` statement
-        return <LoginMantine/>;
-    }
+    // if (!user) {
+    //     // If there are any errors with hydration, this is the issue! Just comment out this `if` statement
+    //     return <LoginMantine/>;
+    // }
 
     return (
         <>
@@ -283,13 +280,12 @@ const ColorPicker = () => {
 
 const CategoryPicker = () => {
     const user = useAuth();
-
+    // TODO fetch all categories from user
+    const categories: Category[] = useCategories(user);
     // const data = userCategories.map((category) => category.category_name);
     // TODO add ability to create category from here!
-    const data = [
-        "hello",
-        "world"
-    ]
+    const data: string[] = categories ? categories.map((category) => category.category_name) : [];
+
 
     return (
         <Select data={data}
