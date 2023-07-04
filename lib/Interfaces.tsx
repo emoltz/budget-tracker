@@ -13,9 +13,10 @@ export interface Expense {
     category: string;
     description: string;
     is_yearly: boolean;
+    is_monthly: boolean;
     month: string;
     name: string;
-    timestamp: Date;
+    // timestamp: Date;
     year: number;
 }
 
@@ -58,20 +59,21 @@ export class ExpenseClass implements Expense {
     is_yearly = false;
     month = "";
     name = "";
-    timestamp = new Date();
+    // timestamp = new Date();
     year = 0;
+    is_monthly = false;
 
     // @ts-ignore
-    constructor(amount, category, description, is_yearly, month, name, timestamp, year) {
-        this.id = name + "_" + month + year;
+
+    constructor(amount, category, description, is_monthly, is_yearly) {
+        this.id = category + "_" + description + "_" + amount;
         this.amount = amount;
         this.category = category;
         this.description = description;
+        this.is_monthly = is_monthly;
         this.is_yearly = is_yearly;
-        this.month = month;
-        this.name = name;
-        this.timestamp = timestamp;
-        this.year = year;
+        this.year = new Date().getFullYear();
+        this.month = new Date().getMonth().toString();
     }
 
     toObject() {
@@ -82,7 +84,7 @@ export class ExpenseClass implements Expense {
             is_yearly: this.is_yearly,
             month: this.month,
             name: this.name,
-            timestamp: this.timestamp,
+            // timestamp: this.timestamp,
             year: this.year,
             id: this.id,
         }

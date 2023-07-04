@@ -26,7 +26,7 @@ import {useDisclosure} from '@mantine/hooks';
 import MyCategories from "@/components/MyCategories";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
 import {TwoColumnLayout} from "@/components/TwoColumnLayout";
-
+import {CategoryPicker} from "@/components/CategoryPicker";
 
 import {
     FiPlus,
@@ -53,6 +53,7 @@ import {
 import {Spacer} from "@nextui-org/react";
 import {Category} from "@/lib/Interfaces";
 import LoginMantine from "@/components/LoginMantine";
+import AddNewExpense from "@/components/AddNewExpense";
 
 const PRIMARY_COL_HEIGHT = rem(500);
 
@@ -91,16 +92,7 @@ const LeftColumn = () => {
         >
             <div className={"text-center items-center"}>
                 <div className={"text-2xl"}>Actions</div>
-                <Button
-                    leftIcon={<FiPlus/>}
-                    color={"dark"}
-                    radius={"md"}
-                    variant={"outline"}
-                >
-                    Add new expense
-
-
-                </Button>
+                <AddNewExpense/>
                 <hr className="border-t border-gray-900 my-3.5"/>
                 <CustomButtons/>
 
@@ -212,6 +204,9 @@ const CustomButtons = () => {
                     <Text>
                         Expense Category:
                         <CategoryPicker
+                            onCategoryChange={
+                                (category) => console.log(category)
+                            }
 
                         />
                     </Text>
@@ -251,10 +246,9 @@ interface CustomButtonProps {
     onClick: () => void;
 }
 
-const CustomButton = ({key, icon, label, color, onClick}: CustomButtonProps) => {
+const CustomButton = ({icon, label, color, onClick}: CustomButtonProps) => {
     return (
         <Button
-            key={key}
             leftIcon={icon}
             variant={"outline"}
             color={color}
@@ -316,23 +310,3 @@ const ColorPicker = () => {
 }
 
 
-const CategoryPicker = () => {
-    const user = useAuth();
-    // TODO fetch all categories from user
-    const categories: Category[] = useCategories(user);
-    // const data = userCategories.map((category) => category.category_name);
-    // TODO add ability to create category from here!
-    const data: string[] = categories ? categories.map((category) => category.category_name) : [];
-
-
-    return (
-        <Select data={data}
-                placeholder={"Select a category"}
-                maxDropdownHeight={160}
-                transitionProps={{duration: 150, transition: 'pop-top-left', timingFunction: 'ease'}}
-                dropdownComponent={"div"}
-                searchable
-                clearable
-        />
-    )
-}

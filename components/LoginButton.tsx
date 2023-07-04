@@ -1,5 +1,5 @@
 'use client';
-import {useEffect, useState} from 'react';
+import {ReactElement, useEffect, useState} from 'react';
 import dynamic from 'next/dynamic';
 import {Button, Checkbox, Form, Input} from 'antd';
 
@@ -10,14 +10,15 @@ import {GoogleAuthProvider, signInWithPopup} from "firebase/auth";
 import GoogleButton from "react-google-button";
 import {Spacer} from "@nextui-org/react";
 
-export default function LoginButton(): JSX.Element {
+export default function LoginButton(): ReactElement {
     const signInWithGoogle = async () => {
         // @ts-ignore
         if (typeof window !== 'undefined' && auth) {
             const provider = new GoogleAuthProvider();
-            const result = await signInWithPopup(auth, provider);
+            const result = await signInWithPopup(auth, provider) as any;
             const user = result.user;
-            if (user) {
+            const isNewUser = result.additionalUserInfo?.isNewUser;
+            if (user && isNewUser) {
                 await saveUserToDatabase(user);
             }
         }
