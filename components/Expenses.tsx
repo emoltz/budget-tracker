@@ -50,7 +50,8 @@ export default function Expenses({data}: Properties) {
                 <td>{item.amount}</td>
                 <td>{item.category}</td>
                 <td>{item.is_yearly.toString()}</td>
-                <td>{item.timestamp.getDate()}</td>
+                {/*<td>{item.timestamp.getDate()}</td>*/}
+                {/*    TODO fix date issue*/}
             </tr>
         );
     });
