@@ -118,7 +118,10 @@ export default function NavBar() {
         >
             <Navbar.Section grow>
                 <Group className={classes.header} position="apart">
-                    {!collapsed && <span>Argonaut</span>}
+                    {!collapsed && <div
+                        className={"text-2xl font-bold font-mono text-gray-700"}
+                    >
+                        Argonaut</div>}
                     <Code sx={{fontWeight: 700}}>v0.1</Code>
                     <div onClick={() => setCollapsed(!collapsed)}>
                         <IconArrowsExchange/>

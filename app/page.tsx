@@ -111,8 +111,39 @@ const LeftColumn = () => {
 }
 
 const CustomButtons = () => {
+    type Button = {
+        icon: React.ReactNode,
+        label: string,
+        color: string,
+        onClick: () => void
+    }
+
     const [buttons, setButtons] = useState([]);
     const [opened, {open, close}] = useDisclosure(false);
+
+    const sampleButtons: Button[] = [
+        {
+            icon: <FaTrain/>,
+            label: "Train 1",
+            color: "cyan",
+            onClick: () => console.log("clicked")
+        },
+        {
+            icon: <FiAlertCircle/>,
+            label: "Lunch",
+            color: "light",
+            onClick: () => console.log("clicked")
+        },
+        {
+            icon: <FaTrain/>,
+            label: "Train 3",
+            color: "red",
+            onClick: () => {
+                console.log("clicked");
+            }
+        },
+    ]
+
 
     return (
         <>
@@ -120,29 +151,31 @@ const CustomButtons = () => {
                 Custom Buttons
             </div>
             {/*CUSTOM BUTTONS*/}
-            <CustomButton
-                icon={<FaTrain/>}
-                label={"Train Ride"}
-                color={"cyan"}
-                onClick={() => console.log("clicked")}/>
+            <div
+                className={"flex flex-wrap justify-center  space-x-1.5"}
+            >
+                {sampleButtons.map((button, index) => (
+                    <CustomButton
+                        key={index}
+                        icon={button.icon}
+                        label={button.label}
+                        color={button.color}
+                        onClick={button.onClick}
+                    />))}
 
 
+            </div>
             {/*ADD NEW BUTTON*/}
             <div>
-                <Group
-                    position={"center"}
+                <Button
+                    leftIcon={<FiPlus/>}
+                    variant={"outline"}
+                    color={"dark"}
+                    compact
+                    onClick={open}
                 >
-                    <Button
-                        leftIcon={<FiPlus/>}
-                        variant={"outline"}
-                        color={"cyan"}
-                        compact
-                        onClick={open}
-                    >
-                        New Button
-                    </Button>
-
-                </Group>
+                    New Button
+                </Button>
             </div>
             <div
                 style={{
@@ -158,6 +191,9 @@ const CustomButtons = () => {
                     title={"Add new button"}
                 >
                     {/*    MODAL CONTENT*/}
+                    <Text>
+                        This allows you to create a button that will log a specific expense every time you push it.
+                    </Text>
                     <Text>
                         Button Name:
                         <Input/>
@@ -208,15 +244,17 @@ const CustomButtons = () => {
 }
 
 interface CustomButtonProps {
+    key: number;
     icon: React.ReactNode;
     label: string;
     color: string;
     onClick: () => void;
 }
 
-const CustomButton = ({icon, label, color, onClick}: CustomButtonProps) => {
+const CustomButton = ({key, icon, label, color, onClick}: CustomButtonProps) => {
     return (
         <Button
+            key={key}
             leftIcon={icon}
             variant={"outline"}
             color={color}
