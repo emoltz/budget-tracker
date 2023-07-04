@@ -77,15 +77,14 @@ export default function RootLayout({
                         >
                             <NavBar/>
                             <main
-                                // className={"flex-1 bg-white min-h-screen"}
-                                className={"flex-1"}
+                                className={"flex-1 bg-white min-h-screen"}
                             >
                                 {children}
                             </main>
+                        {/*<Footer links={footerLinks}/>*/}
 
                         </div>
 
-                        <Footer links={footerLinks}/>
                         {/*</ChakraProvider>*/}
                         </body>
                     </AuthProvider>
