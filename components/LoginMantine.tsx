@@ -25,19 +25,27 @@ import {
 import {auth, saveUserToDatabase} from "@/lib/firebase";
 import {GoogleAuthProvider, signInWithPopup} from "firebase/auth";
 import GoogleButton from "react-google-button";
+import {doc, getDoc, getFirestore} from "firebase/firestore";
 
 export default function LoginMantine(props: PaperProps) {
     // GOOGLE
-    const signInWithGoogle = async (): Promise<void> => {
-        if (typeof window !== 'undefined' && auth!) {
-            const provider: GoogleAuthProvider = new GoogleAuthProvider();
-            const result: UserCredential = await signInWithPopup(auth, provider);
-            const user: User = result.user;
-            if (user) {
+
+const signInWithGoogle = async (): Promise<void> => {
+    if (typeof window !== 'undefined' && auth!) {
+        const provider: GoogleAuthProvider = new GoogleAuthProvider();
+        const result: UserCredential = await signInWithPopup(auth, provider);
+        const user: User = result.user;
+        if (user) {
+            const db = getFirestore();
+            const userDocRef = doc(db, "Users", user.uid);
+            const userDocSnap = await getDoc(userDocRef);
+            if (!userDocSnap.exists()) {
+                // The user does not exist in the database, save the user
                 await saveUserToDatabase(user);
             }
         }
     }
+}
     //COMPONENT
     const [type, toggle] = useToggle(['login', 'register']);
     const form = useForm({

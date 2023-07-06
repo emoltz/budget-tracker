@@ -3,7 +3,7 @@ import './globals.css';
 import React, {useEffect, useState} from 'react';
 import {getCategories, useCategories} from '@/lib/firebase';
 import {collection, getDocs, getFirestore} from 'firebase/firestore';
-import {useAuth, authStateChange} from "@/app/context";
+import {useAuth} from "@/app/context";
 import {User} from "firebase/auth";
 import {
     Container,
