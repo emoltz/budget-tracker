@@ -61,11 +61,11 @@ export default function Home() {
     const theme = useMantineTheme();
     const SECONDARY_COL_HEIGHT = `calc(${PRIMARY_COL_HEIGHT} / 2 - ${theme.spacing.md} / 2)`;
 
-    const user: User = useAuth();
-    // if (!user) {
-    //     // If there are any errors with hydration, this is the issue! Just comment out this `if` statement
-    //     return <LoginMantine/>;
-    // }
+    const user = useAuth();
+    if (!user) {
+        // If there are any errors with hydration, this is the issue! Just comment out this `if` statement
+        return <LoginMantine/>;
+    }
 
     return (
         <>
