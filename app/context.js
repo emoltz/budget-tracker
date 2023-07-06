@@ -18,7 +18,7 @@ export function AuthProvider({children}) {
             }
         });
         return () => unsubscribe();
-    }, []);
+    }, [auth]);
 
     return (
         <AuthContext.Provider value={user}>
