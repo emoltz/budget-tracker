@@ -17,14 +17,16 @@ import {
 const PRIMARY_COL_HEIGHT = rem(300);
 
 export default function Login() {
-    const user = useAuth();
+    const {user, loading} = useAuth();
     if (user) {
-        // @ts-ignore
         return (
             <>
+                {/* @ts-ignore */}
                 Welcome {user.displayName}! You are logged in.
+
                 {/*// @ts-ignore*/}
-                <Button onClick={() => auth!.signOut()}>Sign out</Button>
+                <Button variant={"outline"}
+                        onClick={() => auth!.signOut()}>Sign out</Button>
             </>
         )
     } else {
@@ -32,18 +34,7 @@ export default function Login() {
             <Container
                 my={"md"}
             >
-                <SimpleGrid
-                    cols={1}
-                    spacing={"md"}
-                    breakpoints={[{
-                        maxWidth: 'sm',
-                        cols: 1
-                    }]}
-                >
-
-
-                    <LoginMantine/>
-                </SimpleGrid>
+                <LoginMantine/>
             </Container>
         )
     }

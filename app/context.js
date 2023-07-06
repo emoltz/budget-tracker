@@ -27,5 +27,20 @@ export function AuthProvider({children}) {
 }
 
 export function useAuth() {
-    return useContext(AuthContext);
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                setUser(user);
+            } else {
+                setUser(null);
+            }
+            setLoading(false);
+        });
+        return () => unsubscribe();
+    }, [auth]);
+
+    return { user, loading };
 }

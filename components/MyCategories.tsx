@@ -8,7 +8,7 @@ import {Category} from "@/lib/Interfaces";
 
 export default function MyCategories() {
 
-    const user: User = useAuth();
+    const {user, loading} = useAuth();
     const [categories, setCategories] = useState<Category[]>([]);
 
     useEffect(() => {
