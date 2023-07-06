@@ -82,6 +82,7 @@ export class ExpenseClass implements Expense {
             category: this.category,
             description: this.description,
             is_yearly: this.is_yearly,
+            is_monthly: this.is_monthly,
             month: this.month,
             name: this.name,
             // timestamp: this.timestamp,

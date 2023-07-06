@@ -15,8 +15,8 @@ export default function AddNewExpense() {
             amount: 0,
             description: "",
             category: "",
-            is_yearly: false,
             is_monthly: false,
+            is_yearly: false,
         }
     });
 
@@ -72,6 +72,7 @@ export default function AddNewExpense() {
                         setSelectedFrequency(value);
                         form.setFieldValue('is_monthly', value === 'monthly');
                         form.setFieldValue('is_yearly', value === 'yearly');
+                        // console.log(form.values);
                     }}
                     >
                     <Group mt={"xs"} >
