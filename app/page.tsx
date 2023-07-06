@@ -3,7 +3,7 @@ import './globals.css';
 import React, {useEffect, useState} from 'react';
 import {getCategories, useCategories} from '@/lib/firebase';
 import {collection, getDocs, getFirestore} from 'firebase/firestore';
-import {useAuth} from "@/app/context";
+import {useAuth, authStateChange} from "@/app/context";
 import {User} from "firebase/auth";
 import {
     Container,
@@ -62,10 +62,10 @@ export default function Home() {
     const SECONDARY_COL_HEIGHT = `calc(${PRIMARY_COL_HEIGHT} / 2 - ${theme.spacing.md} / 2)`;
 
     const user: User = useAuth();
-    // if (!user) {
-    //     // If there are any errors with hydration, this is the issue! Just comment out this `if` statement
-    //     return <LoginMantine/>;
-    // }
+    if (!user) {
+        // If there are any errors with hydration, this is the issue! Just comment out this `if` statement
+        return <LoginMantine/>;
+    }
 
     return (
         <>

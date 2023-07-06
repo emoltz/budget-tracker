@@ -157,7 +157,7 @@ export default function LoginMantine(props: PaperProps) {
                             ? 'Already have an account? Login'
                             : "Don't have an account? Register"}
                     </Anchor>
-                    <Button type="submit" radius="xl">
+                    <Button variant={"outline"} type="submit" radius="xl">
                         {upperFirst(type)}
                     </Button>
                 </Group>
