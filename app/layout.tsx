@@ -17,6 +17,7 @@ import "./globals.css";
 import NavBar from "@/components/NavBar";
 import {useState} from "react";
 import Footer from "@/components/Footer";
+import Head from "next/head";
 
 export default function RootLayout({
                                        children,
@@ -64,6 +65,10 @@ export default function RootLayout({
                     withNormalizeCSS
                 >
                     <html lang="en">
+                    <Head>
+                        <meta charSet="utf-8"/>
+
+                    </Head>
                     <AuthProvider>
                         <body>
                         {/*<ChakraProvider>*/}
@@ -72,15 +77,14 @@ export default function RootLayout({
                         >
                             <NavBar/>
                             <main
-                                // className={"flex-1 bg-white min-h-screen"}
-                                className={"flex-1"}
+                                className={"flex-1 bg-white min-h-screen"}
                             >
                                 {children}
                             </main>
+                        {/*<Footer links={footerLinks}/>*/}
 
                         </div>
 
-                        <Footer links={footerLinks}/>
                         {/*</ChakraProvider>*/}
                         </body>
                     </AuthProvider>
