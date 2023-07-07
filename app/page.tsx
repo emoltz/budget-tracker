@@ -58,7 +58,7 @@ import AddNewExpense from "@/components/AddNewExpense";
 import Loading from "@/app/loading";
 import ComponentFrameCenter from "@/components/layouts/ComponentFrameCenter";
 
-const PRIMARY_COL_HEIGHT = rem(500);
+const PRIMARY_COL_HEIGHT = rem(400);
 // TODO make sure the expenses is logged with the right category
 
 export default function Home() {
@@ -138,99 +138,101 @@ const CustomButtons = () => {
 
     return (
         <>
-            <div className={"text-2xl"}>
-                Custom Buttons
-            </div>
-            {/*CUSTOM BUTTONS*/}
-            <div
-                className={"flex flex-wrap justify-center  space-x-1.5"}
+            <ComponentFrameCenter
+                PRIMARY_COL_HEIGHT={PRIMARY_COL_HEIGHT}
+                title={"Custom Buttons"}
             >
-                {sampleButtons.map((button, index) => (
-                    <CustomButton
-                        key={index}
-                        icon={button.icon}
-                        label={button.label}
-                        color={button.color}
-                        onClick={button.onClick}
-                    />))}
-
-
-            </div>
-            {/*ADD NEW BUTTON*/}
-            <div>
-                <Button
-                    leftIcon={<FiPlus/>}
-                    variant={"outline"}
-                    color={"dark"}
-                    compact
-                    onClick={open}
+                <div
+                    className={"flex flex-wrap justify-center  space-x-1.5"}
                 >
-                    New Button
-                </Button>
-            </div>
-            <div
-                style={{
-                    paddingLeft: '200px'
-                }}
-            >
+                    {sampleButtons.map((button, index) => (
+                        <CustomButton
+                            key={index}
+                            icon={button.icon}
+                            label={button.label}
+                            color={button.color}
+                            onClick={button.onClick}
+                        />))}
 
-                <Modal
-                    size={"xl"}
-                    zIndex={1000}
-                    opened={opened}
-                    onClose={close}
-                    title={"Add new button"}
-                >
-                    {/*    MODAL CONTENT*/}
-                    <Text>
-                        This allows you to create a button that will log a specific expense every time you push it.
-                    </Text>
-                    <Text>
-                        Button Name:
-                        <Input/>
-                    </Text>
 
-                    <Text>
-                        Button Icon:
-
-                    </Text>
-
-                    <Text>
-                        Button Color:
-                        <ColorPicker/>
-
-                    </Text>
-                    <Text>
-                        Expense Category:
-                        <CategoryPicker
-                            onCategoryChange={
-                                (category) => console.log(category)
-                            }
-
-                        />
-                    </Text>
-                    <Text>
-                        Price
-                        <NumberInput
-
-                            defaultValue={0}
-                            parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
-                            formatter={(value) =>
-                                !Number.isNaN(parseFloat(value))
-                                    ? `$ ${value}`.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',')
-                                    : '$ '
-                            }
-                        />
-                    </Text>
-                    <Spacer y={1}/>
+                </div>
+                {/*ADD NEW BUTTON*/}
+                <div>
                     <Button
-                        variant={"light"}
-                        color={"cyan"}
-                        onClick={close}>
-                        Save
+                        leftIcon={<FiPlus/>}
+                        variant={"outline"}
+                        color={"dark"}
+                        compact
+                        onClick={open}
+                    >
+                        New Button
                     </Button>
-                </Modal>
-            </div>
+                </div>
+                <div
+                    style={{
+                        paddingLeft: '200px'
+                    }}
+                >
+
+                    <Modal
+                        size={"xl"}
+                        zIndex={1000}
+                        opened={opened}
+                        onClose={close}
+                        title={"Add new button"}
+                    >
+                        {/*    MODAL CONTENT*/}
+                        <Text>
+                            This allows you to create a button that will log a specific expense every time you push it.
+                        </Text>
+                        <Text>
+                            Button Name:
+                            <Input/>
+                        </Text>
+
+                        <Text>
+                            Button Icon:
+
+                        </Text>
+
+                        <Text>
+                            Button Color:
+                            <ColorPicker/>
+
+                        </Text>
+                        <Text>
+                            Expense Category:
+                            <CategoryPicker
+                                onCategoryChange={
+                                    (category) => console.log(category)
+                                }
+
+                            />
+                        </Text>
+                        <Text>
+                            Price
+                            <NumberInput
+
+                                defaultValue={0}
+                                parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
+                                formatter={(value) =>
+                                    !Number.isNaN(parseFloat(value))
+                                        ? `$ ${value}`.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',')
+                                        : '$ '
+                                }
+                            />
+                        </Text>
+                        <Spacer y={1}/>
+                        <Button
+                            variant={"light"}
+                            color={"cyan"}
+                            onClick={close}>
+                            Save
+                        </Button>
+                    </Modal>
+                </div>
+
+            </ComponentFrameCenter>
 
 
         </>
@@ -264,7 +266,7 @@ const AtAGlance = () => {
         <ComponentFrameCenter
             PRIMARY_COL_HEIGHT={PRIMARY_COL_HEIGHT}
             title={"At a Glance"}
-            >
+        >
             <div>
                 This is where the at a glance stuff goes.
 
