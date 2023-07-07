@@ -56,6 +56,7 @@ import {Category} from "@/lib/Interfaces";
 import LoginMantine from "@/components/LoginMantine";
 import AddNewExpense from "@/components/AddNewExpense";
 import Loading from "@/app/loading";
+import ComponentFrameCenter from "@/components/layouts/ComponentFrameCenter";
 
 const PRIMARY_COL_HEIGHT = rem(500);
 // TODO make sure the expenses is logged with the right category
@@ -91,21 +92,12 @@ export default function Home() {
 
 const Actions = () => {
     return (
-        <Paper
-            shadow={"sm"}
-            p={"sm"}
-            withBorder
-            sx={{
-                height: PRIMARY_COL_HEIGHT
-            }}
+        <ComponentFrameCenter
+            PRIMARY_COL_HEIGHT={PRIMARY_COL_HEIGHT}
+            title={"Add New"}
         >
-            <div className={"text-center items-center"}>
-                <div className={"text-2xl"}>Actions</div>
-                <AddNewExpense/>
-
-
-            </div>
-        </Paper>
+            <AddNewExpense/>
+        </ComponentFrameCenter>
     )
 }
 
@@ -269,19 +261,15 @@ const CustomButton = ({icon, label, color, onClick}: CustomButtonProps) => {
 
 const AtAGlance = () => {
     return (
-        <Paper
-            shadow={"sm"}
-            p={"sm"}
-            withBorder
-            sx={{
-                height: PRIMARY_COL_HEIGHT
-            }}
-        >
-            <div className={"text-center"}>
-                <div className={"text-2xl"}>At a Glance</div>
-            </div>
+        <ComponentFrameCenter
+            PRIMARY_COL_HEIGHT={PRIMARY_COL_HEIGHT}
+            title={"At a Glance"}
+            >
+            <div>
+                This is where the at a glance stuff goes.
 
-        </Paper>
+            </div>
+        </ComponentFrameCenter>
     )
 }
 
