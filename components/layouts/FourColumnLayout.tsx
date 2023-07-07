@@ -15,16 +15,16 @@ export const FourColumnLayout = ({upRight, upLeft, downRight, downLeft}: Props) 
               gutter={"sm"}
             columns={10}
         >
-            <Grid.Col span={4}>
+            <Grid.Col span={"content"}>
                 {upLeft}
             </Grid.Col>
-            <Grid.Col span={4}>
+            <Grid.Col span={"content"}>
                 {upRight}
             </Grid.Col>
-            <Grid.Col span={4}>
+            <Grid.Col span={"content"}>
                 {downLeft}
             </Grid.Col>
-            <Grid.Col span={4}>
+            <Grid.Col span={"content"}>
                 {downRight}
             </Grid.Col>
         </Grid>
