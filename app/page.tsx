@@ -77,7 +77,6 @@ export default function Home() {
 
     return (
         <>
-            <ThemeSwitcher/>
             <FourColumnLayout
                 two={<Actions/>}
                 one={<AtAGlance/>}
