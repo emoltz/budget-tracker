@@ -25,7 +25,8 @@ import {
 import {useDisclosure} from '@mantine/hooks';
 import MyCategories from "@/components/MyCategories";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
-import {TwoColumnLayout} from "@/components/TwoColumnLayout";
+import {TwoColumnLayout} from "@/components/layouts/TwoColumnLayout";
+import {FourColumnLayout} from "@/components/layouts/FourColumnLayout";
 import {CategoryPicker} from "@/components/CategoryPicker";
 
 import {
@@ -54,6 +55,7 @@ import {Spacer} from "@nextui-org/react";
 import {Category} from "@/lib/Interfaces";
 import LoginMantine from "@/components/LoginMantine";
 import AddNewExpense from "@/components/AddNewExpense";
+import Loading from "@/app/loading";
 
 const PRIMARY_COL_HEIGHT = rem(500);
 
@@ -63,7 +65,7 @@ export default function Home() {
 
     const {user, loading} = useAuth();
      if (loading) {
-        return <div>Loading...</div>; // Or return a loading spinner
+        return <Loading/>; // Or return a loading spinner
     }
 
     if (!user){
@@ -74,17 +76,23 @@ export default function Home() {
     return (
         <>
             <ThemeSwitcher/>
-            <TwoColumnLayout
-                leftComponent={<LeftColumn/>}
-                rightComponent={<RightColumn/>}
-            />
+            {/*<TwoColumnLayout*/}
+            {/*    leftComponent={<Actions/>}*/}
+            {/*    rightComponent={<AtAGlance/>}*/}
+            {/*/>*/}
+            <FourColumnLayout
+                upLeft={<Actions/>}
+                upRight={<AtAGlance/>}
+                downLeft={<CustomButtons/>}
+                downRight={<MyCategories/>}
+                />
 
 
         </>
     )
 }
 
-const LeftColumn = () => {
+const Actions = () => {
     return (
         <Paper
             shadow={"sm"}
@@ -97,8 +105,7 @@ const LeftColumn = () => {
             <div className={"text-center items-center"}>
                 <div className={"text-2xl"}>Actions</div>
                 <AddNewExpense/>
-                <hr className="border-t border-gray-900 my-3.5"/>
-                <CustomButtons/>
+
 
 
             </div>
@@ -264,7 +271,7 @@ const CustomButton = ({icon, label, color, onClick}: CustomButtonProps) => {
     )
 }
 
-const RightColumn = () => {
+const AtAGlance = () => {
     return (
         <Paper
             shadow={"sm"}
