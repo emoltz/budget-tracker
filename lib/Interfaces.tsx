@@ -20,7 +20,7 @@ export interface Expense {
     year: number;
 }
 
-export class CategoryClass implements Category{
+export class CategoryClass implements Category {
     month = "";
     budget = 0;
     category_name = "";
@@ -49,6 +49,10 @@ export class CategoryClass implements Category{
             id: this.id,
         }
     }
+
+    changeBudget(newBudget: number) {
+        this.budget = newBudget;
+    }
 }
 
 export class ExpenseClass implements Expense {
@@ -63,9 +67,9 @@ export class ExpenseClass implements Expense {
     year = 0;
     is_monthly = false;
 
-    // @ts-ignore
 
-    constructor(amount, category, description, is_monthly, is_yearly) {
+
+    constructor(amount:number, category:string, description:string, is_monthly:boolean, is_yearly:boolean) {
         this.id = category + "_" + description + "_" + amount;
         this.amount = amount;
         this.category = category;
