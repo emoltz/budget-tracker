@@ -2,13 +2,13 @@ import {ReactElement} from "react";
 import {Grid} from "@mantine/core"
 
 interface Props {
-    upRight: ReactElement;
-    upLeft: ReactElement;
-    downRight: ReactElement;
-    downLeft: ReactElement;
+    one: ReactElement;
+    two: ReactElement;
+    three: ReactElement;
+    four: ReactElement;
 }
 
-export const FourColumnLayout = ({upRight, upLeft, downRight, downLeft}: Props) => {
+export const FourColumnLayout = ({one, two, three, four}: Props) => {
 
     return (
         <Grid grow
@@ -16,16 +16,16 @@ export const FourColumnLayout = ({upRight, upLeft, downRight, downLeft}: Props) 
             columns={10}
         >
             <Grid.Col span={"content"}>
-                {upLeft}
+                {two}
             </Grid.Col>
             <Grid.Col span={"content"}>
-                {upRight}
+                {one}
             </Grid.Col>
             <Grid.Col span={"content"}>
-                {downLeft}
+                {three}
             </Grid.Col>
             <Grid.Col span={"content"}>
-                {downRight}
+                {four}
             </Grid.Col>
         </Grid>
     )

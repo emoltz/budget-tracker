@@ -58,17 +58,18 @@ import AddNewExpense from "@/components/AddNewExpense";
 import Loading from "@/app/loading";
 
 const PRIMARY_COL_HEIGHT = rem(500);
+// TODO make sure the expenses is logged with the right category
 
 export default function Home() {
     const theme = useMantineTheme();
     const SECONDARY_COL_HEIGHT = `calc(${PRIMARY_COL_HEIGHT} / 2 - ${theme.spacing.md} / 2)`;
 
     const {user, loading} = useAuth();
-     if (loading) {
+    if (loading) {
         return <Loading/>; // Or return a loading spinner
     }
 
-    if (!user){
+    if (!user) {
         return <LoginMantine/>;
     }
 
@@ -76,16 +77,12 @@ export default function Home() {
     return (
         <>
             <ThemeSwitcher/>
-            {/*<TwoColumnLayout*/}
-            {/*    leftComponent={<Actions/>}*/}
-            {/*    rightComponent={<AtAGlance/>}*/}
-            {/*/>*/}
             <FourColumnLayout
-                upLeft={<Actions/>}
-                upRight={<AtAGlance/>}
-                downLeft={<CustomButtons/>}
-                downRight={<MyCategories/>}
-                />
+                two={<Actions/>}
+                one={<AtAGlance/>}
+                three={<CustomButtons/>}
+                four={<div/>}
+            />
 
 
         </>
@@ -105,7 +102,6 @@ const Actions = () => {
             <div className={"text-center items-center"}>
                 <div className={"text-2xl"}>Actions</div>
                 <AddNewExpense/>
-
 
 
             </div>
