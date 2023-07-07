@@ -77,11 +77,11 @@ export default function RootLayout({
                         >
                             <NavBar/>
                             <main
-                                className={"flex-1 bg-white min-h-screen"}
+                                className={colorScheme === 'dark' ? "flex-1 bg-gray-900 min-h-screen" : "flex-1 bg-white min-h-screen"}
                             >
                                 {children}
                             </main>
-                        {/*<Footer links={footerLinks}/>*/}
+                            {/*<Footer links={footerLinks}/>*/}
 
                         </div>
 

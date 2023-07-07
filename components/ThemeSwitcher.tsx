@@ -8,11 +8,11 @@ export default function ThemeSwitcher() {
     return (
         <ActionIcon
             variant={"outline"}
-            color={dark ? "yellow" : "blue"}
+            color={dark ? "blue" : "yellow"}
             onClick={() => toggleColorScheme()}
             title={"Toggle color scheme"}
         >
-            {dark ? <IconSun size="1.1rem"/> : <IconMoonStars size="1.1rem"/>}
+            {dark ? <IconMoonStars size="1.1rem"/> : <IconSun size="1.1rem"/>}
 
         </ActionIcon>
     )

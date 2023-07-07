@@ -1,5 +1,15 @@
 import {useState} from 'react';
-import {createStyles, Navbar, Group, Code, getStylesRef, rem, Button} from '@mantine/core';
+import {
+    createStyles,
+    Navbar,
+    Group,
+    Code,
+    getStylesRef,
+    rem,
+    Button,
+    useMantineTheme,
+    useMantineColorScheme
+} from '@mantine/core';
 import {
     IconFingerprint,
     IconSettings,
@@ -14,6 +24,7 @@ import {
 } from '@tabler/icons-react';
 import Link from 'next/link';
 import {auth} from "@/lib/firebase";
+import ThemeSwitcher from "@/components/ThemeSwitcher";
 
 const useStyles = createStyles((theme) => ({
     header: {
@@ -83,7 +94,7 @@ const data = [
 export default function NavBar() {
     // COLLAPSE
     const [collapsed, setCollapsed] = useState(false);
-
+    const {colorScheme} = useMantineColorScheme();
 
     const {classes, cx} = useStyles();
     const [active, setActive] = useState('Dashboard');
@@ -119,12 +130,15 @@ export default function NavBar() {
             <Navbar.Section grow>
                 <Group className={classes.header} position="apart">
                     {!collapsed && <div
-                        className={"text-2xl font-bold font-mono text-gray-700"}
+                        className={`text-2xl font-bold font-mono ${colorScheme === 'dark' ? 'text-white' : 'text-gray-700'}`}
                     >
-                        Argonaut</div>}
+                        Argonaut </div>}
                     <Code sx={{fontWeight: 700}}>v0.1</Code>
+                    <ThemeSwitcher/>
                     <div onClick={() => setCollapsed(!collapsed)}>
-                        <IconArrowsExchange/>
+                        <IconArrowsExchange
+                            color={colorScheme === 'dark' ? '#b3b8e6' : 'black'}
+                        />
                     </div>
                 </Group>
                 {links.map((link) => (
@@ -132,6 +146,7 @@ export default function NavBar() {
                         {link}
                     </div>
                 ))}
+
 
             </Navbar.Section>
 

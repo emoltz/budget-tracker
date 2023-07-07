@@ -5,7 +5,7 @@ import {Select} from "@mantine/core";
 import React from "react";
 
 export function CategoryPicker({ onCategoryChange }: {onCategoryChange: (category: string) => void}){
-    const user = useAuth();
+    const {user, loading} = useAuth();
     // TODO fetch all categories from user
     const categories: Category[] = useCategories(user);
     // const data = userCategories.map((category) => category.category_name);
