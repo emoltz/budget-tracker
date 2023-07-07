@@ -153,14 +153,13 @@ const CustomButtons = () => {
                             onClick={button.onClick}
                         />))}
 
-
                 </div>
                 {/*ADD NEW BUTTON*/}
+                <div className={"p-2"}/>
                 <div>
                     <Button
                         leftIcon={<FiPlus/>}
                         variant={"outline"}
-                        color={"dark"}
                         compact
                         onClick={open}
                     >
