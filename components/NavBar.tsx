@@ -136,7 +136,9 @@ export default function NavBar() {
                     <Code sx={{fontWeight: 700}}>v0.1</Code>
                     <ThemeSwitcher/>
                     <div onClick={() => setCollapsed(!collapsed)}>
-                        <IconArrowsExchange/>
+                        <IconArrowsExchange
+                            color={colorScheme === 'dark' ? '#b3b8e6' : 'black'}
+                        />
                     </div>
                 </Group>
                 {links.map((link) => (
