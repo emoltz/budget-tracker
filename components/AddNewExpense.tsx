@@ -8,7 +8,7 @@ import {useAuth} from "@/app/context";
 import {sendExpenseToFirebase} from "@/lib/firebase";
 
 export default function AddNewExpense() {
-    const user = useAuth();
+    const {user, loading} = useAuth();
 
     const form = useForm({
         initialValues: {
@@ -24,6 +24,7 @@ export default function AddNewExpense() {
 
     const handleCategoryChange = (category: string) => {
         form.setFieldValue('category', category);
+        console.log(category);
     }
     return (
         <div
