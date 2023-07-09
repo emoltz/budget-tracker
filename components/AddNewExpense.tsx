@@ -1,8 +1,8 @@
-import {Box, Button, Radio, Checkbox, Group, NumberInput, TextInput} from "@mantine/core";
+import {Button, Group, NumberInput, Radio, TextInput} from "@mantine/core";
 import {useForm} from '@mantine/form';
 import {FiPlus} from "react-icons/fi";
-import React, {useEffect} from "react";
-import {Expense, ExpenseClass} from "@/lib/Interfaces";
+import React from "react";
+import {ExpenseClass} from "@/lib/Interfaces";
 import {CategoryPicker} from "@/components/CategoryPicker";
 import {useAuth} from "@/app/context";
 import {sendExpenseToFirebase} from "@/lib/firebase";
@@ -31,6 +31,11 @@ export default function AddNewExpense() {
             className={"flex justify-center items-center"}
         >
             <form onSubmit={form.onSubmit((values) => {
+                if (!user){
+                    console.error("User is not logged in!")
+                    return;
+                }
+
                 const expense = new ExpenseClass(
                     values.amount,
                     values.category,
@@ -38,6 +43,7 @@ export default function AddNewExpense() {
                     values.is_monthly,
                     values.is_yearly,
                 );
+
                 sendExpenseToFirebase(user, expense).then(() => {
                     form.reset();
                 });
