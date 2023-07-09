@@ -1,18 +1,16 @@
 import {initializeApp} from "firebase/app";
-import dynamic from 'next/dynamic';
 import {getAnalytics} from "firebase/analytics";
-import {getAuth, onAuthStateChanged, User} from 'firebase/auth';
+import {Auth, getAuth, User} from 'firebase/auth';
 import {
-    collection,
     addDoc,
+    collection,
     doc,
-    getDocs,
+    DocumentSnapshot,
     getFirestore,
-    setDoc,
-    query,
-    where,
     onSnapshot,
-    Timestamp, DocumentSnapshot
+    query,
+    setDoc,
+    where
 } from 'firebase/firestore';
 import {Category, CategoryClass, ExpenseClass} from "./Interfaces";
 import {useEffect, useState} from "react";
@@ -35,7 +33,7 @@ const firebaseConfig = {
 // Initialize Firebase
 
 let app;
-let auth;
+let auth: Auth;
 let analytics;
 
 if (typeof window !== 'undefined') {

@@ -1,22 +1,11 @@
 "use client";
-import {AuthProvider} from "@/app/context";
+import {AuthProvider} from "./context"
 import {CacheProvider} from "@emotion/react";
-import {
-    useEmotionCache,
-    MantineProvider,
-    ColorSchemeProvider,
-    ColorScheme,
-    ActionIcon,
-    useMantineColorScheme
-} from "@mantine/core";
-import {IconSun, IconMoonStars} from "@tabler/icons-react";
+import {ColorScheme, ColorSchemeProvider, MantineProvider, useEmotionCache} from "@mantine/core";
 import {useServerInsertedHTML} from "next/navigation";
-import {NextUIProvider} from "@nextui-org/react";
-import {ChakraProvider} from "@chakra-ui/react";
 import "./globals.css";
 import NavBar from "@/components/NavBar";
 import {useState} from "react";
-import Footer from "@/components/Footer";
 import Head from "next/head";
 
 export default function RootLayout({
