@@ -1,58 +1,15 @@
 "use client";
 import './globals.css';
-import React, {useEffect, useState} from 'react';
-import {getCategories, useCategories} from '@/lib/firebase';
-import {collection, getDocs, getFirestore} from 'firebase/firestore';
+import React, {useState} from 'react';
 import {useAuth} from "@/app/context";
-import {User} from "firebase/auth";
-import {
-    Container,
-    Button,
-    Modal,
-    Group,
-    Grid,
-    Text,
-    SimpleGrid,
-    Skeleton,
-    useMantineTheme,
-    Input,
-    NumberInput,
-    rem,
-    Menu,
-    Select,
-    Paper, MultiSelect
-} from '@mantine/core';
+import {Button, Input, Modal, NumberInput, rem, Select, Text, useMantineTheme} from '@mantine/core';
 import {useDisclosure} from '@mantine/hooks';
-import MyCategories from "@/components/MyCategories";
-import ThemeSwitcher from "@/components/ThemeSwitcher";
-import {TwoColumnLayout} from "@/components/layouts/TwoColumnLayout";
 import {FourColumnLayout} from "@/components/layouts/FourColumnLayout";
 import {CategoryPicker} from "@/components/CategoryPicker";
 
-import {
-    FiPlus,
-    FiActivity,
-    FiAirplay,
-    FiAlertCircle,
-    FiAlertOctagon,
-    FiAlertTriangle,
-    FiAlignCenter,
-    FiAlignJustify,
-
-} from 'react-icons/fi';
-import {
-    FaTrain,
-} from "react-icons/fa"
-import {
-    IconSettings,
-    IconSearch,
-    IconPhoto,
-    IconMessageCircle,
-    IconTrash,
-    IconArrowsLeftRight
-} from '@tabler/icons-react';
+import {FiAlertCircle, FiPlus,} from 'react-icons/fi';
+import {FaTrain,} from "react-icons/fa"
 import {Spacer} from "@nextui-org/react";
-import {Category} from "@/lib/Interfaces";
 import LoginMantine from "@/components/LoginMantine";
 import AddNewExpense from "@/components/AddNewExpense";
 import Loading from "@/app/loading";

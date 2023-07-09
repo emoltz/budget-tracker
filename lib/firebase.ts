@@ -1,9 +1,18 @@
 import {initializeApp} from "firebase/app";
-import dynamic from 'next/dynamic';
 import {getAnalytics} from "firebase/analytics";
-import {getAuth, onAuthStateChanged} from 'firebase/auth';
-import {collection, addDoc, doc, getDocs, getFirestore, setDoc, query, where, onSnapshot} from 'firebase/firestore';
-import {CategoryClass, ExpenseClass} from "./Interfaces";
+import {Auth, getAuth, User} from 'firebase/auth';
+import {
+    addDoc,
+    collection,
+    doc,
+    DocumentSnapshot,
+    getFirestore,
+    onSnapshot,
+    query,
+    setDoc,
+    where
+} from 'firebase/firestore';
+import {Category, CategoryClass, ExpenseClass} from "./Interfaces";
 import {useEffect, useState} from "react";
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -24,7 +33,7 @@ const firebaseConfig = {
 // Initialize Firebase
 
 let app;
-let auth;
+let auth: Auth;
 let analytics;
 
 if (typeof window !== 'undefined') {
@@ -40,7 +49,7 @@ export {app, auth, analytics};
  * Converts a firestore document to JSON
  * @param  {DocumentSnapshot} doc
  */
-export function postToJSON(doc) {
+export function postToJSON(doc: DocumentSnapshot) {
     const data = doc.data();
     return {
         ...data,
@@ -49,11 +58,11 @@ export function postToJSON(doc) {
     };
 }
 
-function timestampToDate(timestamp) {
+function timestampToDate(timestamp: number) {
     return new Date(timestamp * 1000);
 }
 
-export async function saveUserToDatabase(user) {
+export async function saveUserToDatabase(user: User) {
     const db = getFirestore();
     const {uid, email, displayName, photoURL} = user;
     const ref = doc(db, 'Users', uid);
@@ -74,43 +83,44 @@ export async function saveUserToDatabase(user) {
     const default_category_names = ["Food", "Groceries", "Activities", "Housing", "Transportation", "Medical & Healthcare", "Personal Spending"]
 
     const default_categories = default_category_names.map((name) => {
-        return new CategoryClass(currentMonth, 0, name, currentYear, 0, false, time_stamp, 0);
+        // TODO fix the below: the category class is not being created correctly
+        return new CategoryClass(currentMonth, 0, name, currentYear, 0);
     });
 
     const categoriesRef = collection(db, 'Users', uid, 'Categories');
-    for (const category of default_categories){
+    for (const category of default_categories) {
         await addDoc(categoriesRef, category.toObject());
     }
 }
 
 
-export async function getCategories(user) {
-    // this function returns the categories for a user in the form of a list of Category objects.
-    // current month and year only!
-    // it is different then `useCategories` because it is not a hook and it is not reactive. This can be used in general cases where you just want to get the categories for a user.
-    if (user?.uid) {
-        const db = getFirestore();
-        const currentDate = new Date();
-        const currentYear = currentDate.getFullYear();
-        const currentMonth = currentDate.getMonth() + 1; // getMonth returns month index starting from 0
+// export async function getCategories(user) {
+//     // this function returns the categories for a user in the form of a list of Category objects.
+//     // current month and year only!
+//     // it is different then `useCategories` because it is not a hook and it is not reactive. This can be used in general cases where you just want to get the categories for a user.
+//     if (user?.uid) {
+//         const db = getFirestore();
+//         const currentDate = new Date();
+//         const currentYear = currentDate.getFullYear();
+//         const currentMonth = currentDate.getMonth() + 1; // getMonth returns month index starting from 0
+//
+//         const querySnapshot = await getDocs(
+//             query(
+//                 collection(db, 'Users', user.uid, 'Categories'),
+//                 where("year", "==", currentYear),
+//                 where("month", "==", currentMonth)
+//             )
+//         );
+//         let data = [];
+//         querySnapshot.forEach((doc) => {
+//             data.push(doc.data());
+//         });
+//         return data;
+//     }
+// }
 
-        const querySnapshot = await getDocs(
-            query(
-                collection(db, 'Users', user.uid, 'Categories'),
-                where("year", "==", currentYear),
-                where("month", "==", currentMonth)
-            )
-        );
-        let data = [];
-        querySnapshot.forEach((doc) => {
-            data.push(doc.data());
-        });
-        return data;
-    }
-}
-
-export function useCategories(user) {
-    const [categories, setCategories] = useState([]);
+export function useCategories(user: User | null): any[] {
+    const [categories, setCategories] = useState<Category[]>([]);
 
     useEffect(() => {
         if (user?.uid) {
@@ -126,9 +136,9 @@ export function useCategories(user) {
                     where("month", "==", currentMonth)
                 ),
                 (snapshot) => {
-                    const newData = [];
+                    const newData: Category[] = [];
                     snapshot.forEach((doc) => {
-                        newData.push(doc.data());
+                        newData.push(doc.data() as Category);
                     });
                     setCategories(newData);
                 }
@@ -141,17 +151,18 @@ export function useCategories(user) {
 
     return categories;
 }
-export async function sendExpenseToFirebase(user, expenseClassObject){
+
+export async function sendExpenseToFirebase(user: User, expenseClassObject: ExpenseClass) {
     // this function sends an expense to firebase
     // this function is not reactive. It is used to send a single expense to firebase
-    if (user?.uid){
+    if (user?.uid) {
         const db = getFirestore();
         const expenseObject = expenseClassObject.toObject();
 
-        try{
+        try {
             const docRef = await addDoc(collection(db, 'Users', user.uid, 'Expenses'), expenseObject);
             console.log("Document written with ID: ", docRef.id);
-        } catch(e){
+        } catch (e) {
             console.error("error adding document: ", e);
         }
     }
