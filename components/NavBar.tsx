@@ -1,26 +1,15 @@
-import {useState} from 'react';
+"use client";
+import {useEffect, useState} from 'react';
+import {Code, createStyles, getStylesRef, Group, Navbar, rem, useMantineColorScheme} from '@mantine/core';
 import {
-    createStyles,
-    Navbar,
-    Group,
-    Code,
-    getStylesRef,
-    rem,
-    Button,
-    useMantineTheme,
-    useMantineColorScheme
-} from '@mantine/core';
-import {
-    IconFingerprint,
-    IconSettings,
-    IconReceipt2,
-    IconLogout,
-    IconChartAreaLine,
-    IconMoneybag,
-    IconDashboard,
-    IconArrowLeft,
-    IconArrowRight,
     IconArrowsExchange,
+    IconChartAreaLine,
+    IconDashboard,
+    IconFingerprint,
+    IconLogout,
+    IconMoneybag,
+    IconReceipt2,
+    IconSettings,
 } from '@tabler/icons-react';
 import Link from 'next/link';
 import {auth} from "@/lib/firebase";
@@ -92,9 +81,21 @@ const data = [
 ];
 
 export default function NavBar() {
+    // TODO honestly re-do navbar from scratch with tailwind. I can't fix the dumb bugs with this component. It's not worth it.
+
     // COLLAPSE
     const [collapsed, setCollapsed] = useState(false);
     const {colorScheme} = useMantineColorScheme();
+    let animationDuration = 100;
+    const [animationCompleted, setAnimationCompleted] = useState(true);
+
+    useEffect( () => {
+        setAnimationCompleted(false);
+        const timer = setTimeout( () => {
+            setAnimationCompleted(true);
+        }, animationDuration);
+        return () => clearTimeout(timer);
+    }, [animationDuration, collapsed])
 
     const {classes, cx} = useStyles();
     const [active, setActive] = useState('Dashboard');
@@ -116,8 +117,9 @@ export default function NavBar() {
 
     return (
         <Navbar
+            className={`bg-fixed h-screen transition-all duration-${animationDuration} ease-in-out`}
             style={{
-                width: collapsed ? '60px' : '300px',
+                width: collapsed ? '80px' : '300px',
             }}
 
             width={{
@@ -129,13 +131,23 @@ export default function NavBar() {
         >
             <Navbar.Section grow>
                 <Group className={classes.header} position="apart">
-                    {!collapsed && <div
-                        className={`text-2xl font-bold font-mono ${colorScheme === 'dark' ? 'text-white' : 'text-gray-700'}`}
+                    {animationCompleted && !collapsed && <div
+                        className={`text-2xl font-bold font-mono transition-all duration-${animationDuration} ease-in-out ${colorScheme === 'dark' ? 'text-white' : 'text-gray-700'}`}
                     >
                         Argonaut </div>}
-                    <Code sx={{fontWeight: 700}}>v0.1</Code>
-                    <ThemeSwitcher/>
-                    <div onClick={() => setCollapsed(!collapsed)}>
+                    {animationCompleted && !collapsed &&
+                        <Code sx={{fontWeight: 700}}>v0.1</Code>
+                    }
+                    {animationCompleted && !collapsed &&
+                        <ThemeSwitcher/>
+                    }
+                    <div
+                        className={`cursor-pointer ${collapsed ? 'ml-2' : ''}`}
+                        onClick={() => {
+                            setCollapsed(!collapsed);
+                            setAnimationCompleted(false);
+                        }}
+                    >
                         <IconArrowsExchange
                             color={colorScheme === 'dark' ? '#b3b8e6' : 'black'}
                         />
