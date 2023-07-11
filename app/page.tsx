@@ -36,12 +36,10 @@ export default function Home() {
         <>
             <FourColumnLayout
                 two={<Actions/>}
-                one={<AtAGlance/>}
-                three={<CustomButtons/>}
+                one={<CustomButtons/>}
+                three={<AtAGlance/>}
                 four={<div/>}
             />
-
-
         </>
     )
 }

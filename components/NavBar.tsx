@@ -89,9 +89,9 @@ export default function NavBar() {
     let animationDuration = 100;
     const [animationCompleted, setAnimationCompleted] = useState(true);
 
-    useEffect( () => {
+    useEffect(() => {
         setAnimationCompleted(false);
-        const timer = setTimeout( () => {
+        const timer: NodeJS.Timeout = setTimeout(() => {
             setAnimationCompleted(true);
         }, animationDuration);
         return () => clearTimeout(timer);
@@ -114,10 +114,10 @@ export default function NavBar() {
             {!collapsed && <span>{item.label}</span>}
         </Link>
     ));
-
+    // TODO make sure the navbar is fixed to the left side of the screen
     return (
         <Navbar
-            className={`bg-fixed h-screen transition-all duration-${animationDuration} ease-in-out`}
+            className={`h-screen transition-all duration-${animationDuration} ease-in-out`}
             style={{
                 width: collapsed ? '80px' : '300px',
             }}

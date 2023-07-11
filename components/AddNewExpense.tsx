@@ -13,6 +13,7 @@ export default function AddNewExpense() {
     const form = useForm({
         initialValues: {
             amount: 0,
+            name: "",
             description: "",
             category: "",
             is_monthly: false,
@@ -36,9 +37,10 @@ export default function AddNewExpense() {
                     return;
                 }
 
-                const expense = new ExpenseClass(
+                const expense:ExpenseClass = new ExpenseClass(
                     values.amount,
                     values.category,
+                    values.name,
                     values.description,
                     values.is_monthly,
                     values.is_yearly,
@@ -49,8 +51,8 @@ export default function AddNewExpense() {
                 });
             })}>
                 <TextInput
-                    placeholder={"Description/name"}
-                    {...form.getInputProps('description')}
+                    placeholder={"Name"}
+                    {...form.getInputProps('name')}
                 />
                 <NumberInput
                     defaultValue={0.00}
