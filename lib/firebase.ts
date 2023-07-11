@@ -3,13 +3,17 @@ import {getAnalytics} from "firebase/analytics";
 import {Auth, getAuth, User} from 'firebase/auth';
 import {
     addDoc,
+    arrayUnion,
     collection,
     doc,
     DocumentSnapshot,
+    Firestore,
+    getDoc,
     getFirestore,
     onSnapshot,
     query,
     setDoc,
+    updateDoc,
     where
 } from 'firebase/firestore';
 import {Category, CategoryClass, ExpenseClass} from "./Interfaces";
@@ -62,6 +66,10 @@ function timestampToDate(timestamp: number) {
     return new Date(timestamp * 1000);
 }
 
+function createDefaultCategories() {
+
+}
+
 export async function saveUserToDatabase(user: User) {
     const db = getFirestore();
     const {uid, email, displayName, photoURL} = user;
@@ -78,18 +86,17 @@ export async function saveUserToDatabase(user: User) {
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear();
     const currentMonth = currentDate.getMonth() + 1; // getMonth returns month index starting from 0
-    const time_stamp = currentDate.getTime();
 
     const default_category_names = ["Food", "Groceries", "Activities", "Housing", "Transportation", "Medical & Healthcare", "Personal Spending"]
 
-    const default_categories = default_category_names.map((name) => {
-        // TODO fix the below: the category class is not being created correctly
+    const default_categories: CategoryClass[] = default_category_names.map((name) => {
         return new CategoryClass(currentMonth, 0, name, currentYear, 0);
     });
 
     const categoriesRef = collection(db, 'Users', uid, 'Categories');
     for (const category of default_categories) {
-        await addDoc(categoriesRef, category.toObject());
+        const categoryRef = doc(categoriesRef, category.id);
+        await setDoc(categoryRef, category.toObject());
     }
 }
 
@@ -119,7 +126,7 @@ export async function saveUserToDatabase(user: User) {
 //     }
 // }
 
-export function useCategories(user: User | null): any[] {
+export function useCategories(user: User | null): Category[] {
     const [categories, setCategories] = useState<Category[]>([]);
 
     useEffect(() => {
@@ -152,18 +159,75 @@ export function useCategories(user: User | null): any[] {
     return categories;
 }
 
-export async function sendExpenseToFirebase(user: User, expenseClassObject: ExpenseClass) {
+export async function addCategory(user: User, category: CategoryClass) {
+    // this function adds a category to the database
+    // this function is not reactive. It is used to send a single category to firebase
+    // TODO finish this and make sure that it saved it with the proper month and year
+    if (user?.uid) {
+        const db: Firestore = getFirestore();
+        const categoryObject = category.toObject();
+
+        try {
+            const docRef = await addDoc(collection(db, 'Users', user.uid, 'Categories'), categoryObject);
+            console.log("Document written with ID: ", docRef.id);
+        } catch (e) {
+            console.error("Error adding document: ", e);
+        }
+    }
+}
+
+async function saveExpenseToCategory(user: User, expense: ExpenseClass) {
+    /*
+    The purpose of this function is to marry the expense to the category in firebase and keep a record of all expenses
+     */
+    if (user?.uid) {
+        const db: Firestore = getFirestore();
+        const expenseObject = expense.toObject();
+        try {
+            const categoryIdentifier = expense.getCategoryID();
+            const categoryRef = doc(collection(doc(collection(db, 'Users'), user.uid), 'Categories'), categoryIdentifier);
+            const categorySnapshot = await getDoc(categoryRef);
+            if (!categorySnapshot.exists()){
+                console.log("Category does not exist:" , categoryIdentifier);
+                throw new Error("Category does not exist");
+            }
+            let categoryData = categorySnapshot.data();
+            // this will add the expense.amount to the category's spent amount
+            categoryData.spent += expense.amount;
+            //append to list of expenses
+            categoryData.expenses = arrayUnion(expense.id);
+
+            // update in database
+            await updateDoc(categoryRef, categoryData);
+
+            // add expense to expenses collection
+            const expenseRef = doc(collection(doc(collection(db, 'Users'), user.uid), 'Expenses'), expense.id);
+            await setDoc(expenseRef, expenseObject);
+
+
+        } catch (e) {
+            console.error("Error saving expense to category: ", e);
+        }
+    }
+}
+
+export async function sendExpenseToFirebase(user: User, expense: ExpenseClass) {
     // this function sends an expense to firebase
     // this function is not reactive. It is used to send a single expense to firebase
+    // TODO make sure this adds to the category spent amount
+    // TODO also make sure the ID is the expense.ID? idk if it's needed though
+    // TODO something happened to the timestamp.
     if (user?.uid) {
-        const db = getFirestore();
-        const expenseObject = expenseClassObject.toObject();
+        const db: Firestore = getFirestore();
+        const expenseObject = expense.toObject();
 
         try {
             const docRef = await addDoc(collection(db, 'Users', user.uid, 'Expenses'), expenseObject);
+            await saveExpenseToCategory(user, expense);
+
             console.log("Document written with ID: ", docRef.id);
         } catch (e) {
-            console.error("error adding document: ", e);
+            console.error("Error adding document: ", e);
         }
     }
 }
