@@ -4,7 +4,7 @@ import React, {useState} from 'react';
 import {useAuth} from "@/app/context";
 import {Button, Input, Modal, NumberInput, rem, Select, Text, useMantineTheme} from '@mantine/core';
 import {useDisclosure} from '@mantine/hooks';
-import {FourColumnLayout} from "@/components/layouts/FourColumnLayout";
+import {ThreeColumnLayout} from "@/components/layouts/ThreeColumnLayout";
 import {CategoryPicker} from "@/components/CategoryPicker";
 
 import {FiAlertCircle, FiPlus,} from 'react-icons/fi';
@@ -14,6 +14,11 @@ import LoginMantine from "@/components/LoginMantine";
 import AddNewExpense from "@/components/AddNewExpense";
 import Loading from "@/app/loading";
 import ComponentFrameCenter from "@/components/layouts/ComponentFrameCenter";
+import BudgetCard from "@/components/BudgetCard";
+import {IconDashboard} from "@tabler/icons-react";
+import {useCategories} from "@/lib/firebase";
+import {Category} from "@/lib/Interfaces";
+import {User} from "firebase/auth";
 
 const PRIMARY_COL_HEIGHT = rem(400);
 // TODO make sure the expenses is logged with the right category
@@ -34,11 +39,13 @@ export default function Home() {
 
     return (
         <>
-            <FourColumnLayout
+            <ThreeColumnLayout
                 two={<Actions/>}
                 one={<CustomButtons/>}
-                three={<AtAGlance/>}
-                four={<div/>}
+                three={<AtAGlance
+                    user={user}
+
+                />}
             />
         </>
     )
@@ -214,15 +221,31 @@ const CustomButton = ({icon, label, color, onClick}: CustomButtonProps) => {
     )
 }
 
-const AtAGlance = () => {
+interface AtAGlanceProps {
+    user: User;
+}
+
+const AtAGlance = ({user}: AtAGlanceProps) => {
+    const categories: Category[] = useCategories(user);
+
+
     return (
         <ComponentFrameCenter
-            PRIMARY_COL_HEIGHT={PRIMARY_COL_HEIGHT}
+            PRIMARY_COL_HEIGHT={"600px"}
             title={"At a Glance"}
         >
             <div>
-                This is where the at a glance stuff goes.
-
+                {categories.map((category, index) => {
+                    return (
+                        <BudgetCard
+                            key={index}
+                            budgetName={category.category_name}
+                            budgetAmount={category.budget}
+                            spent={category.spent}
+                            icon={<IconDashboard size="2rem" stroke={1.5}/>}
+                        />
+                    )
+                })}
             </div>
         </ComponentFrameCenter>
     )
