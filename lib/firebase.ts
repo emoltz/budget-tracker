@@ -166,7 +166,7 @@ export async function addCategory(user: User, category: CategoryClass) {
     if (user?.uid) {
         const db: Firestore = getFirestore();
         const categoryObject = category.toObject();
-
+        // TODO do checks to make sure category object has correct info
         try {
             const docRef = await addDoc(collection(db, 'Users', user.uid, 'Categories'), categoryObject);
             console.log("Document written with ID: ", docRef.id);
@@ -178,7 +178,9 @@ export async function addCategory(user: User, category: CategoryClass) {
 
 async function saveExpenseToCategory(user: User, expense: ExpenseClass) {
     /*
-    The purpose of this function is to marry the expense to the category in firebase and keep a record of all expenses
+        The purpose of this function is to marry the expense to the category in firebase and keep a record of all expenses
+        It's a helper function to `sendExpenseToFirebase`
+        Note that it is not exported, so you can't use it anywhere else but this file.
      */
     if (user?.uid) {
         const db: Firestore = getFirestore();
@@ -214,8 +216,6 @@ async function saveExpenseToCategory(user: User, expense: ExpenseClass) {
 export async function sendExpenseToFirebase(user: User, expense: ExpenseClass) {
     // this function sends an expense to firebase
     // this function is not reactive. It is used to send a single expense to firebase
-    // TODO make sure this adds to the category spent amount
-    // TODO also make sure the ID is the expense.ID? idk if it's needed though
     // TODO something happened to the timestamp.
     if (user?.uid) {
         const db: Firestore = getFirestore();
@@ -231,6 +231,5 @@ export async function sendExpenseToFirebase(user: User, expense: ExpenseClass) {
         }
     }
 }
-
 
 
