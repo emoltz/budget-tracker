@@ -235,7 +235,7 @@ const AtAGlance = ({user}: AtAGlanceProps) => {
             title={"At a Glance"}
         >
             <div
-                className={"grid grid-cols-2 gap-5"}
+                className={"grid md:grid-cols-2 sm:grid-cols-1 gap-5"}
             >
                 {categories.map((category, index) => {
                     return (
