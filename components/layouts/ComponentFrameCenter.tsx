@@ -15,10 +15,11 @@ export default function ComponentFrameCenter({PRIMARY_COL_HEIGHT, title, childre
             p={"sm"}
             withBorder
             sx={{
-                height: PRIMARY_COL_HEIGHT
+                height: PRIMARY_COL_HEIGHT,
+                overflow: "auto",
             }}
         >
-            <div className={"text-center items-center"}>
+            <div className={"text-center items-center "}>
                 <div className={"text-2xl p-1"}>
                     <div className={"p-2"}>
                         {title}

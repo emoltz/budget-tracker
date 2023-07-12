@@ -22,7 +22,12 @@ import {useEffect, useState} from "react";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-// TODO make these dynamic at some point?
+/*
+    TODO:
+    [] handle monthly expenses
+    [] handle yearly expenses
+    [] firebase-admin for server-side authentication
+ */
 
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
