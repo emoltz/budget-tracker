@@ -234,7 +234,9 @@ const AtAGlance = ({user}: AtAGlanceProps) => {
             PRIMARY_COL_HEIGHT={"600px"}
             title={"At a Glance"}
         >
-            <div>
+            <div
+                className={"grid grid-cols-2 gap-5"}
+            >
                 {categories.map((category, index) => {
                     return (
                         <BudgetCard

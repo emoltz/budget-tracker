@@ -1,5 +1,7 @@
-import {Badge, createStyles, Group, Paper, Progress, rem, Text, ThemeIcon} from '@mantine/core';
-import React, {ReactNode} from "react";
+import {Badge, createStyles, Group, Paper, Popover, Progress, rem, Text, ThemeIcon} from '@mantine/core';
+import React, {ReactNode, useState} from "react";
+import {IconDashboard} from "@tabler/icons-react";
+import IconPicker from "@/components/IconPicker";
 
 const ICON_SIZE = rem(60);
 
@@ -33,15 +35,36 @@ interface BudgetCardProps {
 export default function BudgetCard({budgetName, budgetAmount, spent, icon}: BudgetCardProps
 ) {
     const {classes} = useStyles();
-    const moneyLeft: number = budgetAmount - spent;
+    let moneyLeft: number = budgetAmount - spent;
     let percentProgress = (spent / budgetAmount) * 100;
+
+    const [selectedIcon, setSelectedIcon] = useState(<IconDashboard size="2rem" stroke={1.5}/>)
+    const handleIconSelect = (iconId: any) => {
+        setSelectedIcon(iconId);
+
+    }
+    // TODO save icon to database
 
 
     return (
         <Paper radius="md" withBorder className={classes.card} mt={`calc(${ICON_SIZE} / 3)`}>
-            <ThemeIcon className={classes.icon} size={ICON_SIZE} radius={ICON_SIZE}>
-                {icon}
-            </ThemeIcon>
+            <Popover width={200}
+                     position={"right-start"}
+                     withArrow
+                     shadow={"lg"}>
+                <Popover.Target>
+
+                    <ThemeIcon className={classes.icon}
+                               size={ICON_SIZE}
+                               radius={ICON_SIZE}
+                    >
+                        {selectedIcon}
+                    </ThemeIcon>
+                </Popover.Target>
+                <Popover.Dropdown>
+                    <IconPicker onSelect={handleIconSelect}/>
+                </Popover.Dropdown>
+            </Popover>
 
             <Text ta="center" fw={700} className={classes.title}>
                 {budgetName}
