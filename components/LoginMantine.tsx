@@ -27,6 +27,7 @@ import {
 import {auth, saveUserToDatabase} from "@/lib/firebase";
 import GoogleButton from "react-google-button";
 import {doc, getDoc, getFirestore} from "firebase/firestore";
+import React from "react";
 
 export default function LoginMantine(props: PaperProps) {
     // GOOGLE
