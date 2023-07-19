@@ -1,9 +1,6 @@
 "use client";
-import {useAuth} from "@/app/context";
-import {User} from "firebase/auth";
-import {useState} from 'react';
-import {createStyles, Table, Checkbox, ScrollArea, Group, Avatar, Text, rem} from '@mantine/core';
-import {Expense} from "@/lib/Interfaces";
+import {useState} from "react";
+import {Avatar, Checkbox, createStyles, Group, rem, ScrollArea, Table, Text} from '@mantine/core';
 
 const useStyles = createStyles((theme) => ({
     rowSelected: {
@@ -14,13 +11,19 @@ const useStyles = createStyles((theme) => ({
     },
 }));
 
-interface Properties {
-    data: Expense[];
+interface TableProps {
+    data: {
+        avatar: string;
+        name: string;
+        email: string;
+        job: string;
+        id: string
+    }[];
 }
 
-export default function Expenses({data}: Properties) {
+export default function Expenses({data}: TableProps) {
     const {classes, cx} = useStyles();
-    const [selection, setSelection] = useState(['']);
+    const [selection, setSelection] = useState(['0']);
     const toggleRow = (id: string) =>
         setSelection((current) =>
             current.includes(id) ? current.filter((item) => item !== id) : [...current, id]
@@ -41,17 +44,14 @@ export default function Expenses({data}: Properties) {
                 </td>
                 <td>
                     <Group spacing="sm">
-                        {/*<Avatar size={26} src={item.avatar} radius={26}/>*/}
+                        <Avatar size={26} src={item.avatar} radius={26}/>
                         <Text size="sm" weight={500}>
                             {item.name}
                         </Text>
                     </Group>
                 </td>
-                <td>{item.amount}</td>
-                <td>{item.category}</td>
-                <td>{item.is_yearly.toString()}</td>
-                {/*<td>{item.timestamp.getDate()}</td>*/}
-                {/*    TODO fix date issue*/}
+                <td>{item.email}</td>
+                <td>{item.job}</td>
             </tr>
         );
     });
@@ -69,11 +69,9 @@ export default function Expenses({data}: Properties) {
                             transitionDuration={0}
                         />
                     </th>
-                    <th>Expense</th>
-                    <th>Amount</th>
-                    <th>Category</th>
-                    <th>Yearly</th>
-                    <th>Timestamp</th>
+                    <th>User</th>
+                    <th>Email</th>
+                    <th>Job</th>
                 </tr>
                 </thead>
                 <tbody>{rows}</tbody>
