@@ -1,7 +1,7 @@
 import Expenses from "@/components/Expenses";
 
 export default function page() {
-    const data = [
+    const fakeData = [
         {
             avatar: 'https://fakeavatar.com/avatar1.png',
             name: 'John Doe',
@@ -32,7 +32,7 @@ export default function page() {
                 className={"text-2xl font-bold text-gray-800"}
             >
                 <Expenses
-                    data={data}
+                    data={fakeData}
                 />
             </div>
 
