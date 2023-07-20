@@ -1,6 +1,6 @@
-import {createContext, useContext, useEffect, useState} from "react";
+import {createContext, useEffect, useState} from "react";
 import {auth} from '@/lib/firebase';
-import {getAuth, onAuthStateChanged} from 'firebase/auth';
+import {onAuthStateChanged} from 'firebase/auth';
 
 export const AuthContext = createContext();
 
@@ -42,5 +42,5 @@ export function useAuth() {
         return () => unsubscribe();
     }, [auth]);
 
-    return { user, loading };
+    return {user, loading};
 }

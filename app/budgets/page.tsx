@@ -1,22 +1,12 @@
 'use client';
 import BudgetByCategory from "@/components/BudgetByCategory";
-import {
-    FiHome,
-    FiTrendingUp,
-    FiCompass,
-    FiStar,
-    FiSettings,
-    FiMenu,
-    FiBell,
-    FiChevronDown,
-} from 'react-icons/fi';
 import {Category} from "@/lib/Interfaces";
 
 export default function Budgets() {
     let categories = ['Food/Drink', 'Groceries', 'Activities', 'Personal Items', 'Transportation',
         'Home', 'Health'];
     // Dummy data
-    const Categories: Category[] = [
+    const Categories: Category[] | any = [
         {
             id: "1",
             month: "January",
