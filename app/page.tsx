@@ -15,10 +15,10 @@ import AddNewExpense from "@/components/AddNewExpense";
 import Loading from "@/app/loading";
 import ComponentFrameCenter from "@/components/layouts/ComponentFrameCenter";
 import BudgetCard from "@/components/BudgetCard";
-import {IconDashboard} from "@tabler/icons-react";
 import {useCategories} from "@/lib/firebase";
 import {Category} from "@/lib/Interfaces";
 import {User} from "firebase/auth";
+import {icons} from "@/lib/icons";
 
 const PRIMARY_COL_HEIGHT = rem(400);
 // TODO make sure the expenses is logged with the right category
@@ -238,13 +238,21 @@ const AtAGlance = ({user}: AtAGlanceProps) => {
                 className={"grid md:grid-cols-2 sm:grid-cols-1 gap-5"}
             >
                 {categories.map((category, index) => {
+                    const icon = icons.find(icon => icon.name === category.iconName);
+                    let name = category.iconName;
+                    if (!icon) {
+                        name = "dashboard";
+                    } else {
+                        name = icon.name;
+                    }
                     return (
                         <BudgetCard
                             key={index}
+                            id={category.id}
                             budgetName={category.category_name}
                             budgetAmount={category.budget}
                             spent={category.spent}
-                            icon={<IconDashboard size="2rem" stroke={1.5}/>}
+                            iconName={category.iconName ? name : "dashboard"}
                         />
                     )
                 })}

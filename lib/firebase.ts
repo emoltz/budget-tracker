@@ -194,8 +194,8 @@ async function saveExpenseToCategory(user: User, expense: ExpenseClass) {
             const categoryIdentifier = expense.getCategoryID();
             const categoryRef = doc(collection(doc(collection(db, 'Users'), user.uid), 'Categories'), categoryIdentifier);
             const categorySnapshot = await getDoc(categoryRef);
-            if (!categorySnapshot.exists()){
-                console.log("Category does not exist:" , categoryIdentifier);
+            if (!categorySnapshot.exists()) {
+                console.log("Category does not exist:", categoryIdentifier);
                 throw new Error("Category does not exist");
             }
             let categoryData = categorySnapshot.data();
@@ -237,4 +237,15 @@ export async function sendExpenseToFirebase(user: User, expense: ExpenseClass) {
     }
 }
 
+export async function changeCategoryIcon(user: User, iconName: string, categoryID: string): Promise<void> {
+    if (user?.uid) {
+        const db: Firestore = getFirestore();
+        try {
+            const categoryRef = doc(db, 'Users', user.uid, 'Categories', categoryID);
+            await updateDoc(categoryRef, {iconName: iconName});
+        } catch (error) {
+            console.log("Error changing category icon in firebase.tsx: ", error)
+        }
+    }
 
+}

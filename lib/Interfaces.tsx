@@ -1,4 +1,4 @@
-// TODO modify classes (category) to make sure you include an array of all expenses in that category
+import React from "react";
 
 export interface Category {
     id: string;
@@ -7,6 +7,8 @@ export interface Category {
     category_name: string;
     year: number;
     spent: number;
+    expenses: string[];
+    iconName: string;
 }
 
 export interface Expense {
@@ -22,6 +24,13 @@ export interface Expense {
     year: number;
 }
 
+export interface User {
+    display_name: string;
+    email: string;
+    photo_url: string;
+    uid: string;
+}
+
 export class CategoryClass implements Category {
     month = "";
     budget = 0;
@@ -30,6 +39,8 @@ export class CategoryClass implements Category {
     spent = 0;
     id = "";
     expenses: string[] = [];
+    iconName: string = "dashboard";
+
 
     // @ts-ignore
     constructor(month, budget, category_name, year, spent) {
@@ -51,6 +62,7 @@ export class CategoryClass implements Category {
             spent: this.spent,
             id: this.id,
             expenses: this.expenses,
+            icon: this.iconName
         }
     }
 

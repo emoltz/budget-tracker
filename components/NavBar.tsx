@@ -164,12 +164,12 @@ export default function NavBar() {
 
             <Navbar.Section className={classes.footer}>
 
-                <Link href="/login" className={classes.link}>
+                <Link href={"/login"} className={classes.link}>
                     <IconFingerprint className={classes.linkIcon} stroke={1.5}/>
                     {!collapsed && <span>My Profile</span>}
                 </Link>
 
-                <Link href="/login" className={classes.link}>
+                <Link href={"/login"} className={classes.link}>
                     <IconLogout className={classes.linkIcon} stroke={1.5}/>
                     {!collapsed && <div onClick={() => {
                         auth!.signOut();

@@ -1,7 +1,8 @@
+"use client"
 import {Badge, createStyles, Group, Paper, Popover, Progress, rem, Text, ThemeIcon} from '@mantine/core';
-import React, {ReactNode, useState} from "react";
-import {IconDashboard} from "@tabler/icons-react";
+import React, {useState} from "react";
 import IconPicker from "@/components/IconPicker";
+import {icons} from "@/lib/icons";
 
 const ICON_SIZE = rem(60);
 
@@ -29,21 +30,23 @@ interface BudgetCardProps {
     budgetName: string;
     budgetAmount: number;
     spent: number;
-    icon: ReactNode;
+    iconName: string | undefined;
+    id: string;
 }
 
-export default function BudgetCard({budgetName, budgetAmount, spent, icon}: BudgetCardProps
+export default function BudgetCard({budgetName, budgetAmount, spent, id, iconName}: BudgetCardProps
 ) {
     const {classes} = useStyles();
+    const icon = icons.find(icon => icon.name === iconName);
+    const [selectedIcon, setSelectedIcon] = useState(icon)
     let moneyLeft: number = budgetAmount - spent;
     let percentProgress = (spent / budgetAmount) * 100;
 
-    const [selectedIcon, setSelectedIcon] = useState(<IconDashboard size="2rem" stroke={1.5}/>)
-    const handleIconSelect = (iconId: any) => {
-        setSelectedIcon(iconId);
+    const handleIconSelect = (iconId: string) => {
+        const selectedIcon = icons.find(icon => icon.name === iconId);
+        setSelectedIcon(selectedIcon);
 
     }
-    // TODO save icon to database
 
 
     return (
@@ -58,11 +61,11 @@ export default function BudgetCard({budgetName, budgetAmount, spent, icon}: Budg
                                size={ICON_SIZE}
                                radius={ICON_SIZE}
                     >
-                        {selectedIcon}
+                        {selectedIcon?.component}
                     </ThemeIcon>
                 </Popover.Target>
                 <Popover.Dropdown>
-                    <IconPicker onSelect={handleIconSelect}/>
+                    <IconPicker onSelect={handleIconSelect} categoryID={id}/>
                 </Popover.Dropdown>
             </Popover>
 
