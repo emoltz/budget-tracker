@@ -21,7 +21,6 @@ import {User} from "firebase/auth";
 import {icons} from "@/lib/icons";
 
 const PRIMARY_COL_HEIGHT = rem(400);
-// TODO make sure the expenses is logged with the right category
 
 export default function Home() {
     const theme = useMantineTheme();
