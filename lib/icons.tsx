@@ -11,7 +11,9 @@ import {
     IconCurrencyDollar,
     IconDashboard,
     IconDog,
+    IconHome,
     IconMailAi,
+    IconMedicalCross,
     IconMoneybag,
     IconTrain,
 } from "@tabler/icons-react";
@@ -88,6 +90,14 @@ export const icons: IconType[] = [
     {
         name: "dog",
         component: <IconDog/>,
+    },
+    {
+        name: "home",
+        component: <IconHome/>,
+    },
+    {
+        name: "medical",
+        component: <IconMedicalCross/>,
     }
 
 ]
