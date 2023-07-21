@@ -191,7 +191,7 @@ async function saveExpenseToCategory(user: User, expense: ExpenseClass) {
         const db: Firestore = getFirestore();
         const expenseObject = expense.toObject();
         try {
-            const categoryIdentifier = expense.getCategoryID();
+            const categoryIdentifier = expense.categoryID;
             const categoryRef = doc(collection(doc(collection(db, 'Users'), user.uid), 'Categories'), categoryIdentifier);
             const categorySnapshot = await getDoc(categoryRef);
             if (!categorySnapshot.exists()) {
