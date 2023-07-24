@@ -1,4 +1,4 @@
-import Expenses from "@/components/Expenses";
+
 
 export default function page() {
     const fakeData = [
@@ -31,9 +31,6 @@ export default function page() {
             <div
                 className={"text-2xl font-bold text-gray-800"}
             >
-                <Expenses
-                    data={fakeData}
-                />
             </div>
 
         </>
