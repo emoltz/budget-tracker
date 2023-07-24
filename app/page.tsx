@@ -39,11 +39,10 @@ export default function Home() {
     return (
         <>
             <ThreeColumnLayout
-                two={<Actions/>}
                 one={<CustomButtons/>}
+                two={<Actions/>}
                 three={<AtAGlance
                     user={user}
-
                 />}
             />
         </>

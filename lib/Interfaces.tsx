@@ -1,4 +1,4 @@
-import React from "react";
+import {FieldValue, serverTimestamp, Timestamp} from "@firebase/firestore";
 
 export interface Category {
     id: string;
@@ -20,7 +20,7 @@ export interface Expense {
     is_monthly: boolean;
     month: number;
     name: string;
-    // timestamp: Date;
+    date: Timestamp | FieldValue;
     year: number;
 }
 
@@ -83,7 +83,7 @@ export class ExpenseClass implements Expense {
     is_yearly = false;
     month: number = -1;
     name = "";
-    // timestamp = new Date();
+    date = serverTimestamp();
     year = 0;
     is_monthly = false;
 
@@ -109,6 +109,7 @@ export class ExpenseClass implements Expense {
             categoryID: this.categoryID,
             description: this.description,
             name: this.name,
+            date: this.date,
             is_yearly: this.is_yearly,
             is_monthly: this.is_monthly,
             month: this.month,
