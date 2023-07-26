@@ -71,10 +71,6 @@ function timestampToDate(timestamp: number) {
     return new Date(timestamp * 1000);
 }
 
-function createDefaultCategories() {
-
-}
-
 export async function saveUserToDatabase(user: User) {
     const db = getFirestore();
     const {uid, email, displayName, photoURL} = user;
@@ -189,7 +185,7 @@ async function saveExpenseToCategory(user: User, expense: ExpenseClass) {
      */
     if (user?.uid) {
         const db: Firestore = getFirestore();
-        const expenseObject = expense.toObject();
+        // const expenseObject = expense.toObject();
         try {
             const categoryIdentifier = expense.categoryID;
             const categoryRef = doc(collection(doc(collection(db, 'Users'), user.uid), 'Categories'), categoryIdentifier);
@@ -226,7 +222,11 @@ export async function sendExpenseToFirebase(user: User, expense: ExpenseClass) {
         const expenseObject = expense.toObject();
 
         try {
-            const docRef = await addDoc(collection(db, 'Users', user.uid, 'Expenses'), expenseObject);
+            // Create a reference with the generated ID
+            const docRef = doc(collection(db, 'Users', user.uid, 'Expenses'), expense.id);
+
+            // Write the document with the generated ID
+            await setDoc(docRef, expenseObject);
             await saveExpenseToCategory(user, expense);
 
             console.log("Document written with ID: ", docRef.id);
