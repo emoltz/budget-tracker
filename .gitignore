@@ -37,4 +37,3 @@ next-env.d.ts
 .vscode
 .idea
 *.xml
-package-lock.json
