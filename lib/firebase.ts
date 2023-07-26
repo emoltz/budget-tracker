@@ -71,10 +71,6 @@ function timestampToDate(timestamp: number) {
     return new Date(timestamp * 1000);
 }
 
-function createDefaultCategories() {
-
-}
-
 export async function saveUserToDatabase(user: User) {
     const db = getFirestore();
     const {uid, email, displayName, photoURL} = user;
@@ -189,7 +185,7 @@ async function saveExpenseToCategory(user: User, expense: ExpenseClass) {
      */
     if (user?.uid) {
         const db: Firestore = getFirestore();
-        const expenseObject = expense.toObject();
+        // const expenseObject = expense.toObject();
         try {
             const categoryIdentifier = expense.categoryID;
             const categoryRef = doc(collection(doc(collection(db, 'Users'), user.uid), 'Categories'), categoryIdentifier);
@@ -208,8 +204,8 @@ async function saveExpenseToCategory(user: User, expense: ExpenseClass) {
             await updateDoc(categoryRef, categoryData);
 
             // add expense to expenses collection
-            const expenseRef = doc(collection(doc(collection(db, 'Users'), user.uid), 'Expenses'), expense.id);
-            await setDoc(expenseRef, expenseObject);
+            // const expenseRef = doc(collection(doc(collection(db, 'Users'), user.uid), 'Expenses'), expense.id);
+            // await setDoc(expenseRef, expenseObject);
 
 
         } catch (e) {
@@ -221,13 +217,16 @@ async function saveExpenseToCategory(user: User, expense: ExpenseClass) {
 export async function sendExpenseToFirebase(user: User, expense: ExpenseClass) {
     // this function sends an expense to firebase
     // this function is not reactive. It is used to send a single expense to firebase
-    // TODO something happened to the timestamp.
     if (user?.uid) {
         const db: Firestore = getFirestore();
         const expenseObject = expense.toObject();
 
         try {
-            const docRef = await addDoc(collection(db, 'Users', user.uid, 'Expenses'), expenseObject);
+            // Create a reference with the generated ID
+            const docRef = doc(collection(db, 'Users', user.uid, 'Expenses'), expense.id);
+
+            // Write the document with the generated ID
+            await setDoc(docRef, expenseObject);
             await saveExpenseToCategory(user, expense);
 
             console.log("Document written with ID: ", docRef.id);
