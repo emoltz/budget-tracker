@@ -45,9 +45,11 @@ export default function AddNewExpense() {
                     values.is_monthly,
                     values.is_yearly,
                 );
+                // console.log(expense)
 
                 sendExpenseToFirebase(user, expense).then(() => {
                     form.reset();
+                    console.log("Expense sent on tsx file: ", expense);
                 });
             })}>
                 <TextInput

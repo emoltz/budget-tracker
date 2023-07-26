@@ -208,8 +208,8 @@ async function saveExpenseToCategory(user: User, expense: ExpenseClass) {
             await updateDoc(categoryRef, categoryData);
 
             // add expense to expenses collection
-            const expenseRef = doc(collection(doc(collection(db, 'Users'), user.uid), 'Expenses'), expense.id);
-            await setDoc(expenseRef, expenseObject);
+            // const expenseRef = doc(collection(doc(collection(db, 'Users'), user.uid), 'Expenses'), expense.id);
+            // await setDoc(expenseRef, expenseObject);
 
 
         } catch (e) {
@@ -221,7 +221,6 @@ async function saveExpenseToCategory(user: User, expense: ExpenseClass) {
 export async function sendExpenseToFirebase(user: User, expense: ExpenseClass) {
     // this function sends an expense to firebase
     // this function is not reactive. It is used to send a single expense to firebase
-    // TODO something happened to the timestamp.
     if (user?.uid) {
         const db: Firestore = getFirestore();
         const expenseObject = expense.toObject();
