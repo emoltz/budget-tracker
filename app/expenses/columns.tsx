@@ -8,11 +8,24 @@ Columns are where you define the core of what your table will look like. They de
 export const columns: ColumnDef<Expense>[] = [
     {
         accessorKey: "name",
-        header: "Name",
+        header: () => {
+            return <div className={"text-left font-bold"}>Name</div>;
+        },
     },
     {
         accessorKey: "amount",
-        header: "Amount",
+        header: () => {
+            return <div className={"text-right"}>Amount</div>;
+        },
+        cell: ({row}) => {
+            const amount = parseFloat(row.getValue("amount"));
+            const formatted = new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+            }).format(amount);
+            return <div className="text-right font-mono">{formatted}</div>
+
+        }
     },
     {
         accessorKey: "categoryID",
