@@ -32,12 +32,12 @@ export default function AddNewExpense() {
             className={"flex justify-center items-center"}
         >
             <form onSubmit={form.onSubmit((values) => {
-                if (!user){
+                if (!user) {
                     console.error("User is not logged in!")
                     return;
                 }
 
-                const expense:ExpenseClass = new ExpenseClass(
+                const expense: ExpenseClass = new ExpenseClass(
                     values.amount,
                     values.category,
                     values.name,
@@ -45,9 +45,11 @@ export default function AddNewExpense() {
                     values.is_monthly,
                     values.is_yearly,
                 );
+                // console.log(expense)
 
                 sendExpenseToFirebase(user, expense).then(() => {
                     form.reset();
+                    console.log("Expense sent on tsx file: ", expense);
                 });
             })}>
                 <TextInput
@@ -81,16 +83,14 @@ export default function AddNewExpense() {
                         setSelectedFrequency(value);
                         form.setFieldValue('is_monthly', value === 'monthly');
                         form.setFieldValue('is_yearly', value === 'yearly');
-                        // console.log(form.values);
                     }}
-                    >
-                    <Group mt={"xs"} >
+                >
+                    <Group mt={"xs"}>
                         <Radio value={"once"} label={"once"}/>
                         <Radio value={"monthly"} label={"monthly"}/>
                         <Radio value={"yearly"} label={"yearly"}/>
                     </Group>
                 </Radio.Group>
-
 
 
                 <Group
