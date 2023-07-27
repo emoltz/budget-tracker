@@ -22,6 +22,7 @@
     "@nextui-org/react": "^1.0.0-beta.13",
     "@tabler/icons": "^2.22.0",
     "@tabler/icons-react": "^2.22.0",
+    "@tanstack/react-table": "^8.9.3",
     "@tremor/react": "^3.2.3",
     "@types/node": "20.2.5",
     "@types/react": "18.2.7",

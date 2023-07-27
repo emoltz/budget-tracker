@@ -170,7 +170,7 @@ export async function addCategory(user: User, category: CategoryClass) {
         // TODO do checks to make sure category object has correct info
         try {
             const docRef = await addDoc(collection(db, 'Users', user.uid, 'Categories'), categoryObject);
-            console.log("Document written with ID: ", docRef.id);
+            console.log("Category document written with ID: ", docRef.id);
         } catch (e) {
             console.error("Error adding document: ", e);
         }
