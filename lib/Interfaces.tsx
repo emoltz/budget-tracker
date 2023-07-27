@@ -20,7 +20,7 @@ export interface Expense {
     is_monthly: boolean;
     month: number;
     name: string;
-    date: Timestamp | FieldValue;
+    date: Timestamp | FieldValue | String;
     year: number;
 }
 

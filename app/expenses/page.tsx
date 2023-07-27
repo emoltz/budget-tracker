@@ -1,37 +1,78 @@
-
+import {DataTable} from "./data-table"
+import {columns} from "./columns";
+import {Expense} from "@/lib/Interfaces";
 
 export default function page() {
-    const fakeData = [
-        {
-            avatar: 'https://fakeavatar.com/avatar1.png',
-            name: 'John Doe',
-            email: 'john.doe@example.com',
-            job: 'Software Engineer',
-            id: '1',
-        },
-        {
-            avatar: 'https://fakeavatar.com/avatar2.png',
-            name: 'Jane Smith',
-            email: 'jane.smith@example.com',
-            job: 'Product Manager',
-            id: '2',
-        },
-        {
-            avatar: 'https://fakeavatar.com/avatar2.png',
-            name: 'Crunchy',
-            email: "j@gmail.com",
-            job: 'Product Manager',
-            id: '3',
-        }
-    ];
-
+    const fakeData: Expense[] =
+        [
+            {
+                "id": "expense_001",
+                "amount": 50.25,
+                "categoryID": "cat_001",
+                "description": "Groceries",
+                "is_yearly": false,
+                "is_monthly": true,
+                "month": 7,
+                "name": "Monthly Grocery Expense",
+                "date": "2023-07-15T12:34:56", // Replace with a valid timestamp or FieldValue
+                "year": 2023
+            },
+            {
+                "id": "expense_002",
+                "amount": 1200.00,
+                "categoryID": "cat_002",
+                "description": "Rent",
+                "is_yearly": false,
+                "is_monthly": true,
+                "month": 7,
+                "name": "Monthly Rent",
+                "date": "2023-07-01T00:00:00", // Replace with a valid timestamp or FieldValue
+                "year": 2023
+            },
+            {
+                "id": "expense_003",
+                "amount": 250.00,
+                "categoryID": "cat_003",
+                "description": "Internet Bill",
+                "is_yearly": false,
+                "is_monthly": true,
+                "month": 7,
+                "name": "Monthly Internet Expense",
+                "date": "2023-07-10T18:30:00", // Replace with a valid timestamp or FieldValue
+                "year": 2023
+            },
+            {
+                "id": "expense_004",
+                "amount": 1200.00,
+                "categoryID": "cat_004",
+                "description": "Car Insurance",
+                "is_yearly": true,
+                "is_monthly": false,
+                "month": 1,
+                "name": "Yearly Car Insurance",
+                "date": "2023-01-05T09:00:00", // Replace with a valid timestamp or FieldValue
+                "year": 2023
+            },
+            {
+                "id": "expense_005",
+                "amount": 80.00,
+                "categoryID": "cat_005",
+                "description": "Gym Membership",
+                "is_yearly": true,
+                "is_monthly": false,
+                "month": 1,
+                "name": "Yearly Gym Membership",
+                "date": "2023-01-01T08:00:00", // Replace with a valid timestamp or FieldValue
+                "year": 2023
+            }
+        ]
 
     return (
         <>
-            <div
-                className={"text-2xl font-bold text-gray-800"}
-            >
+            <div className="container mx-auto py-10">
+                <DataTable columns={columns} data={fakeData}/>
             </div>
+
 
         </>
     )
