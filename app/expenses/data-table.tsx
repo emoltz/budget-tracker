@@ -6,6 +6,17 @@ import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/
 import {Expense} from "@/lib/Interfaces";
 import {Button} from "@mantine/core";
 
+/*
+    TODO
+     [] make sortable
+     [] make filterable
+     [] make searchable
+     [] make columns resizable
+     [] make columns visible/invisible
+     [] make rows selectable
+
+ */
+
 interface DataTableProps<Expense, TValue> {
     columns: ColumnDef<Expense, TValue>[]
     data: Expense[]
@@ -87,10 +98,7 @@ export function DataTable<TData, TValue>({
                 >
                     Next
                 </Button>
-
             </div>
-
-
         </>
 
     )
