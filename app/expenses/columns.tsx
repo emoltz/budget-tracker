@@ -2,7 +2,7 @@
 
 import {ColumnDef} from "@tanstack/react-table";
 import {Expense} from "@/lib/Interfaces";
-import {MoreHorizontal} from "lucide-react"
+import {ArrowUpDown, MoreHorizontal} from "lucide-react"
 import {Button} from "@mantine/core";
 import {
     DropdownMenu,
@@ -25,8 +25,20 @@ export const columns: ColumnDef<Expense>[] = [
     },
     {
         accessorKey: "amount",
-        header: () => {
-            return <div className={"text-right"}>Amount</div>;
+        header: ({column}) => {
+            return (
+                <div className={"text-right"}>
+                    <Button
+                        variant="ghost"
+                        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                    >
+                        <ArrowUpDown className="ml-2 h-4 w-4 "/>
+                        <div className="pr-1"/>
+                        Amount
+
+                    </Button>
+                </div>
+            )
         },
         cell: ({row}) => {
             const amount = parseFloat(row.getValue("amount"));
@@ -40,7 +52,17 @@ export const columns: ColumnDef<Expense>[] = [
     },
     {
         accessorKey: "categoryID",
-        header: "Category",
+        header: ({column}) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    Category
+                    <ArrowUpDown className="ml-2 h-4 w-4"/>
+                </Button>
+            )
+        },
     },
     {
         accessorKey: "description",
@@ -51,7 +73,6 @@ export const columns: ColumnDef<Expense>[] = [
         header: "Actions",
         id: "actions",
         cell: ({row}) => {
-            // TODO hook this up to the actual data and customize options
             const expense: Expense = row.original
 
             return (
