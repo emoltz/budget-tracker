@@ -1,14 +1,22 @@
 "use client"
 
-import {ColumnDef, flexRender, getCoreRowModel, getPaginationRowModel, useReactTable} from "@tanstack/react-table"
+import {
+    ColumnDef,
+    flexRender,
+    getCoreRowModel,
+    getPaginationRowModel,
+    getSortedRowModel,
+    SortingState,
+    useReactTable
+} from "@tanstack/react-table"
 
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table"
 import {Expense} from "@/lib/Interfaces";
 import {Button} from "@mantine/core";
+import {useState} from "react";
 
 /*
     TODO
-     [] make sortable
      [] make filterable
      [] make searchable
      [] make columns resizable
@@ -26,13 +34,20 @@ export function DataTable<TData, TValue>({
                                              columns,
                                              data,
                                          }: DataTableProps<Expense, TValue>) {
+    const [sorting, setSorting] = useState<SortingState>([])
     const table = useReactTable({
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
-        // TODO ^ customize pagination: https://tanstack.com/table/v8/docs/api/features/pagination
+        // to customize pagination: https://tanstack.com/table/v8/docs/api/features/pagination
+        onSortingChange: setSorting,
+        getSortedRowModel: getSortedRowModel(),
+        state: {
+            sorting,
+        },
     });
+
 
     return (
         <>
