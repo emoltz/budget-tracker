@@ -8,7 +8,6 @@ import {useCategories} from "@/lib/firebase";
 import {User} from "firebase/auth";
 import Loading from "@/app/loading";
 import ChartView from "@/components/ChartView"
-import ChartViewTest from "@/components/ChartViewTest"
 
 import {
   BadgeDelta,
