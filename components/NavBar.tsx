@@ -76,11 +76,37 @@ export default function NavBar() {
                     collapsed={collapsed}
                 >
                   {/* .endsWith won't work for dynamic paths */}
-                    <item.icon stroke={1.5}/>
-                    {!collapsed && <span className="grow">{item.label}</span>}
                 </NavItem>
               </div>
           ))}
+      </div>
+
+      <div className="flex flex-col mt-auto gap-y-3 pt-3">
+        <div>
+          <NavItem
+            name="My Profile"
+            Icon={IconFingerprint}
+            href={"/profile"}
+            isActive={pathname.startsWith("/profile")}
+            collapsed={collapsed}
+          >
+          </NavItem>
+        </div>
+        
+        <div onClick={() => {
+            auth!.signOut();
+            console.log("logged out");
+          }}>
+          <NavItem
+            name="Logout"
+            Icon={IconLogout}
+            href={"/login"}
+            isActive={pathname.startsWith("/debug")}
+            collapsed={collapsed}
+            >
+          </NavItem>
+        </div>
+        
       </div>
     </div>
   )
