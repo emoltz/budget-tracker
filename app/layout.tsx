@@ -64,7 +64,11 @@ export default function RootLayout({
                         <div
                             className={"flex bg-gray-50"}
                         >
-                            <NavBar/>
+                            <div className="flex">
+                                <aside className="self-start sticky top-0">
+                                    <NavBar/>
+                                </aside>
+                            </div>
                             <main
                                 className={colorScheme === 'dark' ? "flex-1 bg-gray-900 min-h-screen" : "flex-1 bg-white min-h-screen"}
                             >
