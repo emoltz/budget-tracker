@@ -45,11 +45,11 @@ export default function NavBar() {
 // ));
 
   return (
-    <div className="flex flex-col my-4 mx-2 gap-2 divide-y">
-      <div className="flex flex-row px-4 gap-2">
+    <div className="max-h-screen flex flex-col m-3 px-3 gap-2 border-r-2 divide-y">
+      <div className="flex flex-row px-4 py-1 gap-3">
         {!collapsed && <Link href="/" 
           className={`text-2xl font-bold font-mono`}
-        > Argonaut
+        >Argonaut
         </Link> }
         <div
             className={`cursor-pointer`}
@@ -63,14 +63,17 @@ export default function NavBar() {
         </div>
       </div>
         
-      <div className="flex flex-col gap-y-2 pt-3">
+      <div className="flex flex-col gap-y-3 pt-3 mb-auto">
           {data.map((item) => (
               
               <div key={item.label}>
                   <NavItem
+                    name={item.label}
+                    Icon={item.icon}
                     href={item.link}
                     key={item.label}
                     isActive={pathname.endsWith(item.link)}
+                    collapsed={collapsed}
                 >
                   {/* .endsWith won't work for dynamic paths */}
                     <item.icon stroke={1.5}/>
