@@ -28,21 +28,10 @@ const data = [
 export default function NavBar() {
   const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
-  // const {classes, cx} = useStyles();
-//   const links = data.map((item) => (
-//     <Link
-//         className={cx(classes.link, {[classes.linkActive]: item.label === active})}
-//         href={item.link}
-//         key={item.label}
-//         onClick={(event) => {
 
-//             setActive(item.label);
-//         }}
-//     >
-//         <item.icon className={classes.linkIcon} stroke={1.5}/>
-//         {!collapsed && <span>{item.label}</span>}
-//     </Link>
-// ));
+  useEffect(() => {
+    setCollapsed(window.innerWidth < 640)
+  }, [])
 
   return (
     <div className="max-h-screen flex flex-col m-3 px-3 gap-2 border-r-2 divide-y">
