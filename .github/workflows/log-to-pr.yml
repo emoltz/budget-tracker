@@ -26,6 +26,7 @@ jobs:
     - name: Comment logs on pull request
       uses: actions/github-script@v5
       with:
+        github-token: ${{ secrets.MY_GITHUB_TOKEN }}
         script: |
           const fs = require('fs');
           const log = fs.readFileSync('lint_log.txt', 'utf8');
