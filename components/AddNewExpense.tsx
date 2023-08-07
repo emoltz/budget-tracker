@@ -5,7 +5,7 @@ import React from "react";
 import {ExpenseClass} from "@/lib/Interfaces";
 import {CategoryPicker} from "@/components/CategoryPicker";
 import {useAuth} from "@/app/context";
-import {sendExpenseToFirebase} from "@/lib/firebase";
+import {sendExpenseToFirebaseNew} from "@/lib/firebase";
 
 export default function AddNewExpense() {
     const {user, loading} = useAuth();
@@ -47,7 +47,7 @@ export default function AddNewExpense() {
                 );
                 // console.log(expense)
 
-                sendExpenseToFirebase(user, expense).then(() => {
+                sendExpenseToFirebaseNew(user, expense).then(() => {
                     form.reset();
                     console.log("Expense sent on tsx file: ", expense);
                 });

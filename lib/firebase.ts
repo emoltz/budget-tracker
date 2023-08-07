@@ -137,32 +137,67 @@ export async function saveUserToDatabaseNew(user: User) {
 
 }
 
+async function saveExpenseToMonth(user: User, expense: ExpenseClass) {
+    /*
+        The purpose of this function is to marry the expense to the month doc in firebase and keep a record of all expenses
+        It's a helper function to `sendExpenseToFirebase`
+        Note that it is not exported, so you can't use it anywhere else but this file.
+     */
+    if (user?.uid) {
+        const db: Firestore = getFirestore();
+        // const expenseObject = expense.toObject();
+        try {
+            // TODO: make get year/month a helper function?
+            const currentDate = new Date();
+            const currentYear = currentDate.getFullYear();
+            const currentMonth = currentDate.getMonth() + 1
 
-// export async function getCategories(user) {
-//     // this function returns the categories for a user in the form of a list of Category objects.
-//     // current month and year only!
-//     // it is different then `useCategories` because it is not a hook and it is not reactive. This can be used in general cases where you just want to get the categories for a user.
-//     if (user?.uid) {
-//         const db = getFirestore();
-//         const currentDate = new Date();
-//         const currentYear = currentDate.getFullYear();
-//         const currentMonth = currentDate.getMonth() + 1; // getMonth returns month index starting from 0
-//
-//         const querySnapshot = await getDocs(
-//             query(
-//                 collection(db, 'Users', user.uid, 'Categories'),
-//                 where("year", "==", currentYear),
-//                 where("month", "==", currentMonth)
-//             )
-//         );
-//         let data = [];
-//         querySnapshot.forEach((doc) => {
-//             data.push(doc.data());
-//         });
-//         return data;
-//     }
-// }
+            const yearCollection = "Year" + currentYear.toString();
+            const monthDoc = currentMonth.toString() + "_" + currentYear.toString();
 
+            const monthRef = doc(collection(doc(collection(db, 'Users_New'), user.uid), yearCollection), monthDoc);
+            const monthSnapshot = await getDoc(monthRef);
+            if (!monthSnapshot.exists()) {
+                console.log("Month does not exist:", monthRef);
+                throw new Error("Month does not exist");
+            }
+
+            let monthData = monthSnapshot.data();
+            // this will add the expense.amount to the category's spent amount
+            monthData.spent += expense.amount;
+            //append to list of expenses
+            monthData.expenses = arrayUnion(expense.id);
+
+            // update in database
+            await updateDoc(monthRef, monthData);
+
+        } catch (e) {
+            console.error("Error saving expense to category: ", e);
+        }
+    }
+}
+
+export async function sendExpenseToFirebaseNew(user: User, expense: ExpenseClass) {
+    // this function sends an expense to firebase
+    // this function is not reactive. It is used to send a single expense to firebase
+    if (user?.uid) {
+        const db: Firestore = getFirestore();
+        const expenseObject = expense.toObject();
+
+        try {
+            // Create a reference with the generated ID
+            const docRef = doc(collection(db, 'Users_New', user.uid, 'Expenses'), expense.id);
+
+            // Write the document with the generated ID
+            await setDoc(docRef, expenseObject);
+            await saveExpenseToMonth(user, expense);
+
+            console.log("Document written with ID: ", docRef.id);
+        } catch (e) {
+            console.error("Error adding document: ", e);
+        }
+    }
+}
 export function useCategories(user: User | null): Category[] {
     const [categories, setCategories] = useState<Category[]>([]);
 
