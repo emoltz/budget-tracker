@@ -1,4 +1,4 @@
-name: Run Cypress Tests and Log to Pull Request
+name: Run Cypress Tests and Log to Pull Request if Error
 
 on:
   pull_request:
@@ -18,12 +18,23 @@ jobs:
       - name: Run Cypress tests and capture logs
         run: |
           # Run Cypress tests and redirect the output to a file
-          npm run test:cypress > cypress_log.txt || true
+          npm run test:cypress > cypress_log.txt || echo "Cypress tests failed" > test_status.txt
 
       - name: Remove ANSI escape codes
         run: sed -i 's/\x1b\[[0-9;]*m//g' cypress_log.txt
 
-      - name: Comment logs on pull request
+      - name: Check if tests failed
+        id: check-failure
+        run: |
+          if [ -f test_status.txt ]; then
+            echo "Tests failed, proceeding to comment logs."
+            echo "failed=true" >> $GITHUB_ENV
+          else
+            echo "Tests passed, no need to comment logs."
+          fi
+
+      - name: Comment logs on pull request if failed
+        if: env.failed == 'true'
         uses: actions/github-script@v5
         with:
           github-token: ${{ secrets.MY_GITHUB_TOKEN }} # Use your custom token
@@ -34,5 +45,5 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: "Cypress Test Results:\n```\n" + log + "\n```"
+              body: "Cypress Test Results (Errors):\n```\n" + log + "\n```"
             });
