@@ -1,11 +1,8 @@
 "use client";
 import React from 'react';
 import {useAuth} from "@/app/context";
-
 import {Category} from "@/lib/Interfaces";
-import {CategoryPicker} from "@/components/CategoryPicker";
 import {useCategories} from "@/lib/firebase";
-import {User} from "firebase/auth";
 import Loading from "@/app/loading";
 import ChartView from "@/components/ChartView"
 
