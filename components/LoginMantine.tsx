@@ -24,7 +24,7 @@ import {
     UserCredential
 } from "firebase/auth";
 // @ts-ignore
-import {auth, saveUserToDatabase} from "@/lib/firebase";
+import {auth, saveUserToDatabase, saveUserToDatabaseNew} from "@/lib/firebase";
 import GoogleButton from "react-google-button";
 import {doc, getDoc, getFirestore} from "firebase/firestore";
 import React from "react";
@@ -79,7 +79,7 @@ export default function LoginMantine(props: PaperProps) {
                         displayName: name
                     });
 
-                    await saveUserToDatabase(auth.currentUser).then(() => {
+                    await saveUserToDatabaseNew(auth.currentUser).then(() => {
                         console.log("User successfully sent to database!");
                         console.log(auth.currentUser)
                     });

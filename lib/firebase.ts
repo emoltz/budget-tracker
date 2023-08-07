@@ -74,7 +74,7 @@ function timestampToDate(timestamp: number) {
 export async function saveUserToDatabase(user: User) {
     const db = getFirestore();
     const {uid, email, displayName, photoURL} = user;
-    const ref = doc(db, 'Users', uid);
+    const ref = doc(db, 'Users_New', uid);
     const data = {
         uid: uid,
         email: email,
@@ -99,6 +99,42 @@ export async function saveUserToDatabase(user: User) {
         const categoryRef = doc(categoriesRef, category.id);
         await setDoc(categoryRef, category.toObject());
     }
+}
+
+export async function saveUserToDatabaseNew(user: User) {
+    const db = getFirestore();
+    const {uid, email, displayName, photoURL} = user;
+    const ref = doc(db, 'Users_New', uid);
+    const default_category_names = ["Food", "Groceries", "Activities", "Housing", "Transportation", "Medical & Healthcare", "Personal Spending"]
+
+    const data = {
+        uid: uid,
+        email: email,
+        display_name: displayName,
+        categories: default_category_names,
+        photo_url: photoURL,
+    };
+    await setDoc(ref, data);
+
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1; // getMonth returns month index starting from 0
+
+    // create collection for the current year
+    const yearRef = collection(db, 'Users_New', uid, 'Year' + currentYear.toString());
+
+    // create document for current month
+    // this will need to happen for each new month >> write into addExpense (if currMonth doc doesn't exist, create it)
+    const monthRef = doc(yearRef, currentMonth.toString() + "_" + currentYear.toString());
+
+    // this should eventually be part of interfaces
+    const monthInfo = {
+        month: currentMonth,
+        spent: 0, // aggregate and update on addExpense
+        expenses: []
+    }
+    await setDoc(monthRef, monthInfo);
+
 }
 
 
