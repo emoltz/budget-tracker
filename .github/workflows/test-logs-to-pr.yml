@@ -1,0 +1,35 @@
+name: Run Cypress Tests and Log to Pull Request
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  comment-logs:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run Cypress tests and capture logs
+      run: |
+        # Run Cypress tests and redirect the output to a file
+        npm run test:cypress > cypress_log.txt || true
+
+    - name: Comment logs on pull request
+      uses: actions/github-script@v5
+      with:
+        github-token: ${{ secrets.MY_GITHUB_TOKEN }} # Use your custom token
+        script: |
+          const fs = require('fs');
+          const log = fs.readFileSync('cypress_log.txt', 'utf8');
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: "Cypress Test Results:\n```\n" + log + "\n```"
+          });
