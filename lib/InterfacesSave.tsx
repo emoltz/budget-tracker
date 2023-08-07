@@ -13,24 +13,22 @@ export interface Category {
 
 export interface Expense {
     id: string;
-    name: string;
     amount: number;
-    vendor: string;
-    description: string;
     categoryID: string;
-    date: Timestamp | FieldValue | String;
-    month: number;
-    year: number;
+    description: string;
     is_yearly: boolean;
     is_monthly: boolean;
+    month: number;
+    name: string;
+    date: Timestamp | FieldValue | String;
+    year: number;
 }
 
 export interface User {
-    uid: string;
     display_name: string;
     email: string;
-    categories: string[];
     photo_url: string;
+    uid: string;
 }
 
 export class CategoryClass implements Category {
@@ -81,7 +79,6 @@ export class ExpenseClass implements Expense {
     id = "";
     amount = 0;
     categoryID = "";
-    vendor = "";
     description = "";
     is_yearly = false;
     month: number = -1;
@@ -91,12 +88,11 @@ export class ExpenseClass implements Expense {
     is_monthly = false;
 
 
-    constructor(amount: number, categoryName: string, name: string, vendor: string, description: string, is_monthly: boolean, is_yearly: boolean) {
+    constructor(amount: number, categoryName: string, name: string, description: string, is_monthly: boolean, is_yearly: boolean) {
         // random number
         const newID: string = this.generateExpenseId(categoryName);
         this.amount = amount;
         this.name = name;
-        this.vendor = vendor;
         this.description = description;
         this.is_monthly = is_monthly;
         this.is_yearly = is_yearly;
@@ -121,7 +117,6 @@ export class ExpenseClass implements Expense {
             categoryID: this.categoryID,
             description: this.description,
             name: this.name,
-            vendor: this.vendor,
             date: this.date,
             is_yearly: this.is_yearly,
             is_monthly: this.is_monthly,

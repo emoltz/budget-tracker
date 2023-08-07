@@ -14,6 +14,7 @@ export default function AddNewExpense() {
         initialValues: {
             amount: 0,
             name: "",
+            vendor: "",
             description: "",
             category: "",
             is_monthly: false,
@@ -41,6 +42,7 @@ export default function AddNewExpense() {
                     values.amount,
                     values.category,
                     values.name,
+                    values.vendor,
                     values.description,
                     values.is_monthly,
                     values.is_yearly,
@@ -70,7 +72,10 @@ export default function AddNewExpense() {
                     placeholder={"Enter expense"}
                     {...form.getInputProps('amount')}
                 />
-
+                <TextInput
+                    placeholder={"Vendor"}
+                    {...form.getInputProps('vendor')}
+                />
                 <CategoryPicker
                     onCategoryChange={handleCategoryChange}
                 />
