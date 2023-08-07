@@ -1,0 +1,37 @@
+name: Log to Pull Request
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  comment-logs:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install dependencies and build (if needed)
+      run: |
+        # Add commands to install dependencies and build your project
+        npm install
+        npm run build
+
+    - name: Run lint and capture logs
+      run: |
+        # Run your tests or other commands and redirect the output to a file
+        npm run lint > lint_log.txt || true
+
+    - name: Comment logs on pull request
+      uses: actions/github-script@v5
+      with:
+        script: |
+          const fs = require('fs');
+          const log = fs.readFileSync('lint_log.txt', 'utf8');
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: "```\n" + log + "\n```"
+          });
