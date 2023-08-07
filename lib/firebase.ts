@@ -105,6 +105,7 @@ export async function saveUserToDatabaseNew(user: User) {
     const db = getFirestore();
     const {uid, email, displayName, photoURL} = user;
     const ref = doc(db, 'Users_New', uid);
+    // option to ask for user-desired categories during onboarding
     const default_category_names = ["Food", "Groceries", "Activities", "Housing", "Transportation", "Medical & Healthcare", "Personal Spending"]
 
     const data = {
@@ -229,6 +230,24 @@ export function useCategories(user: User | null): Category[] {
     }, [user]);
 
     return categories;
+}
+
+export async function getUserCategories(user: User | null) : Promise<string[]>{
+    // get category names only (stored as part of User document)
+    if (user?.uid) {
+        const db = getFirestore();
+
+        const userRef = doc(collection(db, 'Users_New'), user.uid);
+        const userSnap = await getDoc(userRef);
+
+        if (userSnap.exists()) {
+            const userCategories : string[] = userSnap.data()["categories"];
+            return userCategories;
+        }
+    }
+
+    const errString : string[] = ["Error returning categories"];
+    return errString;
 }
 
 export async function addCategory(user: User, category: CategoryClass) {
