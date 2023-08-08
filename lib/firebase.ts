@@ -8,7 +8,7 @@ import {
     doc,
     DocumentSnapshot,
     Firestore,
-    getDoc,
+    getDoc, getDocs,
     getFirestore,
     onSnapshot,
     query,
@@ -100,32 +100,6 @@ export async function saveUserToDatabase(user: User) {
         await setDoc(categoryRef, category.toObject());
     }
 }
-
-
-// export async function getCategories(user) {
-//     // this function returns the categories for a user in the form of a list of Category objects.
-//     // current month and year only!
-//     // it is different then `useCategories` because it is not a hook and it is not reactive. This can be used in general cases where you just want to get the categories for a user.
-//     if (user?.uid) {
-//         const db = getFirestore();
-//         const currentDate = new Date();
-//         const currentYear = currentDate.getFullYear();
-//         const currentMonth = currentDate.getMonth() + 1; // getMonth returns month index starting from 0
-//
-//         const querySnapshot = await getDocs(
-//             query(
-//                 collection(db, 'Users', user.uid, 'Categories'),
-//                 where("year", "==", currentYear),
-//                 where("month", "==", currentMonth)
-//             )
-//         );
-//         let data = [];
-//         querySnapshot.forEach((doc) => {
-//             data.push(doc.data());
-//         });
-//         return data;
-//     }
-// }
 
 export function useCategories(user: User | null): Category[] {
     const [categories, setCategories] = useState<Category[]>([]);
