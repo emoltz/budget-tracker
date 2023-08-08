@@ -28,75 +28,93 @@ const data = [
 export default function NavBar() {
   const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
+  let animationDuration = 500;
+  const [animationCompleted, setAnimationCompleted] = useState(true);
 
   useEffect(() => {
     setCollapsed(window.innerWidth < 640)
   }, [])
 
-  return (
-    <div className="max-h-screen flex flex-col m-3 px-3 gap-2 border-r-2 divide-y">
-      <div className="flex flex-row px-4 py-1 gap-3">
-        {!collapsed && <Link href="/" 
-          className={`text-2xl font-bold font-mono`}
-        >Argonaut
-        </Link> }
-        <div
-            className={`cursor-pointer`}
-            onClick={() => {
-                setCollapsed(!collapsed);
-            }}
-        >
-            <IconArrowsExchange
-                color={'black'}
-            />
-        </div>
-      </div>
-        
-      <div className="flex flex-col gap-y-3 pt-3 mb-auto">
-          {data.map((item) => (
-              
-              <div key={item.label}>
-                  <NavItem
-                    name={item.label}
-                    Icon={item.icon}
-                    href={item.link}
-                    key={item.label}
-                    isActive={pathname.endsWith(item.link)}
-                    collapsed={collapsed}
-                >
-                  {/* .endsWith won't work for dynamic paths */}
-                </NavItem>
-              </div>
-          ))}
-      </div>
+  useEffect(() => {
+    setAnimationCompleted(false);
+    const timer: NodeJS.Timeout = setTimeout(() => {
+        setAnimationCompleted(true);
+    }, animationDuration);
+    return () => clearTimeout(timer);
+  }, [animationDuration, collapsed])
 
-      <div className="flex flex-col mt-auto gap-y-3 pt-3">
-        <div>
-          <NavItem
-            name="My Profile"
-            Icon={IconFingerprint}
-            href={"/profile"}
-            isActive={pathname.startsWith("/profile")}
-            collapsed={collapsed}
+  return (
+    <div className={`flex ${collapsed?"w-20":"w-72"} transition-all`}>
+      <aside className="self-start sticky top-0">
+      <div className={`max-h-screen flex flex-col m-3 px-3 gap-2 border-r-2 divide-y`}>
+        <div className="flex flex-row px-4 py-1 gap-3">
+          {animationCompleted && !collapsed && <Link href="/" 
+              className={`text-2xl font-bold font-mono transition-all`}
+            >Argonaut
+            </Link>}
+            
+          {animationCompleted && !collapsed && <Link href="/" className="font-bold font-mono bg-slate-200 rounded-sm content-center p-1">v0.2</Link>}
+
+          <div
+              className={`cursor-pointer`}
+              onClick={() => {
+                  setCollapsed(!collapsed);
+                  setAnimationCompleted(false);
+              }}
           >
-          </NavItem>
+              <IconArrowsExchange
+                  color={'black'}
+              />
+          </div>
         </div>
-        
-        <div onClick={() => {
-            auth!.signOut();
-            console.log("logged out");
-          }}>
-          <NavItem
-            name="Logout"
-            Icon={IconLogout}
-            href={"/login"}
-            isActive={pathname.startsWith("/debug")}
-            collapsed={collapsed}
+          
+        <div className="flex flex-col gap-y-3 pt-3 mb-auto">
+            {data.map((item) => (
+                
+                <div key={item.label}>
+                    <NavItem
+                      name={item.label}
+                      Icon={item.icon}
+                      href={item.link}
+                      key={item.label}
+                      isActive={pathname.endsWith(item.link)}
+                      collapsed={collapsed}
+                  >
+                    {/* .endsWith won't work for dynamic paths */}
+                  </NavItem>
+                </div>
+            ))}
+        </div>
+
+        <div className="flex flex-col mt-auto gap-y-3 pt-3">
+          <div>
+            <NavItem
+              name="My Profile"
+              Icon={IconFingerprint}
+              href={"/profile"}
+              isActive={pathname.startsWith("/profile")}
+              collapsed={collapsed}
             >
-          </NavItem>
+            </NavItem>
+          </div>
+          
+          <div onClick={() => {
+              auth!.signOut();
+              console.log("logged out");
+            }}>
+            <NavItem
+              name="Logout"
+              Icon={IconLogout}
+              href={"/login"}
+              isActive={pathname.startsWith("/debug")}
+              collapsed={collapsed}
+              >
+            </NavItem>
+          </div>
+          
         </div>
-        
       </div>
+      </aside>
     </div>
   )
 }
