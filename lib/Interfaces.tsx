@@ -17,6 +17,7 @@ export interface Expense {
     amount: number;
     vendor: string;
     description: string;
+    category: string;
     categoryID: string;
     date: Timestamp | FieldValue | String;
     month: number;
@@ -80,6 +81,7 @@ export class CategoryClass implements Category {
 export class ExpenseClass implements Expense {
     id = "";
     amount = 0;
+    category = "";
     categoryID = "";
     vendor = "";
     description = "";
@@ -103,6 +105,7 @@ export class ExpenseClass implements Expense {
         this.year = new Date().getFullYear();
         this.month = new Date().getMonth() + 1;
         this.id = newID;
+        this.category = categoryName;
         this.categoryID = this.getCategoryID(categoryName);
     }
 
@@ -118,6 +121,7 @@ export class ExpenseClass implements Expense {
         // this is for sending it to firebase, making sure it is in the correct format
         return {
             amount: this.amount,
+            category: this.category,
             categoryID: this.categoryID,
             description: this.description,
             name: this.name,
