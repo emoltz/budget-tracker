@@ -8,6 +8,7 @@ export default function page() {
             {
                 "id": "expense_001",
                 "amount": 50.25,
+                "category": "Groceries",
                 "categoryID": "cat_001",
                 "vendor": "",
                 "description": "Groceries",
@@ -21,6 +22,7 @@ export default function page() {
             {
                 "id": "expense_002",
                 "amount": 1200.00,
+                "category": "Housing",
                 "categoryID": "cat_002",
                 "vendor": "",
                 "description": "Rent",
@@ -34,6 +36,7 @@ export default function page() {
             {
                 "id": "expense_003",
                 "amount": 250.00,
+                "category": "Housing",
                 "categoryID": "cat_003",
                 "vendor": "",
                 "description": "Internet Bill",
@@ -47,6 +50,7 @@ export default function page() {
             {
                 "id": "expense_004",
                 "amount": 1200.00,
+                "category": "Transportation",
                 "categoryID": "cat_004",
                 "vendor": "",
                 "description": "Car Insurance",
@@ -60,6 +64,7 @@ export default function page() {
             {
                 "id": "expense_005",
                 "amount": 80.00,
+                "category": "Personal Spending",
                 "categoryID": "cat_005",
                 "vendor": "",
                 "description": "Gym Membership",
