@@ -20,7 +20,7 @@ export function CategoryPicker({ onCategoryChange }: {onCategoryChange: (categor
         getUserCategories(user)
             .then((res) => setData(res))
             .catch(console.error);
-    })
+    }, [user])
    
     return (
         <Select data={data}
