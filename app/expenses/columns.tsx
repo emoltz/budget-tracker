@@ -12,6 +12,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import Link from "next/link";
 
 /*
 Columns are where you define the core of what your table will look like. They define the data that will be displayed, how it will be formatted, sorted and filtered.
@@ -88,11 +89,25 @@ export const columns: ColumnDef<Expense>[] = [
                         <DropdownMenuItem
                             onClick={() => navigator.clipboard.writeText(expense.id)}
                         >
-                            Copy payment ID
+                            Copy Expense ID
                         </DropdownMenuItem>
                         <DropdownMenuSeparator/>
-                        <DropdownMenuItem>View customer</DropdownMenuItem>
-                        <DropdownMenuItem>View payment details</DropdownMenuItem>
+                        <DropdownMenuItem>
+                            <Link href={`/expenses/${expense.id}`}>
+                                View Expense Details
+                            </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                            onClick={() => console.log("View Category")}
+                        >
+                            View Category
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                            <div className={"text-red-600 font-bold"}>
+
+                                Delete
+                            </div>
+                        </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             )
