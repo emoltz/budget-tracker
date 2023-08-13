@@ -17,7 +17,7 @@ import {
     updateDoc,
     where
 } from 'firebase/firestore';
-import {Category, CategoryClass, ExpenseClass} from "./Interfaces";
+import {Category, CategoryClass, ExpenseClass, MonthSummary} from "./Interfaces";
 import {useEffect, useState} from "react";
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -107,36 +107,41 @@ export async function saveUserToDatabaseNew(user: User) {
     const {uid, email, displayName, photoURL} = user;
     const ref = doc(db, 'Users_New', uid);
     // option to ask for user-desired categories during onboarding
-    const default_category_names = ["Food", "Groceries", "Activities", "Housing", "Transportation", "Medical & Healthcare", "Personal Spending"]
+    const default_categories = {
+        "Food" : "beer", 
+        "Groceries" : "box", 
+        "Activities" : "beach", 
+        "Housing" : "home", 
+        "Transportation" : "train", 
+        "Medical & Healthcare" : "medical", 
+        "Personal Spending" : "money"
+    }
 
     const data = {
         uid: uid,
         email: email,
         display_name: displayName,
-        categories: default_category_names,
+        categories: default_categories,
         photo_url: photoURL,
     };
     await setDoc(ref, data);
 
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const currentMonth = currentDate.getMonth() + 1; // getMonth returns month index starting from 0
+    // create collection for the current month
+    const monthRef = collection(db, 'Users_New', uid, getCurrentMonthString());
 
-    // create collection for the current year
-    const yearRef = collection(db, 'Users_New', uid, 'Year' + currentYear.toString());
-
-    // create document for current month
+    // create summary document for current month
     // this will need to happen for each new month >> write into addExpense (if currMonth doc doesn't exist, create it)
-    const monthRef = doc(yearRef, currentMonth.toString() + "_" + currentYear.toString());
+    const summaryRef = doc(monthRef, "summary");
 
-    // this should eventually be part of interfaces
-    const monthInfo = {
-        month: currentMonth,
-        spent: 0, // aggregate and update on addExpense
-        expenses: []
+    // TODO: connect to budget 
+    const initialSummary : MonthSummary = {
+        month: new Date().getMonth() + 1, // getMonth returns month index starting from 0,
+        year: new Date().getFullYear(),
+        monthTotal: 0,
+        categoryTotals: {}
     }
-    await setDoc(monthRef, monthInfo);
 
+    await setDoc(summaryRef, {initialSummary});
 }
 
 export async function sendExpenseToFirebaseNew(user: User, expense: ExpenseClass) {
@@ -147,13 +152,8 @@ export async function sendExpenseToFirebaseNew(user: User, expense: ExpenseClass
         const expenseObject = expense.toObject();
 
         try {
-            // TODO: make get year/month a helper function?
-            const currentDate = new Date();
-            const currentYear = currentDate.getFullYear();
-            const currentMonth = currentDate.getMonth() + 1
-
             // get reference to current month
-            const monthCollection = currentMonth.toString() + "_" + currentYear.toString();
+            const monthCollection = getCurrentMonthString();
             const monthRef = collection(doc(collection(db, 'Users_New'), user.uid), monthCollection);
 
             // create and write a document with the generated ID
@@ -165,15 +165,36 @@ export async function sendExpenseToFirebaseNew(user: User, expense: ExpenseClass
             const summaryRef = doc(monthRef, "summary");
 
             // add expense.amount to the month's total spent and the category total
+            // individual category totals are nested within categoryTotals
             await updateDoc(summaryRef, {
                 monthTotal: increment(expense.amount),
-                [expense.category + "Total"]: increment(expense.amount)
+                ["categoryTotals." + expense.category + "Total"]: increment(expense.amount)
             });
 
             console.log("Document written with ID: ", docRef.id);
         } catch (e) {
             console.error("Error adding document: ", e);
         }
+    }
+}
+
+export async function getCurrentSummary(user: User | null): Promise<MonthSummary> {
+    if (user?.uid) {
+        const db = getFirestore();
+        const monthCollection = getCurrentMonthString();
+
+        const monthRef = collection(doc(collection(db, 'Users_New'), user.uid), monthCollection);
+
+        const summaryDoc = await getDoc(doc(monthRef, "summary"));
+
+        if (!summaryDoc.exists()) {
+            console.log("Month summary does not exist:", monthCollection);
+            throw new Error("Month summary does not exist");
+        }
+        return summaryDoc.data() as MonthSummary;
+    }
+    else {
+        throw new Error("User not found")
     }
 }
 
@@ -215,7 +236,7 @@ export async function getUserCategories(user: User | null) : Promise<string[]>{
     if (user?.uid) {
         const db = getFirestore();
 
-        const userRef = doc(collection(db, 'Users_New'), user.uid);
+        const userRef = doc(db, 'Users_New', user.uid);
         const userSnap = await getDoc(userRef);
 
         if (userSnap.exists()) {
@@ -315,4 +336,13 @@ export async function changeCategoryIcon(user: User, iconName: string, categoryI
         }
     }
 
+}
+
+function getCurrentMonthString() : string{
+    // helper function to return the name of the current month's collection
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1; // getMonth returns month index starting from 0
+
+    return currentMonth.toString() + '_' + currentYear.toString();
 }

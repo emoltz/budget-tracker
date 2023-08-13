@@ -30,8 +30,16 @@ export interface User {
     uid: string;
     display_name: string;
     email: string;
-    categories: string[];
+    // below could be its own interface
+    categories: {[category: string] : string};
     photo_url: string;
+}
+
+export interface MonthSummary {
+    month: number;
+    year: number;
+    monthTotal: number;
+    categoryTotals: {[category: string] : number};
 }
 
 export class CategoryClass implements Category {
@@ -138,6 +146,59 @@ export class ExpenseClass implements Expense {
     getCategoryID(categoryName: string): string {
         // this helps us marry it to the category inside Firebase
         return categoryName + "_" + this.month + "_" + this.year;
+    }
+
+}
+
+// should have budget and icons
+// similar to Category, this is just here before the above gets implemented
+interface CategorySummary {
+    category : string,
+    amount : number
+}
+
+export class MonthSummaryClass implements MonthSummary {
+    month = 0;
+    year = 0;
+    monthTotal = 0;
+
+    // make this a list of categorySummaries
+    // whenever MonthSummaryClass is created, make a call to find icons and budget
+    // this could also link back to expenses?
+    categoryTotals = {};
+
+
+    constructor(summary: MonthSummary) {
+        this.month = summary.month,
+        this.year = summary.year;
+        this.monthTotal = summary.monthTotal;
+        this.categoryTotals = summary.categoryTotals;
+    }
+
+    // constructor(month: number, year: number, monthTotal: number, categoryTotals:{}) {
+    //     this.month = month;
+    //     this.year = year;
+    //     this.monthTotal = monthTotal;
+    //     this.categoryTotals = categoryTotals;
+    // }
+
+    toObject() {
+        return {
+            month: this.month,
+            year: this.year,
+            monthTotal: this.monthTotal,
+            categoryTotals: this.categoryTotals
+        }
+    }
+
+    // return totals as list of dicts
+    // TODO: get icons in here somehow
+    getTotals() {
+        const totals: CategorySummary[] = [];
+        Object.entries(this.categoryTotals).forEach(([k, v]) => {
+            totals.push({category : k, amount : v} as CategorySummary)
+        });
+        return totals;
     }
 
 }
