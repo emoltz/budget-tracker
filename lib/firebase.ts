@@ -8,7 +8,7 @@ import {
     doc,
     DocumentSnapshot,
     Firestore,
-    getDoc,
+    getDoc, getDocs,
     getFirestore,
     increment,
     onSnapshot,
