@@ -28,7 +28,7 @@ const data = [
 export default function NavBar() {
   const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
-  let animationDuration = 500;
+  let animationDuration = 100;
   const [animationCompleted, setAnimationCompleted] = useState(true);
 
   useEffect(() => {
@@ -44,7 +44,7 @@ export default function NavBar() {
   }, [animationDuration, collapsed])
 
   return (
-    <aside className={`flex relative top-0 z-10 border-r ${collapsed?"w-[4.5rem]":"w-64"} transition-all`}>
+    <aside className={`flex relative top-0 z-10 border-r ${collapsed?"w-[4.5rem]":"w-72"} transition-all`}>
       <nav className="flex flex-col m-3 gap-2 divide-y w-full">
           <div className="flex flex-row px-2 py-1 gap-3 items-center">
             {animationCompleted && !collapsed && 
