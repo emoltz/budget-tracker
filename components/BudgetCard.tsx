@@ -50,7 +50,7 @@ export default function BudgetCard({budgetName, budgetAmount, spent, id, iconNam
 
 
     return (
-        <Paper radius="md" withBorder className={classes.card} mt={`calc(${ICON_SIZE} / 3)`}>
+        <Paper radius="md" withBorder className={classes.card} mt={`calc(${ICON_SIZE} / 3)`} data-test={"budget-card"}>
             <Popover width={200}
                      position={"right-start"}
                      withArrow
@@ -60,6 +60,7 @@ export default function BudgetCard({budgetName, budgetAmount, spent, id, iconNam
                     <ThemeIcon className={classes.icon}
                                size={ICON_SIZE}
                                radius={ICON_SIZE}
+                               data-test={"theme-icon"}
                     >
                         {selectedIcon?.component}
                     </ThemeIcon>
@@ -69,29 +70,33 @@ export default function BudgetCard({budgetName, budgetAmount, spent, id, iconNam
                 </Popover.Dropdown>
             </Popover>
 
-            <Text ta="center" fw={700} className={classes.title}>
+            <Text ta="center" fw={700} className={classes.title} data-test={"budget-name"}>
                 {budgetName}
             </Text>
-            <Text c="dimmed" ta="center" fz="sm">
+            <Text c="dimmed" ta="center" fz="sm" data-test={"budget-amount"}>
                 ${budgetAmount} / month
             </Text>
 
             <Group position="apart" mt="xs">
-                <Text fz="sm" color="dimmed">
+                <Text fz="sm" color="dimmed" data-test={"budget-progress"}>
                     Progress
                 </Text>
-                <Text fz="sm" color="dimmed">
+                <Text fz="sm" color="dimmed" data-test={"budget-progress-percent"}>
                     {percentProgress.toFixed(0)}%
                 </Text>
             </Group>
 
-            <Progress value={percentProgress} mt={5}/>
+            <Progress value={percentProgress} mt={5} data-test={"budget-progress-bar"}/>
 
             <Group position="apart" mt="md">
                 <span/>
                 <Badge
                     color={moneyLeft > 0 ? "green" : "red"}
-                    size="sm">${moneyLeft.toFixed(2)} left</Badge>
+                    size="sm"
+                    data-test={"money-left"}
+                >
+                    ${moneyLeft.toFixed(2)} left
+                </Badge>
             </Group>
         </Paper>
     )
