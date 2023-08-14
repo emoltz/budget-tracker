@@ -44,49 +44,56 @@ export default function NavBar() {
   }, [animationDuration, collapsed])
 
   return (
-    <div className={`flex ${collapsed?"w-20":"w-72"} transition-all`}>
-      <aside className="self-start sticky top-0">
-      <div className={`max-h-screen flex flex-col m-3 px-3 gap-2 border-r-2 divide-y`}>
-        <div className="flex flex-row px-4 py-1 gap-3">
-          {animationCompleted && !collapsed && <Link href="/" 
-              className={`text-2xl font-bold font-mono transition-all`}
-            >Argonaut
-            </Link>}
-            
-          {animationCompleted && !collapsed && <Link href="/" className="font-bold font-mono bg-slate-200 rounded-sm content-center p-1">v0.2</Link>}
-
-          <div
-              className={`cursor-pointer`}
-              onClick={() => {
-                  setCollapsed(!collapsed);
-                  setAnimationCompleted(false);
-              }}
-          >
-              <IconArrowsExchange
-                  color={'black'}
-              />
-          </div>
-        </div>
-          
-        <div className="flex flex-col gap-y-3 pt-3 mb-auto">
-            {data.map((item) => (
+    <aside className={`flex relative top-0 z-10 border-r ${collapsed?"w-[4.5rem]":"w-64"} transition-all`}>
+      <nav className="flex flex-col m-3 gap-2 divide-y w-full">
+          <div className="flex flex-row px-2 py-1 gap-3 items-center">
+            {animationCompleted && !collapsed && 
+                <Link href="/" 
+                    className={`text-2xl font-bold font-mono justify-self-start transition-all`}
+              >Argonaut
+              </Link>}
+              
+            {animationCompleted && !collapsed && 
+                <Link href="/" 
+                    className="text-xs font-mono bg-slate-200 rounded-sm p-1"
+                >v0.2
+                </Link>}
                 
-                <div key={item.label}>
-                    <NavItem
-                      name={item.label}
-                      Icon={item.icon}
-                      href={item.link}
-                      key={item.label}
-                      isActive={pathname.endsWith(item.link)}
-                      collapsed={collapsed}
-                  >
-                    {/* .endsWith won't work for dynamic paths */}
-                  </NavItem>
-                </div>
-            ))}
-        </div>
+            {animationCompleted && !collapsed &&
+                    <ThemeSwitcher/>
+                }
+            <div
+                className={`cursor-pointer grow items-center`}
+                onClick={() => {
+                    setCollapsed(!collapsed);
+                    setAnimationCompleted(false);
+                }}
+            >
+                <IconArrowsExchange
+                    color={'black'}
+                />
+            </div>
+          </div>
+            
+          <div className="flex flex-col gap-y-3 pt-3">
+              {data.map((item) => (
+                  
+                  <div key={item.label}>
+                      <NavItem
+                        name={item.label}
+                        Icon={item.icon}
+                        href={item.link}
+                        key={item.label}
+                        isActive={pathname.endsWith(item.link)}
+                        collapsed={collapsed}
+                    >
+                      {/* TODO: .endsWith won't work for dynamic paths */}
+                    </NavItem>
+                  </div>
+              ))}
+          </div>
 
-        <div className="flex flex-col mt-auto gap-y-3 pt-3">
+        <div className="flex flex-col grow-1 mt-auto gap-y-3 pt-3">
           <div>
             <NavItem
               name="My Profile"
@@ -113,8 +120,7 @@ export default function NavBar() {
           </div>
           
         </div>
-      </div>
-      </aside>
-    </div>
+    </nav>
+  </aside>
   )
 }
