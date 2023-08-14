@@ -55,6 +55,10 @@ export default function NavBar() {
             
           {animationCompleted && !collapsed && <Link href="/" className="font-bold font-mono bg-slate-200 rounded-sm content-center p-1">v0.2</Link>}
 
+          {animationCompleted && !collapsed &&
+                        <ThemeSwitcher/>
+                    }
+
           <div
               className={`cursor-pointer`}
               onClick={() => {
