@@ -146,7 +146,7 @@ export class ExpenseClass implements Expense {
     getCategoryID(categoryName: string): string {
         // this helps us marry it to the category inside Firebase
         const id = categoryName + "_" + this.month + "_" + this.year;
-        if (!validateCategoryID(id)) throw new Error("Invalid category ID");
+        // if (!validateCategoryID(id)) throw new Error("Invalid category ID");
         return id;
     }
 
@@ -215,9 +215,12 @@ export class MonthSummaryClass implements MonthSummary {
     // TODO: get icons in here somehow
     getTotals() {
         const totals: CategorySummary[] = [];
-        Object.entries(this.categoryTotals).forEach(([k, v]) => {
-            totals.push({category : k, amount : v} as CategorySummary)
-        });
+
+        if (this.categoryTotals !== undefined) {
+            Object.entries(this.categoryTotals).forEach(([k, v]) => {
+                totals.push({category : k, amount : v} as CategorySummary)
+            });
+        }
         return totals;
     }
 

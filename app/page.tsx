@@ -248,7 +248,7 @@ const AtAGlance = ({userData}: AtAGlanceProps) => {
                 {userData === undefined ?
                     <p>Unable to load user data.</p> :
 
-                    userData.getTotals().map((category, idx) => {
+                    userData?.getTotals().map((category, idx) => {
                         return(
                             // <li key={idx}>category</li>
                             <BudgetCard

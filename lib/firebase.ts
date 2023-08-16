@@ -141,7 +141,7 @@ export async function saveUserToDatabaseNew(user: User) {
         categoryTotals: {}
     }
 
-    await setDoc(summaryRef, {initialSummary});
+    await setDoc(summaryRef, initialSummary);
 }
 
 export async function sendExpenseToFirebaseNew(user: User, expense: ExpenseClass) {
@@ -240,7 +240,7 @@ export async function getUserCategories(user: User | null) : Promise<string[]>{
         const userSnap = await getDoc(userRef);
 
         if (userSnap.exists()) {
-            const userCategories : string[] = userSnap.data()["categories"];
+            const userCategories : string[] = Object.keys(userSnap.data()["categories"]);
             return userCategories;
         }
     }

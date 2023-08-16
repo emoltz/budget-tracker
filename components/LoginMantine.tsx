@@ -43,7 +43,7 @@ export default function LoginMantine(props: PaperProps) {
                 const userDocSnap = await getDoc(userDocRef);
                 if (!userDocSnap.exists()) {
                     // The user does not exist in the database, save the user
-                    await saveUserToDatabase(user);
+                    await saveUserToDatabaseNew(user);
                 }
             }
         }
