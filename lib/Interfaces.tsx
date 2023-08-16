@@ -16,7 +16,7 @@ export interface Expense {
     name: string;
     amount: number;
     vendor: string;
-    description: string;
+    description: string; // or "notes"
     category: string;
     categoryID: string;
     date: Timestamp | FieldValue | String;
@@ -145,9 +145,29 @@ export class ExpenseClass implements Expense {
 
     getCategoryID(categoryName: string): string {
         // this helps us marry it to the category inside Firebase
-        return categoryName + "_" + this.month + "_" + this.year;
+        const id = categoryName + "_" + this.month + "_" + this.year;
+        if (!validateCategoryID(id)) throw new Error("Invalid category ID");
+        return id;
     }
 
+}
+
+function validateCategoryID(categoryID: string): boolean {
+    // Split the ID by underscore
+    const parts = categoryID.split("_");
+
+    // Check that there are exactly three parts
+    if (parts.length !== 3) return false;
+
+    // Extract parts
+    const [category_name, month, year] = parts;
+
+    // Check that month and year are in the correct formats (modify these checks as needed)
+    if (!/^\w+$/.test(category_name)) return false; // Ensure category_name consists of word characters
+    if (!/^[A-Za-z]+$/.test(month)) return false; // Ensure month consists of letters
+    if (!/^\d{4}$/.test(year)) return false; // Ensure year consists of exactly four digits
+
+    return true; // If all checks pass, return true
 }
 
 // should have budget and icons

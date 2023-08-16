@@ -25,7 +25,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
     });
     return () => unsubscribe();
-  }, [auth]);
+  }, []);
 
   return (
     <AuthContext.Provider value={{ user }}>
@@ -48,7 +48,7 @@ export function useAuth() {
       setLoading(false);
     });
     return () => unsubscribe();
-  }, [auth]);
+  }, []);
 
   return { user, loading };
 }

@@ -61,12 +61,12 @@ export default function RootLayout({
                     <AuthProvider>
                         <body>
                         {/*<ChakraProvider>*/}
-                        <div
-                            className={"flex bg-gray-50"}
-                        >
+                          <div className={"flex relative h-screen overflow-hidden"} >
+
                             <NavBar/>
+                                    
                             <main
-                                className={colorScheme === 'dark' ? "flex-1 bg-gray-900 min-h-screen" : "flex-1 bg-white min-h-screen"}
+                                className={`flex-1 overflow-y-scroll min-h-screen ${colorScheme === 'dark' ? "bg-gray-900" : "bg-white"}`}
                             >
                                 {children}
                             </main>
