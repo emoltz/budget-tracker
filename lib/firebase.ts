@@ -108,6 +108,7 @@ export async function saveUserToDatabaseNew(user: User) {
     const ref = doc(db, 'Users_New', uid);
     // option to ask for user-desired categories during onboarding
     const default_categories = {
+        // TODO marry values to icon definitions
         "Food" : "beer", 
         "Groceries" : "box", 
         "Activities" : "beach", 

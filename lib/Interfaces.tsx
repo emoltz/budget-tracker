@@ -19,7 +19,7 @@ export interface Expense {
     description: string; // or "notes"
     category: string;
     categoryID: string;
-    date: Timestamp | FieldValue | String;
+    date: Timestamp | FieldValue | string;
     month: number;
     year: number;
     is_yearly: boolean;
@@ -53,6 +53,7 @@ export class CategoryClass implements Category {
     iconName: string = "dashboard";
 
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     constructor(month, budget, category_name, year, spent) {
         this.id = category_name + "_" + month + "_" + year;
@@ -152,23 +153,23 @@ export class ExpenseClass implements Expense {
 
 }
 
-function validateCategoryID(categoryID: string): boolean {
-    // Split the ID by underscore
-    const parts = categoryID.split("_");
-
-    // Check that there are exactly three parts
-    if (parts.length !== 3) return false;
-
-    // Extract parts
-    const [category_name, month, year] = parts;
-
-    // Check that month and year are in the correct formats (modify these checks as needed)
-    if (!/^\w+$/.test(category_name)) return false; // Ensure category_name consists of word characters
-    if (!/^[A-Za-z]+$/.test(month)) return false; // Ensure month consists of letters
-    if (!/^\d{4}$/.test(year)) return false; // Ensure year consists of exactly four digits
-
-    return true; // If all checks pass, return true
-}
+// function validateCategoryID(categoryID: string): boolean {
+//     // Split the ID by underscore
+//     const parts = categoryID.split("_");
+//
+//     // Check that there are exactly three parts
+//     if (parts.length !== 3) return false;
+//
+//     // Extract parts
+//     const [category_name, month, year] = parts;
+//
+//     // Check that month and year are in the correct formats (modify these checks as needed)
+//     if (!/^\w+$/.test(category_name)) return false; // Ensure category_name consists of word characters
+//     if (!/^[A-Za-z]+$/.test(month)) return false; // Ensure month consists of letters
+//     if (!/^\d{4}$/.test(year)) return false; // Ensure year consists of exactly four digits
+//
+//     return true; // If all checks pass, return true
+// }
 
 // should have budget and icons
 // similar to Category, this is just here before the above gets implemented
