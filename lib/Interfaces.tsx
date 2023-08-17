@@ -146,7 +146,7 @@ export class ExpenseClass implements Expense {
     getCategoryID(categoryName: string): string {
         // this helps us marry it to the category inside Firebase
         const id = categoryName + "_" + this.month + "_" + this.year;
-        // if (!validateCategoryID(id)) throw new Error("Invalid category ID");
+        if (!validateCategoryID(id)) throw new Error("Invalid category ID");
         return id;
     }
 

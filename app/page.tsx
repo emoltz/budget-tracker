@@ -33,10 +33,12 @@ export default function Home() {
 
     useEffect(() => {
         async function fetchData() {
-            const summaryData = new MonthSummaryClass(await getCurrentSummary(user));
-            setUserData(summaryData);
-          }
-      
+            if (user) {
+                const summaryData: MonthSummaryClass = new MonthSummaryClass(await getCurrentSummary(user));
+                setUserData(summaryData);
+            }
+        }
+
         fetchData();
     }, [user])
 
@@ -249,7 +251,7 @@ const AtAGlance = ({userData}: AtAGlanceProps) => {
                     <p>Unable to load user data.</p> :
 
                     userData?.getTotals().map((category, idx) => {
-                        return(
+                        return (
                             // <li key={idx}>category</li>
                             <BudgetCard
                                 key={idx}
@@ -260,7 +262,7 @@ const AtAGlance = ({userData}: AtAGlanceProps) => {
                                 iconName={"dashboard"}
                             />
                         )
-                    }) 
+                    })
 
                     // categories.map((category, index) => {
                     // const icon = icons.find(icon => icon.name === category.iconName);
@@ -280,9 +282,9 @@ const AtAGlance = ({userData}: AtAGlanceProps) => {
                     //         iconName={category.iconName ? name : "dashboard"}
                     //     />
                     // )
-                // })
-                
-            }
+                    // })
+
+                }
             </div>
         </ComponentFrameCenter>
     )
