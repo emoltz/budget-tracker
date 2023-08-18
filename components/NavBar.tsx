@@ -25,28 +25,33 @@ const data = [
     {link: '/settings', label: 'Settings', icon: IconSettings},
 ];
 
-export default function NavBar() {
-  const [collapsed, setCollapsed] = useState(false);
+interface Props {
+    collapsed: boolean;
+}
+
+export default function NavBar({collapsed}: Props) {
+//   const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
-  let animationDuration = 100;
-  const [animationCompleted, setAnimationCompleted] = useState(true);
+  // NOTE: seems like transitions work without setting animationCompleted?
+//   let animationDuration = 100;
+//   const [animationCompleted, setAnimationCompleted] = useState(true);
 
-  useEffect(() => {
-    setCollapsed(window.innerWidth < 640)
-  }, [])
+//   useEffect(() => {
+//     setCollapsed(window.innerWidth < 640)
+//   }, [])
 
-  useEffect(() => {
-    setAnimationCompleted(false);
-    const timer: NodeJS.Timeout = setTimeout(() => {
-        setAnimationCompleted(true);
-    }, animationDuration);
-    return () => clearTimeout(timer);
-  }, [animationDuration, collapsed])
+//   useEffect(() => {
+//     setAnimationCompleted(false);
+//     const timer: NodeJS.Timeout = setTimeout(() => {
+//         setAnimationCompleted(true);
+//     }, animationDuration);
+//     return () => clearTimeout(timer);
+//   }, [animationDuration, collapsed])
 
   return (
-    <aside className={`flex relative top-0 z-10 border-r ${collapsed?"w-[4.5rem]":"w-72"} transition-all`}>
+    <aside className={`flex absolute md:relative h-full z-10 border-r bg-white ${collapsed?"w-0 overflow-hidden sm:w-[4.5rem]":"w-64"} transition-all`}>
       <nav className="flex flex-col m-3 gap-2 divide-y w-full">
-          <div className="flex flex-row px-2 py-1 gap-3 items-center">
+          {/* <div className="flex flex-row px-2 py-1 gap-3 items-center">
             {animationCompleted && !collapsed && 
                 <Link href="/" 
                     className={`text-2xl font-bold font-mono justify-self-start transition-all`}
@@ -73,7 +78,7 @@ export default function NavBar() {
                     color={'black'}
                 />
             </div>
-          </div>
+          </div> */}
             
           <div className="flex flex-col gap-y-3 pt-3">
               {data.map((item) => (
@@ -93,32 +98,31 @@ export default function NavBar() {
               ))}
           </div>
 
-        <div className="flex flex-col grow-1 mt-auto gap-y-3 pt-3">
-          <div>
-            <NavItem
-              name="My Profile"
-              Icon={IconFingerprint}
-              href={"/profile"}
-              isActive={pathname.startsWith("/profile")}
-              collapsed={collapsed}
-            >
-            </NavItem>
-          </div>
-          
-          <div onClick={() => {
-              auth!.signOut();
-              console.log("logged out");
+        <div className="flex flex-col gap-y-3 pt-3 mt-auto">
+            <div>
+                <NavItem
+                    name="My Profile"
+                    Icon={IconFingerprint}
+                    href={"/profile"}
+                    isActive={pathname.startsWith("/profile")}
+                    collapsed={collapsed}
+                >
+                </NavItem>
+            </div>
+            
+            <div onClick={() => {
+                auth!.signOut();
+                console.log("logged out");
             }}>
-            <NavItem
-              name="Logout"
-              Icon={IconLogout}
-              href={"/login"}
-              isActive={pathname.startsWith("/debug")}
-              collapsed={collapsed}
-              >
-            </NavItem>
-          </div>
-          
+                <NavItem
+                    name="Logout"
+                    Icon={IconLogout}
+                    href={"/login"}
+                    isActive={pathname.startsWith("/debug")}
+                    collapsed={collapsed}
+                    >
+                </NavItem>
+            </div>
         </div>
     </nav>
   </aside>
