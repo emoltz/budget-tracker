@@ -1,5 +1,56 @@
 import {FieldValue, serverTimestamp, Timestamp} from "@firebase/firestore";
 
+/*
+    This file contains all the interfaces for the app.
+    TODO:
+        [] convert from snake_case to camelCase?
+ */
+export interface Budget {
+    id: string;
+    category_name: string;
+    amount: number;
+    is_weekly: boolean;
+    is_monthly: boolean;
+    is_yearly: boolean;
+}
+
+export class BudgetClass {
+    id = "";
+    category_name = "";
+    amount = 0;
+    is_weekly = false;
+    is_monthly = false;
+    is_yearly = false;
+
+    constructor(category_name: string, amount: number, is_weekly: boolean, is_monthly: boolean, is_yearly: boolean) {
+        this.id = this.generateBudgetId(category_name)
+        this.category_name = category_name;
+        this.amount = amount;
+        this.is_weekly = is_weekly;
+        this.is_monthly = is_monthly;
+        this.is_yearly = is_yearly;
+    }
+
+    generateBudgetId(category_name: string): string {
+        // Get current timestamp
+        const timestamp = Date.now();
+
+        // Construct the ID
+        return `${category_name}_${timestamp}`;
+    }
+
+    toObject() {
+        return {
+            id: this.id,
+            category_name: this.category_name,
+            amount: this.amount,
+            is_weekly: this.is_weekly,
+            is_monthly: this.is_monthly,
+            is_yearly: this.is_yearly,
+        }
+    }
+}
+
 export interface Category {
     id: string;
     month: string;
