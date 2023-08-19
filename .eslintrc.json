@@ -1,6 +1,8 @@
 {
   "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint"],
+  "plugins": [
+    "@typescript-eslint"
+  ],
   "extends": [
     "plugin:@typescript-eslint/recommended"
   ],
@@ -11,7 +13,10 @@
         "ts-ignore": false
       }
     ],
-    "@typescript-eslint/no-unused-vars": "warn"
+    "@typescript-eslint/no-unused-vars": "warn",
+    "prefer-const": "warn",
+    "@typescript-eslint/no-explicit-any": "warn"
+
     // You can also use "warn" instead of "error" if you prefer a warning
   }
 }
