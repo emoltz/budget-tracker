@@ -17,6 +17,7 @@ import ComponentFrameCenter from "@/components/layouts/ComponentFrameCenter";
 import BudgetCard from "@/components/BudgetCard";
 import {getCurrentSummary} from "@/lib/firebase";
 import {MonthSummaryClass} from "@/lib/Interfaces";
+import LoadingAtAGlance from "@/components/layouts/LoadingAtAGlance";
 // import {useCategories} from "@/lib/firebase";
 // import {Category} from "@/lib/Interfaces";
 // import {User} from "firebase/auth";
@@ -249,7 +250,7 @@ const AtAGlance = ({userData}: AtAGlanceProps) => {
                 className={"grid md:grid-cols-2 sm:grid-cols-1 gap-5"}
             >
                 {userData === undefined ?
-                    <p>Unable to load user data.</p> :
+                    <LoadingAtAGlance/> :
 
                     userData?.getTotals().map((category, idx) => {
                         return (

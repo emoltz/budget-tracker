@@ -1,10 +1,5 @@
 import {FieldValue, serverTimestamp, Timestamp} from "@firebase/firestore";
 
-/*
-    This file contains all the interfaces for the app.
-    TODO:
-        [] convert from snake_case to camelCase?
- */
 export interface Budget {
     id: string;
     category_name: string;

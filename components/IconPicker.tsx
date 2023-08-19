@@ -3,6 +3,7 @@ import {ActionIcon} from "@mantine/core";
 import {icons} from "@/lib/icons";
 import {changeCategoryIcon} from "@/lib/firebase";
 import {useAuth} from "@/app/context";
+import Loading from "@/app/login/loading";
 
 
 interface IconPickerProps {
@@ -22,7 +23,7 @@ export default function IconPicker({onSelect, categoryID}: IconPickerProps): Rea
     }
 
     if (loading){
-        return <div>Loading...</div>
+        return <Loading/>
     }
 
     return (
