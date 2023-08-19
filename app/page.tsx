@@ -1,8 +1,8 @@
 "use client";
 import './globals.css';
-import React, {useState, useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useAuth} from "@/app/context";
-import {Button, Input, Modal, NumberInput, rem, Select, Text, useMantineTheme} from '@mantine/core';
+import {Button, Input, Modal, NumberInput, rem, Select, Text,} from '@mantine/core';
 import {useDisclosure} from '@mantine/hooks';
 import {ThreeColumnLayout} from "@/components/layouts/ThreeColumnLayout";
 import {CategoryPicker} from "@/components/CategoryPicker";
@@ -25,8 +25,8 @@ import {MonthSummaryClass} from "@/lib/Interfaces";
 const PRIMARY_COL_HEIGHT = rem(400);
 
 export default function Home() {
-    const theme = useMantineTheme();
-    const SECONDARY_COL_HEIGHT = `calc(${PRIMARY_COL_HEIGHT} / 2 - ${theme.spacing.md} / 2)`;
+    // const theme = useMantineTheme();
+    // const SECONDARY_COL_HEIGHT = `calc(${PRIMARY_COL_HEIGHT} / 2 - ${theme.spacing.md} / 2)`;
 
     const {user, loading} = useAuth();
     const [userData, setUserData] = useState<MonthSummaryClass>();
@@ -39,6 +39,7 @@ export default function Home() {
             }
         }
 
+        // noinspection JSIgnoredPromiseFromCall
         fetchData();
     }, [user])
 
@@ -83,7 +84,7 @@ const CustomButtons = () => {
         onClick: () => void
     }
 
-    const [buttons, setButtons] = useState([]);
+    // const [buttons, setButtons] = useState([]);
     const [opened, {open, close}] = useDisclosure(false);
 
     const sampleButtons: Button[] = [

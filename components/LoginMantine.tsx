@@ -23,8 +23,7 @@ import {
     User,
     UserCredential
 } from "firebase/auth";
-// @ts-ignore
-import {auth, saveUserToDatabase, saveUserToDatabaseNew} from "@/lib/firebase";
+import {auth, saveUserToDatabaseNew} from "@/lib/firebase";
 import GoogleButton from "react-google-button";
 import {doc, getDoc, getFirestore} from "firebase/firestore";
 import React from "react";

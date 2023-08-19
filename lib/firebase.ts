@@ -6,9 +6,8 @@ import {
     arrayUnion,
     collection,
     doc,
-    DocumentSnapshot,
     Firestore,
-    getDoc, getDocs,
+    getDoc,
     getFirestore,
     increment,
     onSnapshot,
@@ -55,23 +54,21 @@ if (typeof window !== 'undefined') {
 export {app, auth, analytics};
 
 
-/**`
- * Converts a firestore document to JSON
- * @param  {DocumentSnapshot} doc
- */
-export function postToJSON(doc: DocumentSnapshot) {
-    const data = doc.data();
-    return {
-        ...data,
-        // firestore timestamp NOT serializable to JSON. Must convert to milliseconds
-        created_date: data?.created_date.toMillis() || 0,
-    };
-}
 
-function timestampToDate(timestamp: number) {
-    return new Date(timestamp * 1000);
-}
+// export function postToJSON(doc: DocumentSnapshot) {
+//     const data = doc.data();
+//     return {
+//         ...data,
+//         // firestore timestamp NOT serializable to JSON. Must convert to milliseconds
+//         created_date: data?.created_date.toMillis() || 0,
+//     };
+// }
 
+// function timestampToDate(timestamp: number) {
+//     return new Date(timestamp * 1000);
+// }
+
+// noinspection JSCommentMatchesSignature
 export async function saveUserToDatabase(user: User) {
     const db = getFirestore();
     const {uid, email, displayName, photoURL} = user;
@@ -241,15 +238,14 @@ export async function getUserCategories(user: User | null) : Promise<string[]>{
         const userSnap = await getDoc(userRef);
 
         if (userSnap.exists()) {
-            const userCategories : string[] = Object.keys(userSnap.data()["categories"]);
-            return userCategories;
+            return Object.keys(userSnap.data()["categories"]);
         }
     }
 
-    const errString : string[] = ["Error returning categories"];
-    return errString;
+    return ["Error returning categories"];
 }
 
+// noinspection JSUnusedGlobalSymbols
 export async function addCategory(user: User, category: CategoryClass) {
     // this function adds a category to the database
     // this function is not reactive. It is used to send a single category to firebase
@@ -282,9 +278,10 @@ async function saveExpenseToCategory(user: User, expense: ExpenseClass) {
             const categorySnapshot = await getDoc(categoryRef);
             if (!categorySnapshot.exists()) {
                 console.log("Category does not exist:", categoryIdentifier);
+                // noinspection ExceptionCaughtLocallyJS
                 throw new Error("Category does not exist");
             }
-            let categoryData = categorySnapshot.data();
+            const categoryData = categorySnapshot.data();
             // this will add the expense.amount to the category's spent amount
             categoryData.spent += expense.amount;
             //append to list of expenses
@@ -304,6 +301,7 @@ async function saveExpenseToCategory(user: User, expense: ExpenseClass) {
     }
 }
 
+// noinspection JSUnusedGlobalSymbols
 export async function sendExpenseToFirebase(user: User, expense: ExpenseClass) {
     // this function sends an expense to firebase
     // this function is not reactive. It is used to send a single expense to firebase

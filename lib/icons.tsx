@@ -20,11 +20,11 @@ import {
 import React from "react";
 
 
-interface IconProps {
-    size?: string | number;
-    stroke?: string | number;
-    color?: string;
-}
+// interface IconProps {
+//     size?: string | number;
+//     stroke?: string | number;
+//     color?: string;
+// }
 
 export type IconType = {
     name: string;
