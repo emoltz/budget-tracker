@@ -149,8 +149,8 @@ export async function saveUserToDatabaseNew(user: User) {
     for (const budgetClass of default_budgets) {
         const budgetObject: Budget = budgetClass.toObject();
         const budget_id = budgetClass.id; // Ensure this ID is generated correctly
-        const budgetDocRef = doc(budgetsCollectionRef); // Reference to a new document with a generated ID
-        await setDoc(budgetDocRef, {...budgetObject, id: budget_id}); // Include the budget_id in the document data
+        const budgetDocRef = doc(budgetsCollectionRef, budget_id); // Reference to the document with ID "budget_id"
+        await setDoc(budgetDocRef, budgetObject); // Use the budget_id as the document ID
     }
 
 
