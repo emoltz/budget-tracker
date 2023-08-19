@@ -40,6 +40,7 @@ export default function Home() {
                 const categories: { [key: string]: string } = await getCategoriesNew(user);
                 setUserData(summaryData);
                 setUserCategories(categories);
+                // TODO fuse this data into new Category interface? then pass to component?
             }
         }
 
@@ -63,7 +64,6 @@ export default function Home() {
                 two={<Actions/>}
                 three={<AtAGlance
                     userData={userData}
-                    categoryData={userCategories}
                 />}
             />
         </>
@@ -242,11 +242,10 @@ const CustomButton = ({icon, label, color, onClick}: CustomButtonProps) => {
 
 interface AtAGlanceProps {
     userData: MonthSummaryClass | undefined;
-    categoryData: { [key: string]: string } | undefined;
     // TODO the categoryData should be of type CategorySummary where we can, on the backend, marry all the data together
 }
 
-const AtAGlance = ({userData, categoryData}: AtAGlanceProps) => {
+const AtAGlance = ({userData}: AtAGlanceProps) => {
     return (
         <ComponentFrameCenter
             PRIMARY_COL_HEIGHT={"600px"}
@@ -255,63 +254,46 @@ const AtAGlance = ({userData, categoryData}: AtAGlanceProps) => {
             <div
                 className={"grid md:grid-cols-2 sm:grid-cols-1 gap-5"}
             >
-                {
-                    categoryData === undefined ?
-                        <LoadingAtAGlance/> :
-                        Object.keys(categoryData).sort().map((category, idx) => {
-                            // TODO right now, the list is coming in alphabetical order. We may need to allow for user to set order
-                            return (
-                                <BudgetCard
-                                    key={idx}
-                                    id={idx.toString()}
-                                    budgetName={category}
-                                    budgetAmount={500} // fake budget
-                                    spent={0}
-                                    iconName={categoryData[category]}
-                                />
-                            )
-                        })
+
+
+                {userData === undefined ?
+                    <LoadingAtAGlance/> :
+
+                    userData?.getTotals().map((category, idx) => {
+                        return (
+                            // <li key={idx}>category</li>
+                            <BudgetCard
+                                key={idx}
+                                id={idx.toString()}
+                                budgetName={category.category}
+                                budgetAmount={500} // fake budget
+                                spent={category.amount}
+                                iconName={"dashboard"}
+                            />
+                        )
+                    })
+
+                    // categories.map((category, index) => {
+                    // const icon = icons.find(icon => icon.name === category.iconName);
+                    // let name = category.iconName;
+                    // if (!icon) {
+                    //     name = "dashboard";
+                    // } else {
+                    //     name = icon.name;
+                    // }
+                    // return (
+                    //     <BudgetCard
+                    //         key={index}
+                    //         id={category.id}
+                    //         budgetName={category.category_name}
+                    //         budgetAmount={category.budget}
+                    //         spent={category.spent}
+                    //         iconName={category.iconName ? name : "dashboard"}
+                    //     />
+                    // )
+                    // })
+
                 }
-
-
-                {/*{userData === undefined ?*/}
-                {/*    <LoadingAtAGlance/> :*/}
-
-                {/*    userData?.getTotals().map((category, idx) => {*/}
-                {/*        return (*/}
-                {/*            // <li key={idx}>category</li>*/}
-                {/*            <BudgetCard*/}
-                {/*                key={idx}*/}
-                {/*                id={idx.toString()}*/}
-                {/*                budgetName={category.category}*/}
-                {/*                budgetAmount={500} // fake budget*/}
-                {/*                spent={category.amount}*/}
-                {/*                iconName={"dashboard"}*/}
-                {/*            />*/}
-                {/*        )*/}
-                {/*    })*/}
-
-                {/*    // categories.map((category, index) => {*/}
-                {/*    // const icon = icons.find(icon => icon.name === category.iconName);*/}
-                {/*    // let name = category.iconName;*/}
-                {/*    // if (!icon) {*/}
-                {/*    //     name = "dashboard";*/}
-                {/*    // } else {*/}
-                {/*    //     name = icon.name;*/}
-                {/*    // }*/}
-                {/*    // return (*/}
-                {/*    //     <BudgetCard*/}
-                {/*    //         key={index}*/}
-                {/*    //         id={category.id}*/}
-                {/*    //         budgetName={category.category_name}*/}
-                {/*    //         budgetAmount={category.budget}*/}
-                {/*    //         spent={category.spent}*/}
-                {/*    //         iconName={category.iconName ? name : "dashboard"}*/}
-                {/*    //     />*/}
-                {/*    // )*/}
-                {/*    // })*/}
-
-                {/*}*/}
             </div>
         </ComponentFrameCenter>
     )

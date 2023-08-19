@@ -7,6 +7,7 @@ import {
     doc,
     Firestore,
     getDoc,
+    getDocs,
     getFirestore,
     increment,
     onSnapshot,
@@ -15,7 +16,7 @@ import {
     updateDoc,
     where
 } from 'firebase/firestore';
-import {Budget, BudgetClass, Category, CategoryClass, ExpenseClass, MonthSummary} from "./Interfaces";
+import {Budget, BudgetClass, Category, CategoryClass, Expense, ExpenseClass, MonthSummary} from "./Interfaces";
 import {useEffect, useState} from "react";
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -242,6 +243,7 @@ export async function getCategoriesNew(user: User | null): Promise<{ [key: strin
 }
 
 export async function addCategory(user: User | null, category: string, icon: string) {
+    // TODO test this function
     if (user) {
         const db = getFirestore();
         const userRef = doc(db, 'Users_New', user.uid);
@@ -264,6 +266,7 @@ export async function addCategory(user: User | null, category: string, icon: str
 }
 
 export async function deleteCategory(user: User | null, category: string) {
+    // TODO test this function
     if (user) {
         const db = getFirestore();
         const userRef = doc(db, 'Users_New', user.uid);
@@ -285,6 +288,27 @@ export async function deleteCategory(user: User | null, category: string) {
         throw new Error("User not found")
     }
 }
+
+export async function getExpenses(user: User | null): Promise<Expense[]> {
+    if (user) {
+        const db = getFirestore();
+        const userRef = doc(db, 'Users_New', user.uid);
+
+        // Construct the path to the current month and year's document
+        const monthYearRef = collection(userRef, getCurrentMonthString());
+
+        // Get the document snapshot
+        const expensesSnapshot = await getDocs(monthYearRef);
+        const expenses: Expense[] = [];
+        expensesSnapshot.forEach((doc) => {
+            expenses.push(doc.data() as Expense);
+        });
+        return expenses;
+    } else {
+        throw new Error("User not found");
+    }
+}
+
 
 
 export function useCategories(user: User | null): Category[] {
