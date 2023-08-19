@@ -2,7 +2,6 @@ import {initializeApp} from "firebase/app";
 import {getAnalytics} from "firebase/analytics";
 import {Auth, getAuth, User} from 'firebase/auth';
 import {
-    addDoc,
     arrayUnion,
     collection,
     doc,
@@ -104,7 +103,6 @@ export async function saveUserToDatabaseNew(user: User) {
     const ref = doc(db, 'Users_New', uid);
     // option to ask for user-desired categories during onboarding
     const default_categories = {
-        // TODO marry values to icon definitions
         "Food": "dashboard",
         "Groceries": "box",
         "Activities": "beach",
@@ -243,6 +241,52 @@ export async function getCategoriesNew(user: User | null): Promise<{ [key: strin
 
 }
 
+export async function addCategory(user: User | null, category: string, icon: string) {
+    if (user) {
+        const db = getFirestore();
+        const userRef = doc(db, 'Users_New', user.uid);
+        const userSnap = await getDoc(userRef);
+        if (!userSnap.exists()) {
+            console.error('User document does not exist:', user.uid);
+            throw new Error('User document not found');
+        }
+        const userData = userSnap.data();
+        // add category to user document
+        try {
+            const newCategories = {...userData["categories"], [category]: icon};
+            await updateDoc(userRef, {categories: newCategories});
+        } catch (error) {
+            console.log("Error adding category: ", error)
+        }
+    } else {
+        throw new Error("User not found")
+    }
+}
+
+export async function deleteCategory(user: User | null, category: string) {
+    if (user) {
+        const db = getFirestore();
+        const userRef = doc(db, 'Users_New', user.uid);
+        const userSnap = await getDoc(userRef);
+        if (!userSnap.exists()) {
+            console.error('User document does not exist:', user.uid);
+            throw new Error('User document not found');
+        }
+        const userData = userSnap.data();
+        // remove category from user document
+        try {
+            const newCategories = {...userData["categories"]};
+            delete newCategories[category];
+            await updateDoc(userRef, {categories: newCategories});
+        } catch (error) {
+            console.log("Error deleting category: ", error)
+        }
+    } else {
+        throw new Error("User not found")
+    }
+}
+
+
 export function useCategories(user: User | null): Category[] {
     const [categories, setCategories] = useState<Category[]>([]);
 
@@ -293,22 +337,22 @@ export async function getUserCategories(user: User | null): Promise<string[]> {
 }
 
 // noinspection JSUnusedGlobalSymbols
-export async function addCategory(user: User, category: CategoryClass) {
-    // this function adds a category to the database
-    // this function is not reactive. It is used to send a single category to firebase
-    // TODO finish this and make sure that it saved it with the proper month and year
-    if (user?.uid) {
-        const db: Firestore = getFirestore();
-        const categoryObject = category.toObject();
-        // TODO do checks to make sure category object has correct info
-        try {
-            const docRef = await addDoc(collection(db, 'Users', user.uid, 'Categories'), categoryObject);
-            console.log("Category document written with ID: ", docRef.id);
-        } catch (e) {
-            console.error("Error adding document: ", e);
-        }
-    }
-}
+// export async function addCategory(user: User, category: CategoryClass) {
+//     // this function adds a category to the database
+//     // this function is not reactive. It is used to send a single category to firebase
+//     // TODO finish this and make sure that it saved it with the proper month and year
+//     if (user?.uid) {
+//         const db: Firestore = getFirestore();
+//         const categoryObject = category.toObject();
+//         // TODO do checks to make sure category object has correct info
+//         try {
+//             const docRef = await addDoc(collection(db, 'Users', user.uid, 'Categories'), categoryObject);
+//             console.log("Category document written with ID: ", docRef.id);
+//         } catch (e) {
+//             console.error("Error adding document: ", e);
+//         }
+//     }
+// }
 
 async function saveExpenseToCategory(user: User, expense: ExpenseClass) {
     /*
