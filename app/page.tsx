@@ -15,7 +15,7 @@ import AddNewExpense from "@/components/AddNewExpense";
 import Loading from "@/app/loading";
 import ComponentFrameCenter from "@/components/layouts/ComponentFrameCenter";
 import BudgetCard from "@/components/BudgetCard";
-import {getCurrentSummary} from "@/lib/firebase";
+import {getCategoriesNew, getCurrentSummary} from "@/lib/firebase";
 import {MonthSummaryClass} from "@/lib/Interfaces";
 import LoadingAtAGlance from "@/components/layouts/LoadingAtAGlance";
 // import {useCategories} from "@/lib/firebase";
@@ -31,12 +31,15 @@ export default function Home() {
 
     const {user, loading} = useAuth();
     const [userData, setUserData] = useState<MonthSummaryClass>();
+    const [userCategories, setUserCategories] = useState<{ [key: string]: string } | undefined>();
 
     useEffect(() => {
         async function fetchData() {
             if (user) {
                 const summaryData: MonthSummaryClass = new MonthSummaryClass(await getCurrentSummary(user));
+                const categories: { [key: string]: string } = await getCategoriesNew(user);
                 setUserData(summaryData);
+                setUserCategories(categories);
             }
         }
 
@@ -60,6 +63,7 @@ export default function Home() {
                 two={<Actions/>}
                 three={<AtAGlance
                     userData={userData}
+                    categoryData={userCategories}
                 />}
             />
         </>
@@ -238,9 +242,11 @@ const CustomButton = ({icon, label, color, onClick}: CustomButtonProps) => {
 
 interface AtAGlanceProps {
     userData: MonthSummaryClass | undefined;
+    categoryData: { [key: string]: string } | undefined;
+    // TODO the categoryData should be of type CategorySummary where we can, on the backend, marry all the data together
 }
 
-const AtAGlance = ({userData}: AtAGlanceProps) => {
+const AtAGlance = ({userData, categoryData}: AtAGlanceProps) => {
     return (
         <ComponentFrameCenter
             PRIMARY_COL_HEIGHT={"600px"}
@@ -249,44 +255,63 @@ const AtAGlance = ({userData}: AtAGlanceProps) => {
             <div
                 className={"grid md:grid-cols-2 sm:grid-cols-1 gap-5"}
             >
-                {userData === undefined ?
-                    <LoadingAtAGlance/> :
-
-                    userData?.getTotals().map((category, idx) => {
-                        return (
-                            // <li key={idx}>category</li>
-                            <BudgetCard
-                                key={idx}
-                                id={idx.toString()}
-                                budgetName={category.category}
-                                budgetAmount={500} // fake budget
-                                spent={category.amount}
-                                iconName={"dashboard"}
-                            />
-                        )
-                    })
-
-                    // categories.map((category, index) => {
-                    // const icon = icons.find(icon => icon.name === category.iconName);
-                    // let name = category.iconName;
-                    // if (!icon) {
-                    //     name = "dashboard";
-                    // } else {
-                    //     name = icon.name;
-                    // }
-                    // return (
-                    //     <BudgetCard
-                    //         key={index}
-                    //         id={category.id}
-                    //         budgetName={category.category_name}
-                    //         budgetAmount={category.budget}
-                    //         spent={category.spent}
-                    //         iconName={category.iconName ? name : "dashboard"}
-                    //     />
-                    // )
-                    // })
-
+                {
+                    categoryData === undefined ?
+                        <LoadingAtAGlance/> :
+                        Object.keys(categoryData).sort().map((category, idx) => {
+                            // TODO right now, the list is coming in alphabetical order. We may need to allow for user to set order
+                            return (
+                                <BudgetCard
+                                    key={idx}
+                                    id={idx.toString()}
+                                    budgetName={category}
+                                    budgetAmount={500} // fake budget
+                                    spent={0}
+                                    iconName={categoryData[category]}
+                                />
+                            )
+                        })
                 }
+
+
+                {/*{userData === undefined ?*/}
+                {/*    <LoadingAtAGlance/> :*/}
+
+                {/*    userData?.getTotals().map((category, idx) => {*/}
+                {/*        return (*/}
+                {/*            // <li key={idx}>category</li>*/}
+                {/*            <BudgetCard*/}
+                {/*                key={idx}*/}
+                {/*                id={idx.toString()}*/}
+                {/*                budgetName={category.category}*/}
+                {/*                budgetAmount={500} // fake budget*/}
+                {/*                spent={category.amount}*/}
+                {/*                iconName={"dashboard"}*/}
+                {/*            />*/}
+                {/*        )*/}
+                {/*    })*/}
+
+                {/*    // categories.map((category, index) => {*/}
+                {/*    // const icon = icons.find(icon => icon.name === category.iconName);*/}
+                {/*    // let name = category.iconName;*/}
+                {/*    // if (!icon) {*/}
+                {/*    //     name = "dashboard";*/}
+                {/*    // } else {*/}
+                {/*    //     name = icon.name;*/}
+                {/*    // }*/}
+                {/*    // return (*/}
+                {/*    //     <BudgetCard*/}
+                {/*    //         key={index}*/}
+                {/*    //         id={category.id}*/}
+                {/*    //         budgetName={category.category_name}*/}
+                {/*    //         budgetAmount={category.budget}*/}
+                {/*    //         spent={category.spent}*/}
+                {/*    //         iconName={category.iconName ? name : "dashboard"}*/}
+                {/*    //     />*/}
+                {/*    // )*/}
+                {/*    // })*/}
+
+                {/*}*/}
             </div>
         </ComponentFrameCenter>
     )

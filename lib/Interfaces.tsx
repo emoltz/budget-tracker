@@ -70,16 +70,8 @@ export interface Expense {
     is_monthly: boolean;
 }
 
-export interface User {
-    uid: string;
-    display_name: string;
-    email: string;
-    // below could be its own interface
-    categories: {[category: string] : string};
-    photo_url: string;
-}
-
 export interface MonthSummary {
+    // TODO modify this to include the category's icon
     month: number;
     year: number;
     monthTotal: number;
@@ -120,14 +112,6 @@ export class CategoryClass implements Category {
             expenses: this.expenses,
             icon: this.iconName
         }
-    }
-
-    addExpense(expenseID: string) {
-        this.expenses.push(expenseID);
-    }
-
-    changeBudget(newBudget: number) {
-        this.budget = newBudget;
     }
 }
 
@@ -217,7 +201,9 @@ export class ExpenseClass implements Expense {
 // similar to Category, this is just here before the above gets implemented
 interface CategorySummary {
     category : string,
-    amount : number
+    amount: number,
+    icon?: string
+
 }
 
 export class MonthSummaryClass implements MonthSummary {

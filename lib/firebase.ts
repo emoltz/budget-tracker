@@ -105,7 +105,7 @@ export async function saveUserToDatabaseNew(user: User) {
     // option to ask for user-desired categories during onboarding
     const default_categories = {
         // TODO marry values to icon definitions
-        "Food": "beer",
+        "Food": "dashboard",
         "Groceries": "box",
         "Activities": "beach",
         "Housing": "home",
@@ -200,6 +200,12 @@ export async function sendExpenseToFirebaseNew(user: User, expense: ExpenseClass
 }
 
 export async function getCurrentSummary(user: User | null): Promise<MonthSummary> {
+    /**
+     This function retrieves the current month's summary
+     data for a specific user from the Firestore database.
+     The summary is expected to be stored in a specific path based
+     on the user's unique identifier (UID) and the current month.
+     */
     if (user?.uid) {
         const db = getFirestore();
         const monthCollection = getCurrentMonthString();
@@ -216,6 +222,25 @@ export async function getCurrentSummary(user: User | null): Promise<MonthSummary
     } else {
         throw new Error("User not found")
     }
+}
+
+export async function getCategoriesNew(user: User | null): Promise<{ [key: string]: string }> {
+    if (user) {
+        // get category dict from User document
+        const db = getFirestore();
+        const userRef = doc(db, 'Users_New', user.uid);
+        const userSnap = await getDoc(userRef);
+        if (!userSnap.exists()) {
+            console.error('User document does not exist:', user.uid);
+            throw new Error('User document not found');
+        }
+        const userData = userSnap.data();
+        return userData["categories"] as { [key: string]: string };
+
+    } else {
+        throw new Error("User not found")
+    }
+
 }
 
 export function useCategories(user: User | null): Category[] {
