@@ -131,7 +131,14 @@ export async function saveUserToDatabaseNew(user: User) {
     // this will need to happen for each new month >> write into addExpense (if currMonth doc doesn't exist, create it)
     const summaryRef = doc(monthRef, "summary");
 
-    // TODO: connect to budget 
+    // TODO: connect to budget
+
+    const budgetRef = doc(monthRef, "Budgets");
+    // create budgets for each category
+    const default_budgets = {}
+
+
+    // create summary document for current month
     const initialSummary : MonthSummary = {
         month: new Date().getMonth() + 1, // getMonth returns month index starting from 0,
         year: new Date().getFullYear(),
