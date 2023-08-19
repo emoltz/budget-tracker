@@ -43,6 +43,8 @@ export class BudgetClass {
             id: this.id,
             category_name: this.category_name,
             amount: this.amount,
+            is_monthly: this.is_monthly,
+            is_yearly: this.is_yearly
         }
     }
 }

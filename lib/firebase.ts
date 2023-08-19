@@ -16,7 +16,7 @@ import {
     updateDoc,
     where
 } from 'firebase/firestore';
-import {Category, CategoryClass, ExpenseClass, MonthSummary} from "./Interfaces";
+import {Budget, BudgetClass, Category, CategoryClass, ExpenseClass, MonthSummary} from "./Interfaces";
 import {useEffect, useState} from "react";
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -52,7 +52,6 @@ if (typeof window !== 'undefined') {
 }
 
 export {app, auth, analytics};
-
 
 
 // export function postToJSON(doc: DocumentSnapshot) {
@@ -106,13 +105,13 @@ export async function saveUserToDatabaseNew(user: User) {
     // option to ask for user-desired categories during onboarding
     const default_categories = {
         // TODO marry values to icon definitions
-        "Food" : "beer", 
-        "Groceries" : "box", 
-        "Activities" : "beach", 
-        "Housing" : "home", 
-        "Transportation" : "train", 
-        "Medical & Healthcare" : "medical", 
-        "Personal Spending" : "money"
+        "Food": "beer",
+        "Groceries": "box",
+        "Activities": "beach",
+        "Housing": "home",
+        "Transportation": "train",
+        "Medical & Healthcare": "medical",
+        "Personal Spending": "money"
     }
 
     const data = {
@@ -133,13 +132,30 @@ export async function saveUserToDatabaseNew(user: User) {
 
     // TODO: connect to budget
 
-    const budgetRef = doc(monthRef, "Budgets");
+    const budgetsCollectionRef = collection(db, 'Users_New', uid, "Budgets");
+
+
     // create budgets for each category
-    const default_budgets = {}
+    const default_budgets: BudgetClass[] = [
+        new BudgetClass("Food", 0),
+        new BudgetClass("Groceries", 0),
+        new BudgetClass("Activities", 0),
+        new BudgetClass("Housing", 0),
+        new BudgetClass("Transportation", 0),
+        new BudgetClass("Medical & Healthcare", 0),
+        new BudgetClass("Personal Spending", 0)
+    ];
+    // create and write a document with the generated ID
+    for (const budgetClass of default_budgets) {
+        const budgetObject: Budget = budgetClass.toObject();
+        const budget_id = budgetClass.id; // Ensure this ID is generated correctly
+        const budgetDocRef = doc(budgetsCollectionRef); // Reference to a new document with a generated ID
+        await setDoc(budgetDocRef, {...budgetObject, id: budget_id}); // Include the budget_id in the document data
+    }
 
 
     // create summary document for current month
-    const initialSummary : MonthSummary = {
+    const initialSummary: MonthSummary = {
         month: new Date().getMonth() + 1, // getMonth returns month index starting from 0,
         year: new Date().getFullYear(),
         monthTotal: 0,
@@ -197,8 +213,7 @@ export async function getCurrentSummary(user: User | null): Promise<MonthSummary
             throw new Error("Month summary does not exist");
         }
         return summaryDoc.data() as MonthSummary;
-    }
-    else {
+    } else {
         throw new Error("User not found")
     }
 }
@@ -236,7 +251,7 @@ export function useCategories(user: User | null): Category[] {
     return categories;
 }
 
-export async function getUserCategories(user: User | null) : Promise<string[]>{
+export async function getUserCategories(user: User | null): Promise<string[]> {
     // get category names only (stored as part of User document)
     if (user?.uid) {
         const db = getFirestore();
@@ -344,7 +359,7 @@ export async function changeCategoryIcon(user: User, iconName: string, categoryI
 
 }
 
-function getCurrentMonthString() : string{
+function getCurrentMonthString(): string {
     // helper function to return the name of the current month's collection
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear();
