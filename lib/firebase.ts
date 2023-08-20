@@ -69,7 +69,7 @@ export {app, auth, analytics};
 // }
 
 // noinspection JSCommentMatchesSignature
-export async function saveUserToDatabase_depricated(user: User) {
+export async function saveUserToDatabase_deprecated(user: User) {
     const db = getFirestore();
     const {uid, email, displayName, photoURL} = user;
     const ref = doc(db, usersDirectory, uid);
