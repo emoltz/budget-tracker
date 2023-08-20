@@ -16,7 +16,7 @@ import {
     updateDoc,
     where
 } from 'firebase/firestore';
-import {Budget, BudgetClass, Category, CategoryClass, Expense, ExpenseClass, MonthSummary} from "./Interfaces";
+import {Budget, BudgetClass, Category, CategoryClass, Expense, ExpenseClass, MonthSummary, MonthSummaryClass} from "./Interfaces";
 import {useEffect, useState} from "react";
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -126,13 +126,9 @@ export async function saveUserToDatabaseNew(user: User) {
     const monthRef = collection(db, 'Users_New', uid, getCurrentMonthString());
 
     // create summary document for current month
-    // this will need to happen for each new month >> write into addExpense (if currMonth doc doesn't exist, create it)
     const summaryRef = doc(monthRef, "summary");
 
-    // TODO: connect to budget
-
     const budgetsCollectionRef = collection(db, 'Users_New', uid, "Budgets");
-
 
     // create budgets for each category
     const default_budgets: BudgetClass[] = [
@@ -152,13 +148,12 @@ export async function saveUserToDatabaseNew(user: User) {
         await setDoc(budgetDocRef, budgetObject); // Use the budget_id as the document ID
     }
 
-
     // create summary document for current month
-    const initialSummary: MonthSummary = {
+    // categoryTotals is now a collection - category docs will be created on addExpense
+    const initialSummary = {
         month: new Date().getMonth() + 1, // getMonth returns month index starting from 0,
         year: new Date().getFullYear(),
         monthTotal: 0,
-        categoryTotals: {}
     }
 
     await setDoc(summaryRef, initialSummary);
@@ -174,31 +169,60 @@ export async function sendExpenseToFirebaseNew(user: User, expense: ExpenseClass
         try {
             // get reference to current month
             const monthCollection = getCurrentMonthString();
-            const monthRef = collection(doc(collection(db, 'Users_New'), user.uid), monthCollection);
+            const monthRef = collection(db, 'Users_New', user.uid, monthCollection);
 
             // create and write a document with the generated ID
             const docRef = doc(monthRef, expense.id);
             await setDoc(docRef, expenseObject);
+            // console.log("Expense document written with ID: ", docRef.id);
 
             // update this month's summary doc
-            // should create the doc if it doesn't exist
-            const summaryRef = doc(monthRef, "summary");
+            const monthSummary = doc(monthRef, "summary");
+            const monthSnap = await getDoc(monthSummary);
 
-            // add expense.amount to the month's total spent and the category total
-            // individual category totals are nested within categoryTotals
-            await updateDoc(summaryRef, {
-                monthTotal: increment(expense.amount),
-                ["categoryTotals." + expense.category + "Total"]: increment(expense.amount)
-            });
+            // create the doc if it doesn't exist (such as for a new month)
+            if (!monthSnap.exists()) {
+                await setDoc(monthSummary, {
+                    month: expense.month,
+                    year: expense.year,
+                    monthTotal: expense.amount,
+                });
+            }
+            else {
+                // otherwise expense.amount to the month's total spent
+                await updateDoc(monthSummary, {
+                    monthTotal: increment(expense.amount),
+                });
+            }
 
-            console.log("Document written with ID: ", docRef.id);
+            const categorySummary = doc(monthSummary, "categoryTotals", expense.category);
+            const categorySnap = await getDoc(categorySummary);
+
+            // create new category doc if first expense in this category, otherwise update
+            if (!categorySnap.exists()) {
+                // TODO: incorporate real budget and icons
+                // TODO: use CategoryClass.toObject()
+                await setDoc(categorySummary, {
+                    category_name: expense.category, 
+                    month: expense.month, 
+                    year: expense.year, 
+                    spent: expense.amount, 
+                    budget: 500
+                 } );
+            }
+            else {
+                await updateDoc(categorySummary, {
+                    spent: increment(expense.amount) 
+                });
+            }
+            
         } catch (e) {
             console.error("Error adding document: ", e);
         }
     }
 }
 
-export async function getCurrentSummary(user: User | null): Promise<MonthSummary> {
+export async function getCurrentSummary(user: User | null): Promise<MonthSummaryClass> {
     /**
      This function retrieves the current month's summary
      data for a specific user from the Firestore database.
@@ -209,7 +233,7 @@ export async function getCurrentSummary(user: User | null): Promise<MonthSummary
         const db = getFirestore();
         const monthCollection = getCurrentMonthString();
 
-        const monthRef = collection(doc(collection(db, 'Users_New'), user.uid), monthCollection);
+        const monthRef = collection(db, 'Users_New', user.uid, monthCollection);
 
         const summaryDoc = await getDoc(doc(monthRef, "summary"));
 
@@ -217,7 +241,26 @@ export async function getCurrentSummary(user: User | null): Promise<MonthSummary
             console.log("Month summary does not exist:", monthCollection);
             throw new Error("Month summary does not exist");
         }
-        return summaryDoc.data() as MonthSummary;
+        
+        const monthData = summaryDoc.data();
+
+        // get reference to collection of category summaries
+        const categoriesSnap = await getDocs(collection(monthRef, "summary", "categoryTotals"))
+        const categoryTotals : Category[] = [];
+
+        // get individual category summaries as Categories
+        categoriesSnap.forEach((doc) => {
+            categoryTotals.push(doc.data() as Category)
+        })
+
+        return new MonthSummaryClass({
+            month: monthData.month,
+            year: monthData.year,
+            monthTotal: monthData.monthTotal,
+            categoryTotals: categoryTotals,
+        })
+
+        // return summaryDoc.data() as MonthSummary;
     } else {
         throw new Error("User not found")
     }

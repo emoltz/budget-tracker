@@ -36,7 +36,7 @@ export default function Home() {
     useEffect(() => {
         async function fetchData() {
             if (user) {
-                const summaryData: MonthSummaryClass = new MonthSummaryClass(await getCurrentSummary(user));
+                const summaryData: MonthSummaryClass = await getCurrentSummary(user);
                 const categories: { [key: string]: string } = await getCategoriesNew(user);
                 setUserData(summaryData);
                 setUserCategories(categories);
@@ -258,16 +258,15 @@ const AtAGlance = ({userData}: AtAGlanceProps) => {
 
                 {userData === undefined ?
                     <LoadingAtAGlance/> :
-
-                    userData?.getTotals().map((category, idx) => {
+                    // JSON.stringify(userData)
+                    userData?.categoryTotals.map((category, idx) => {
                         return (
-                            // <li key={idx}>category</li>
                             <BudgetCard
                                 key={idx}
                                 id={idx.toString()}
-                                budgetName={category.category}
-                                budgetAmount={500} // fake budget
-                                spent={category.amount}
+                                budgetName={category.category_name}
+                                budgetAmount={category.budget}
+                                spent={category.spent}
                                 iconName={"dashboard"}
                             />
                         )

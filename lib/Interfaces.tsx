@@ -44,15 +44,53 @@ export class BudgetClass {
     }
 }
 
+// TODO: whether or not to keep a copy of expenses here
 export interface Category {
     id: string;
-    month: string;
-    budget: number;
     category_name: string;
+    month: string;
     year: number;
     spent: number;
-    expenses: string[];
+    budget: number;
+    // expenses: string[];
     iconName: string;
+}
+
+export class CategoryClass implements Category {
+    id = "";
+    category_name = "";
+    month = "";
+    year = 0;
+    spent = 0;
+    budget = 0;
+    // expenses: string[] = [];
+    iconName: string = "dashboard";
+
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    constructor(category_name, month, year, spent, budget) {
+        this.id = category_name + "_" + month + "_" + year;
+        this.category_name = category_name;
+        this.month = month;
+        this.year = year;
+        this.spent = spent;
+        this.budget = budget;
+    }
+
+
+    toObject() {
+        return {
+            category_name: this.category_name,
+            budget: this.budget,
+            month: this.month,
+            year: this.year,
+            spent: this.spent,
+            id: this.id,
+            // expenses: this.expenses,
+            icon: this.iconName
+        }
+    }
 }
 
 export interface Expense {
@@ -68,51 +106,6 @@ export interface Expense {
     year: number;
     is_yearly: boolean;
     is_monthly: boolean;
-}
-
-export interface MonthSummary {
-    // TODO modify this to include the category's icon
-    month: number;
-    year: number;
-    monthTotal: number;
-    categoryTotals: {[category: string] : number};
-}
-
-export class CategoryClass implements Category {
-    month = "";
-    budget = 0;
-    category_name = "";
-    year = 0;
-    spent = 0;
-    id = "";
-    expenses: string[] = [];
-    iconName: string = "dashboard";
-
-
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    constructor(month, budget, category_name, year, spent) {
-        this.id = category_name + "_" + month + "_" + year;
-        this.month = month;
-        this.budget = budget;
-        this.category_name = category_name;
-        this.year = year;
-        this.spent = spent;
-    }
-
-
-    toObject() {
-        return {
-            category_name: this.category_name,
-            budget: this.budget,
-            month: this.month,
-            year: this.year,
-            spent: this.spent,
-            id: this.id,
-            expenses: this.expenses,
-            icon: this.iconName
-        }
-    }
 }
 
 export class ExpenseClass implements Expense {
@@ -197,30 +190,26 @@ export class ExpenseClass implements Expense {
 //     return true; // If all checks pass, return true
 // }
 
-// should have budget and icons
-// similar to Category, this is just here before the above gets implemented
-interface CategorySummary {
-    category : string,
-    amount: number,
-    icon?: string
-
+export interface MonthSummary {
+    month: number;
+    year: number;
+    monthTotal: number;
+    categoryTotals: Category[];
 }
 
 export class MonthSummaryClass implements MonthSummary {
     month = 0;
     year = 0;
     monthTotal = 0;
-
-    // make this a list of categorySummaries
+    categoryTotals : Category[] = [];
+    
     // whenever MonthSummaryClass is created, make a call to find icons and budget
-    // this could also link back to expenses?
-    categoryTotals = {};
-
-
     constructor(summary: MonthSummary) {
         this.month = summary.month;
         this.year = summary.year;
         this.monthTotal = summary.monthTotal;
+
+        // summary.categoryTotals should already be a list of Categories
         this.categoryTotals = summary.categoryTotals;
     }
 
@@ -242,15 +231,25 @@ export class MonthSummaryClass implements MonthSummary {
 
     // return totals as list of dicts
     // TODO: get icons in here somehow
-    getTotals() {
-        const totals: CategorySummary[] = [];
 
-        if (this.categoryTotals !== undefined) {
-            Object.entries(this.categoryTotals).forEach(([k, v]) => {
-                totals.push({category : k, amount : v} as CategorySummary)
-            });
-        }
-        return totals;
-    }
+    // getTotals() {
+    //     const totals: Category[] = [];
+
+    //     if (this.categoryTotals !== undefined) {
+    //         Object.entries(this.categoryTotals).forEach((category) => {
+    //             totals.push({
+    //                 id: category.id,
+    //                 category : category.category_name, 
+    //                 month: category.month,
+    //                 year: category.year,
+    //                 spent: category.spent,
+    //                 budget: category.budget,
+    //                 // expenses: string[];
+    //                 iconName: iconName
+    //             } as Category)
+    //         });
+    //     }
+    //     return totals;
+    // }
 
 }
