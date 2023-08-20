@@ -69,13 +69,14 @@ export class CategoryClass implements Category {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    constructor(category_name, month, year, spent, budget) {
+    constructor(category_name, month, year, spent, budget, icon) {
         this.id = category_name + "_" + month + "_" + year;
         this.category_name = category_name;
         this.month = month;
         this.year = year;
         this.spent = spent;
         this.budget = budget;
+        this.icon_name = icon;
     }
 
 
@@ -88,7 +89,7 @@ export class CategoryClass implements Category {
             spent: this.spent,
             id: this.id,
             // expenses: this.expenses,
-            icon: this.icon_name
+            icon_name: this.icon_name
         }
     }
 }

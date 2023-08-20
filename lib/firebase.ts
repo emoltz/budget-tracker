@@ -89,7 +89,7 @@ export async function saveUserToDatabase(user: User) {
     const default_category_names = ["Food", "Groceries", "Activities", "Housing", "Transportation", "Medical & Healthcare", "Personal Spending"]
 
     const default_categories: CategoryClass[] = default_category_names.map((name) => {
-        return new CategoryClass(currentMonth, 0, name, currentYear, 0);
+        return new CategoryClass(currentMonth, 0, name, currentYear, 0, "dashboard");
     });
 
     const categoriesRef = collection(db, 'Users', uid, 'Categories');
@@ -203,29 +203,28 @@ export async function sendExpenseToFirebaseNew(user: User, expense: ExpenseClass
             // TODO split this into a helper function
             if (!categorySnap.exists()) {
                 const userRef = doc(db, 'Users_New', user.uid);
+
                 // pull budget from matching budget doc
+                // only one budget for now - TODO check for weekly/monthly
                 const budgetQuery = query(
                     collection(userRef, "Budgets"), 
                     where("category_name", "==", expense.category),
                     limit(1) 
-                );  // only one budget for now - TODO check for weekly/monthly
-
+                );  
                 const querySnap = await getDocs(budgetQuery);
-                const budgetAmt = querySnap.docs[0].data().amount;
 
-                // get category icon from user
+                // reference to user doc for icon
                 const userSnap = await getDoc(userRef);
-                const icon = userSnap.exists() ? userSnap.data().categories[expense.category] : "dashboard";
 
-                // TODO: use CategoryClass.toObject()
-                await setDoc(categorySummary, {
-                    category_name: expense.category,
-                    month: expense.month,
-                    year: expense.year,
-                    spent: expense.amount,
-                    budget: budgetAmt,
-                    icon_name: icon
-                 } );
+                const category = new CategoryClass(
+                    expense.category,
+                    expense.month,
+                    expense.year,
+                    expense.amount,
+                    querySnap.docs[0].data().amount, // budget
+                    userSnap.exists() ? userSnap.data().categories[expense.category] : "dashboard", // icon
+                )
+                await setDoc(categorySummary, category.toObject());
             }
             else {
                 await updateDoc(categorySummary, {
