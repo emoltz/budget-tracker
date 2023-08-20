@@ -1,12 +1,15 @@
 'use client';
-import {ReactElement, useEffect, useState} from 'react';
-import dynamic from 'next/dynamic';
+import {ReactElement, useState} from 'react';
 import {Button, Checkbox, Form, Input} from 'antd';
 
-import {createUserWithEmailAndPassword, signInWithEmailAndPassword, Auth} from "firebase/auth";
+import {
+    createUserWithEmailAndPassword,
+    GoogleAuthProvider,
+    signInWithEmailAndPassword,
+    signInWithPopup
+} from "firebase/auth";
 // @ts-ignore
-import {auth, saveUserToDatabase} from "@/lib/firebase";
-import {GoogleAuthProvider, signInWithPopup} from "firebase/auth";
+import {auth, saveUserToDatabase_depricated} from "@/lib/firebase";
 import GoogleButton from "react-google-button";
 import {Spacer} from "@nextui-org/react";
 
@@ -19,7 +22,7 @@ export default function LoginButton(): ReactElement {
             const user = result.user;
             const isNewUser = result.additionalUserInfo?.isNewUser;
             if (user && isNewUser) {
-                await saveUserToDatabase(user);
+                await saveUserToDatabase_depricated(user);
             }
         }
     }
@@ -42,7 +45,7 @@ export default function LoginButton(): ReactElement {
                     console.log("registered!");
                 });
                 // @ts-ignore
-                await saveUserToDatabase(auth.currentUser).then(() => {
+                await saveUserToDatabase_depricated(auth.currentUser).then(() => {
                     console.log("User successfully sent to database!");
                 });
 

@@ -1,6 +1,6 @@
 import {Expense} from "@/lib/Interfaces";
 
-export const fakeData: Expense[] = [
+export const fakeData: any[] | Expense[] = [
     {
         "id": "expense_001",
         "amount": 50.25,

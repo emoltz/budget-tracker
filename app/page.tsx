@@ -1,8 +1,8 @@
 "use client";
 import './globals.css';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useAuth} from "@/app/context";
-import {Button, Input, Modal, NumberInput, rem, Select, Text, useMantineTheme} from '@mantine/core';
+import {Button, Input, Modal, NumberInput, rem, Select, Text,} from '@mantine/core';
 import {useDisclosure} from '@mantine/hooks';
 import {ThreeColumnLayout} from "@/components/layouts/ThreeColumnLayout";
 import {CategoryPicker} from "@/components/CategoryPicker";
@@ -15,18 +15,39 @@ import AddNewExpense from "@/components/AddNewExpense";
 import Loading from "@/app/loading";
 import ComponentFrameCenter from "@/components/layouts/ComponentFrameCenter";
 import BudgetCard from "@/components/BudgetCard";
-import {useCategories} from "@/lib/firebase";
-import {Category} from "@/lib/Interfaces";
-import {User} from "firebase/auth";
-import {icons} from "@/lib/icons";
+import {getCategoriesNew, getCurrentSummary} from "@/lib/firebase";
+import {MonthSummaryClass} from "@/lib/Interfaces";
+import LoadingAtAGlance from "@/components/layouts/LoadingAtAGlance";
+// import {useCategories} from "@/lib/firebase";
+// import {Category} from "@/lib/Interfaces";
+// import {User} from "firebase/auth";
+// import {icons} from "@/lib/icons";
 
 const PRIMARY_COL_HEIGHT = rem(400);
 
 export default function Home() {
-    const theme = useMantineTheme();
-    const SECONDARY_COL_HEIGHT = `calc(${PRIMARY_COL_HEIGHT} / 2 - ${theme.spacing.md} / 2)`;
+    // const theme = useMantineTheme();
+    // const SECONDARY_COL_HEIGHT = `calc(${PRIMARY_COL_HEIGHT} / 2 - ${theme.spacing.md} / 2)`;
 
     const {user, loading} = useAuth();
+    const [userData, setUserData] = useState<MonthSummaryClass>();
+    const [userCategories, setUserCategories] = useState<{ [key: string]: string } | undefined>();
+
+    useEffect(() => {
+        async function fetchData() {
+            if (user) {
+                const summaryData: MonthSummaryClass = new MonthSummaryClass(await getCurrentSummary(user));
+                const categories: { [key: string]: string } = await getCategoriesNew(user);
+                setUserData(summaryData);
+                setUserCategories(categories);
+                // TODO fuse this data into new Category interface? then pass to component?
+            }
+        }
+
+        // noinspection JSIgnoredPromiseFromCall
+        fetchData();
+    }, [user])
+
     if (loading) {
         return <Loading/>; // Or return a loading spinner
     }
@@ -42,7 +63,7 @@ export default function Home() {
                 one={<CustomButtons/>}
                 two={<Actions/>}
                 three={<AtAGlance
-                    user={user}
+                    userData={userData}
                 />}
             />
         </>
@@ -68,7 +89,7 @@ const CustomButtons = () => {
         onClick: () => void
     }
 
-    const [buttons, setButtons] = useState([]);
+    // const [buttons, setButtons] = useState([]);
     const [opened, {open, close}] = useDisclosure(false);
 
     const sampleButtons: Button[] = [
@@ -220,13 +241,11 @@ const CustomButton = ({icon, label, color, onClick}: CustomButtonProps) => {
 }
 
 interface AtAGlanceProps {
-    user: User;
+    userData: MonthSummaryClass | undefined;
+    // TODO the categoryData should be of type CategorySummary where we can, on the backend, marry all the data together
 }
 
-const AtAGlance = ({user}: AtAGlanceProps) => {
-    const categories: Category[] = useCategories(user);
-
-
+const AtAGlance = ({userData}: AtAGlanceProps) => {
     return (
         <ComponentFrameCenter
             PRIMARY_COL_HEIGHT={"600px"}
@@ -235,25 +254,46 @@ const AtAGlance = ({user}: AtAGlanceProps) => {
             <div
                 className={"grid md:grid-cols-2 sm:grid-cols-1 gap-5"}
             >
-                {categories.map((category, index) => {
-                    const icon = icons.find(icon => icon.name === category.iconName);
-                    let name = category.iconName;
-                    if (!icon) {
-                        name = "dashboard";
-                    } else {
-                        name = icon.name;
-                    }
-                    return (
-                        <BudgetCard
-                            key={index}
-                            id={category.id}
-                            budgetName={category.category_name}
-                            budgetAmount={category.budget}
-                            spent={category.spent}
-                            iconName={category.iconName ? name : "dashboard"}
-                        />
-                    )
-                })}
+
+
+                {userData === undefined ?
+                    <LoadingAtAGlance/> :
+
+                    userData?.getTotals().map((category, idx) => {
+                        return (
+                            // <li key={idx}>category</li>
+                            <BudgetCard
+                                key={idx}
+                                id={idx.toString()}
+                                budgetName={category.category}
+                                budgetAmount={500} // fake budget
+                                spent={category.amount}
+                                iconName={"dashboard"}
+                            />
+                        )
+                    })
+
+                    // categories.map((category, index) => {
+                    // const icon = icons.find(icon => icon.name === category.iconName);
+                    // let name = category.iconName;
+                    // if (!icon) {
+                    //     name = "dashboard";
+                    // } else {
+                    //     name = icon.name;
+                    // }
+                    // return (
+                    //     <BudgetCard
+                    //         key={index}
+                    //         id={category.id}
+                    //         budgetName={category.category_name}
+                    //         budgetAmount={category.budget}
+                    //         spent={category.spent}
+                    //         iconName={category.iconName ? name : "dashboard"}
+                    //     />
+                    // )
+                    // })
+
+                }
             </div>
         </ComponentFrameCenter>
     )
