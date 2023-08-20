@@ -199,15 +199,20 @@ export async function sendExpenseToFirebaseNew(user: User, expense: ExpenseClass
             const categorySnap = await getDoc(categorySummary);
 
             // create new category doc if first expense in this category, otherwise update
+            // TODO split this into a helper function
             if (!categorySnap.exists()) {
-                // TODO: incorporate real budget and icons
+                const userRef = doc(db, 'Users_New', user.uid);
+                // get category icon from user
+                const userSnap = await getDoc(userRef);
+                const icon = userSnap.exists() ? userSnap.data().categories[expense.category] : "dashboard";
+
                 // TODO: use CategoryClass.toObject()
                 await setDoc(categorySummary, {
-                    category_name: expense.category, 
-                    month: expense.month, 
-                    year: expense.year, 
-                    spent: expense.amount, 
-                    budget: 500
+                    category_name: expense.category,
+                    month: expense.month,
+                    year: expense.year,
+                    spent: expense.amount,
+                    icon_name: icon
                  } );
             }
             else {

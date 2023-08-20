@@ -53,7 +53,7 @@ export interface Category {
     spent: number;
     budget: number;
     // expenses: string[];
-    iconName: string;
+    icon_name: string;
 }
 
 export class CategoryClass implements Category {
@@ -64,7 +64,7 @@ export class CategoryClass implements Category {
     spent = 0;
     budget = 0;
     // expenses: string[] = [];
-    iconName: string = "dashboard";
+    icon_name: string = "dashboard";
 
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -88,7 +88,7 @@ export class CategoryClass implements Category {
             spent: this.spent,
             id: this.id,
             // expenses: this.expenses,
-            icon: this.iconName
+            icon: this.icon_name
         }
     }
 }
@@ -245,7 +245,7 @@ export class MonthSummaryClass implements MonthSummary {
     //                 spent: category.spent,
     //                 budget: category.budget,
     //                 // expenses: string[];
-    //                 iconName: iconName
+    //                 icon_name: icon_name
     //             } as Category)
     //         });
     //     }

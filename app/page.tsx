@@ -255,7 +255,6 @@ const AtAGlance = ({userData}: AtAGlanceProps) => {
                 className={"grid md:grid-cols-2 sm:grid-cols-1 gap-5"}
             >
 
-
                 {userData === undefined ?
                     <LoadingAtAGlance/> :
                     // JSON.stringify(userData)
@@ -267,7 +266,7 @@ const AtAGlance = ({userData}: AtAGlanceProps) => {
                                 budgetName={category.category_name}
                                 budgetAmount={category.budget}
                                 spent={category.spent}
-                                iconName={"dashboard"}
+                                iconName={category.icon_name}
                             />
                         )
                     })
