@@ -10,6 +10,7 @@ import {
     getDocs,
     getFirestore,
     increment,
+    limit,
     onSnapshot,
     query,
     setDoc,
@@ -132,13 +133,13 @@ export async function saveUserToDatabaseNew(user: User) {
 
     // create budgets for each category
     const default_budgets: BudgetClass[] = [
-        new BudgetClass("Food", 0),
-        new BudgetClass("Groceries", 0),
-        new BudgetClass("Activities", 0),
-        new BudgetClass("Housing", 0),
-        new BudgetClass("Transportation", 0),
-        new BudgetClass("Medical & Healthcare", 0),
-        new BudgetClass("Personal Spending", 0)
+        new BudgetClass("Food", 500),
+        new BudgetClass("Groceries", 500),
+        new BudgetClass("Activities", 300),
+        new BudgetClass("Housing", 2000),
+        new BudgetClass("Transportation", 200),
+        new BudgetClass("Medical & Healthcare", 200),
+        new BudgetClass("Personal Spending", 300)
     ];
     // create and write a document with the generated ID
     for (const budgetClass of default_budgets) {
@@ -202,6 +203,16 @@ export async function sendExpenseToFirebaseNew(user: User, expense: ExpenseClass
             // TODO split this into a helper function
             if (!categorySnap.exists()) {
                 const userRef = doc(db, 'Users_New', user.uid);
+                // pull budget from matching budget doc
+                const budgetQuery = query(
+                    collection(userRef, "Budgets"), 
+                    where("category_name", "==", expense.category),
+                    limit(1) 
+                );  // only one budget for now - TODO check for weekly/monthly
+
+                const querySnap = await getDocs(budgetQuery);
+                const budgetAmt = querySnap.docs[0].data().amount;
+
                 // get category icon from user
                 const userSnap = await getDoc(userRef);
                 const icon = userSnap.exists() ? userSnap.data().categories[expense.category] : "dashboard";
@@ -212,6 +223,7 @@ export async function sendExpenseToFirebaseNew(user: User, expense: ExpenseClass
                     month: expense.month,
                     year: expense.year,
                     spent: expense.amount,
+                    budget: budgetAmt,
                     icon_name: icon
                  } );
             }
@@ -265,7 +277,6 @@ export async function getCurrentSummary(user: User | null): Promise<MonthSummary
             categoryTotals: categoryTotals,
         })
 
-        // return summaryDoc.data() as MonthSummary;
     } else {
         throw new Error("User not found")
     }
