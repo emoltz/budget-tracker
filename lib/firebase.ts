@@ -16,7 +16,16 @@ import {
     updateDoc,
     where
 } from 'firebase/firestore';
-import {Budget, BudgetClass, Category, CategoryClass, Expense, ExpenseClass, MonthSummary} from "./Interfaces";
+import {
+    Budget,
+    BudgetClass,
+    Category,
+    CategoryBudget,
+    CategoryClass,
+    Expense,
+    ExpenseClass,
+    MonthSummary
+} from "./Interfaces";
 import {useEffect, useState} from "react";
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -241,6 +250,48 @@ export async function getCategoriesNew(user: User | null): Promise<{ [key: strin
         throw new Error("User not found")
     }
 
+}
+
+function consolidateBudgetAndCategory(category: string, icon: string, budgetAmount: number, spent: number): CategoryBudget {
+    return {
+        category: category,
+        icon: icon,
+        budgetAmount: budgetAmount,
+        spent: spent
+    };
+}
+
+export async function getCategoryBudgets(user: User | null): Promise<CategoryBudget[]> {
+    if (user){
+        // first, get the user's categories
+        const categories = await getCategoriesNew(user);
+        // then, get the user's budgets
+        const db = getFirestore();
+        const budgetsCollectionRef = collection(db, usersDirectory, user.uid, "Budgets");
+        const budgetsSnapshot = await getDocs(budgetsCollectionRef);
+        const budgets: Budget[] = [];
+        budgetsSnapshot.forEach((doc) => {
+            budgets.push(doc.data() as Budget);
+        });
+
+        // get summary
+        const summary:MonthSummary = await getCurrentSummary(user);
+
+        // finally, consolidate the two into a list of CategoryBudgets
+        const categoryBudgets: CategoryBudget[] = [];
+        for (const budget of budgets){
+            const category = budget.category_name;
+            const icon = categories[category];
+            const budgetAmount = budget.amount;
+            const spent = summary.categoryTotals[category + "Total"]
+            categoryBudgets.push(consolidateBudgetAndCategory(category, icon, budgetAmount, spent));
+        }
+        return categoryBudgets;
+
+    }
+    else{
+        throw new Error("User not found");
+    }
 }
 
 export async function addCategory(user: User | null, category: string, icon: string) {

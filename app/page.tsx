@@ -267,7 +267,7 @@ const AtAGlance = ({userData}: AtAGlanceProps) => {
                                 id={idx.toString()}
                                 budgetName={category.category}
                                 budgetAmount={500} // fake budget
-                                spent={category.amount}
+                                spent={category.budgetAmount}
                                 iconName={"dashboard"}
                             />
                         )
