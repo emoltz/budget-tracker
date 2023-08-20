@@ -44,6 +44,7 @@ const firebaseConfig = {
 let app;
 let auth: Auth;
 let analytics;
+const usersDirectory: string = "Users"
 
 if (typeof window !== 'undefined') {
     app = initializeApp(firebaseConfig);
@@ -68,10 +69,10 @@ export {app, auth, analytics};
 // }
 
 // noinspection JSCommentMatchesSignature
-export async function saveUserToDatabase(user: User) {
+export async function saveUserToDatabase_depricated(user: User) {
     const db = getFirestore();
     const {uid, email, displayName, photoURL} = user;
-    const ref = doc(db, 'Users_New', uid);
+    const ref = doc(db, usersDirectory, uid);
     const data = {
         uid: uid,
         email: email,
@@ -101,7 +102,7 @@ export async function saveUserToDatabase(user: User) {
 export async function saveUserToDatabaseNew(user: User) {
     const db = getFirestore();
     const {uid, email, displayName, photoURL} = user;
-    const ref = doc(db, 'Users_New', uid);
+    const ref = doc(db, usersDirectory, uid);
     // option to ask for user-desired categories during onboarding
     const default_categories = {
         "Food": "dashboard",
@@ -123,7 +124,7 @@ export async function saveUserToDatabaseNew(user: User) {
     await setDoc(ref, data);
 
     // create collection for the current month
-    const monthRef = collection(db, 'Users_New', uid, getCurrentMonthString());
+    const monthRef = collection(db, usersDirectory, uid, getCurrentMonthString());
 
     // create summary document for current month
     // this will need to happen for each new month >> write into addExpense (if currMonth doc doesn't exist, create it)
@@ -131,7 +132,7 @@ export async function saveUserToDatabaseNew(user: User) {
 
     // TODO: connect to budget
 
-    const budgetsCollectionRef = collection(db, 'Users_New', uid, "Budgets");
+    const budgetsCollectionRef = collection(db, usersDirectory, uid, "Budgets");
 
 
     // create budgets for each category
@@ -174,7 +175,7 @@ export async function sendExpenseToFirebaseNew(user: User, expense: ExpenseClass
         try {
             // get reference to current month
             const monthCollection = getCurrentMonthString();
-            const monthRef = collection(doc(collection(db, 'Users_New'), user.uid), monthCollection);
+            const monthRef = collection(doc(collection(db, usersDirectory), user.uid), monthCollection);
 
             // create and write a document with the generated ID
             const docRef = doc(monthRef, expense.id);
@@ -209,13 +210,13 @@ export async function getCurrentSummary(user: User | null): Promise<MonthSummary
         const db = getFirestore();
         const monthCollection = getCurrentMonthString();
 
-        const monthRef = collection(doc(collection(db, 'Users_New'), user.uid), monthCollection);
+        const monthRef = collection(doc(collection(db, usersDirectory), user.uid), monthCollection);
 
         const summaryDoc = await getDoc(doc(monthRef, "summary"));
 
         if (!summaryDoc.exists()) {
             console.log("Month summary does not exist:", monthCollection);
-            throw new Error("Month summary does not exist");
+            // throw new Error("Month summary does not exist");
         }
         return summaryDoc.data() as MonthSummary;
     } else {
@@ -227,7 +228,7 @@ export async function getCategoriesNew(user: User | null): Promise<{ [key: strin
     if (user) {
         // get category dict from User document
         const db = getFirestore();
-        const userRef = doc(db, 'Users_New', user.uid);
+        const userRef = doc(db, usersDirectory, user.uid);
         const userSnap = await getDoc(userRef);
         if (!userSnap.exists()) {
             console.error('User document does not exist:', user.uid);
@@ -246,7 +247,7 @@ export async function addCategory(user: User | null, category: string, icon: str
     // TODO test this function
     if (user) {
         const db = getFirestore();
-        const userRef = doc(db, 'Users_New', user.uid);
+        const userRef = doc(db, usersDirectory, user.uid);
         const userSnap = await getDoc(userRef);
         if (!userSnap.exists()) {
             console.error('User document does not exist:', user.uid);
@@ -269,7 +270,7 @@ export async function deleteCategory(user: User | null, category: string) {
     // TODO test this function
     if (user) {
         const db = getFirestore();
-        const userRef = doc(db, 'Users_New', user.uid);
+        const userRef = doc(db, usersDirectory, user.uid);
         const userSnap = await getDoc(userRef);
         if (!userSnap.exists()) {
             console.error('User document does not exist:', user.uid);
@@ -292,7 +293,7 @@ export async function deleteCategory(user: User | null, category: string) {
 export async function getExpenses(user: User | null): Promise<Expense[]> {
     if (user) {
         const db = getFirestore();
-        const userRef = doc(db, 'Users_New', user.uid);
+        const userRef = doc(db, usersDirectory, user.uid);
 
         // Construct the path to the current month and year's document
         const monthYearRef = collection(userRef, getCurrentMonthString());
@@ -308,7 +309,6 @@ export async function getExpenses(user: User | null): Promise<Expense[]> {
         throw new Error("User not found");
     }
 }
-
 
 
 export function useCategories(user: User | null): Category[] {
@@ -349,7 +349,7 @@ export async function getUserCategories(user: User | null): Promise<string[]> {
     if (user?.uid) {
         const db = getFirestore();
 
-        const userRef = doc(db, 'Users_New', user.uid);
+        const userRef = doc(db, usersDirectory, user.uid);
         const userSnap = await getDoc(userRef);
 
         if (userSnap.exists()) {
@@ -417,7 +417,7 @@ async function saveExpenseToCategory(user: User, expense: ExpenseClass) {
 }
 
 // noinspection JSUnusedGlobalSymbols
-export async function sendExpenseToFirebase(user: User, expense: ExpenseClass) {
+export async function sendExpenseToFirebase_depricated(user: User, expense: ExpenseClass) {
     // this function sends an expense to firebase
     // this function is not reactive. It is used to send a single expense to firebase
     if (user?.uid) {
