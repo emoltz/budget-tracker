@@ -128,10 +128,18 @@ export async function saveUserToDatabaseNew(user: User) {
     const monthRef = collection(db, usersDirectory, uid, getCurrentMonthString());
 
     // create summary document for current month
+    // categoryTotals is now a collection - category docs will be created on addExpense
     const summaryRef = doc(monthRef, "summary");
+    const initialSummary = {
+        month: new Date().getMonth() + 1, // getMonth returns month index starting from 0,
+        year: new Date().getFullYear(),
+        monthTotal: 0,
+    }
+
+    await setDoc(summaryRef, initialSummary);
+
 
     const budgetsCollectionRef = collection(db, usersDirectory, uid, "Budgets");
-
 
     // create budgets for each category
     const default_budgets: BudgetClass[] = [
@@ -151,15 +159,6 @@ export async function saveUserToDatabaseNew(user: User) {
         await setDoc(budgetDocRef, budgetObject); // Use the budget_id as the document ID
     }
 
-    // create summary document for current month
-    // categoryTotals is now a collection - category docs will be created on addExpense
-    const initialSummary = {
-        month: new Date().getMonth() + 1, // getMonth returns month index starting from 0,
-        year: new Date().getFullYear(),
-        monthTotal: 0,
-    }
-
-    await setDoc(summaryRef, initialSummary);
 }
 
 export async function sendExpenseToFirebaseNew(user: User, expense: ExpenseClass) {
@@ -251,22 +250,40 @@ export async function getCurrentSummary(user: User | null): Promise<MonthSummary
         const db = getFirestore();
         const monthCollection = getCurrentMonthString();
 
-        const monthRef = collection(db, 'Users_New', user.uid, monthCollection);
+        const monthRef = collection(db, usersDirectory, user.uid, monthCollection);
 
-        const summaryDoc = await getDoc(doc(monthRef, "summary"));
+        const summaryDoc = doc(monthRef, "summary");
+        const summarySnap = await getDoc(summaryDoc);
 
-        if (!summaryDoc.exists()) {
-            console.log("Month summary does not exist:", monthCollection);
-            throw new Error("Month summary does not exist");
+        if (!summarySnap.exists()) {
+            console.log("Month summary does not exist: ", monthCollection, "\nCreating new summary.");
+            // throw new Error("Month summary does not exist");
+            
+            // create a summary doc for the month using initial values
+            // TODO: make this a helper function
+            const currentDate = new Date();
+            const currentYear = currentDate.getFullYear();
+            const currentMonth = currentDate.getMonth() + 1;
+
+            const initialSummary = new MonthSummaryClass({
+                month: currentMonth,
+                year: currentYear,
+                monthTotal: 0,
+                categoryTotals: [],
+            })
+
+            await setDoc(doc(monthRef, "summary"), initialSummary);
+
+            return initialSummary;
         }
         
-        const monthData = summaryDoc.data();
+        const monthData = summarySnap.data();
 
         // get reference to collection of category summaries
         const categoriesSnap = await getDocs(collection(monthRef, "summary", "categoryTotals"))
-        const categoryTotals : Category[] = [];
-
+        
         // get individual category summaries as Categories
+        const categoryTotals : Category[] = [];
         categoriesSnap.forEach((doc) => {
             categoryTotals.push(doc.data() as Category)
         })
