@@ -1,5 +1,6 @@
 "use client";
 import Link from 'next/link';
+import React from "react";
 
 interface Props {
   name: string;
@@ -7,10 +8,10 @@ interface Props {
   href: string;
   isActive?: boolean;
   collapsed: boolean;
-  children: React.ReactNode;
+  // children: React.ReactNode;
 }
 
-export default function NavItem({name, Icon, href, isActive, collapsed, children}:Props) {
+export default function NavItem({name, Icon, href, isActive, collapsed}:Props) {
   return (
       <Link
         href={href}
@@ -21,7 +22,7 @@ export default function NavItem({name, Icon, href, isActive, collapsed, children
           color={"gray"}
         />
         {!collapsed && <span className="text-sm grow">{name}</span>}
-        {children}
+        {/*{children}*/}
       </Link>
   )
 }

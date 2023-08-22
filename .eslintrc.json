@@ -1,3 +1,22 @@
 {
-  "extends": "next/core-web-vitals"
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "extends": [
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "rules": {
+    "@typescript-eslint/ban-ts-comment": [
+      "error",
+      {
+        "ts-ignore": false
+      }
+    ],
+    "@typescript-eslint/no-unused-vars": "warn",
+    "prefer-const": "warn",
+    "@typescript-eslint/no-explicit-any": "warn"
+
+    // You can also use "warn" instead of "error" if you prefer a warning
+  }
 }

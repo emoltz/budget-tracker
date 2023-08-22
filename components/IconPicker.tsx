@@ -1,9 +1,9 @@
-"use client"
 import React from "react";
 import {ActionIcon} from "@mantine/core";
 import {icons} from "@/lib/icons";
 import {changeCategoryIcon} from "@/lib/firebase";
 import {useAuth} from "@/app/context";
+import Loading from "@/app/login/loading";
 
 
 interface IconPickerProps {
@@ -11,14 +11,19 @@ interface IconPickerProps {
     categoryID: string;
 }
 
+// @ts-ignore
 export default function IconPicker({onSelect, categoryID}: IconPickerProps): React.JSX.Element {
     const {user, loading} = useAuth();
     const onIconChange = async (categoryID: string, iconName: string) => {
         if (user) {
-            await changeCategoryIcon(user!, iconName, categoryID).then(() => {
+            await changeCategoryIcon(user, iconName, categoryID).then(() => {
                 // console.log("Icon changed")
             });
         }
+    }
+
+    if (loading){
+        return <Loading/>
     }
 
     return (
@@ -31,7 +36,7 @@ export default function IconPicker({onSelect, categoryID}: IconPickerProps): Rea
                         onClick={() => {
                             onSelect(icon.name)
                             onIconChange(categoryID, icon.name).then(r => {
-                                // console.log(r)
+                                console.log("Icon changed: ", r)
                             });
                         }}
                     >
