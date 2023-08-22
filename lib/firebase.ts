@@ -262,7 +262,7 @@ function consolidateBudgetAndCategory(category: string, icon: string, budgetAmou
 }
 
 export async function getCategoryBudgets(user: User | null): Promise<CategoryBudget[]> {
-    if (user){
+    if (user) {
         // first, get the user's categories
         const categories = await getCategoriesNew(user);
         // then, get the user's budgets
@@ -275,24 +275,81 @@ export async function getCategoryBudgets(user: User | null): Promise<CategoryBud
         });
 
         // get summary
-        const summary:MonthSummary = await getCurrentSummary(user);
+        const summary: MonthSummary = await getCurrentSummary(user);
 
         // finally, consolidate the two into a list of CategoryBudgets
         const categoryBudgets: CategoryBudget[] = [];
-        for (const budget of budgets){
+        for (const budget of budgets) {
             const category = budget.category_name;
             const icon = categories[category];
             const budgetAmount = budget.amount;
             const spent = summary.categoryTotals[category + "Total"]
             categoryBudgets.push(consolidateBudgetAndCategory(category, icon, budgetAmount, spent));
         }
+
+        // console.log(categoryBudgets)
         return categoryBudgets;
 
-    }
-    else{
+    } else {
         throw new Error("User not found");
     }
 }
+
+export const useCategoryBudgets_currentMonth = (user: User | null): CategoryBudget[] | null => {
+    const [categoryBudgets, setCategoryBudgets] = useState<CategoryBudget[] | null>(null);
+
+    useEffect(() => {
+        if (user) {
+            const db = getFirestore();
+            const budgetsCollectionRef = collection(db, usersDirectory, user.uid, "Budgets");
+
+            const monthCollection = getCurrentMonthString();
+            const monthRef = collection(doc(collection(db, usersDirectory), user.uid), monthCollection);
+            const summaryDocRef = doc(monthRef, "summary");
+
+
+            const fetchAndUpdate = async () => {
+                // console.log('Fetching and updating data...');
+
+                const budgetsSnapshot = await getDocs(budgetsCollectionRef);
+                const summaryDoc = await getDoc(doc(monthRef, "summary"));
+                const summary: MonthSummary = summaryDoc.data() as MonthSummary;
+                console.log("Summary: ", summary)
+
+                const budgets: Budget[] = [];
+                budgetsSnapshot.forEach((doc) => {
+                    budgets.push(doc.data() as Budget);
+                });
+
+                const categories = await getCategoriesNew(user);
+
+                const updatedCategoryBudgets: CategoryBudget[] = [];
+                for (const budget of budgets) {
+                    const category = budget.category_name;
+                    const icon = categories[category];
+                    const budgetAmount = budget.amount;
+                    const spent = summary.categoryTotals[category + "Total"];
+                    updatedCategoryBudgets.push(consolidateBudgetAndCategory(category, icon, budgetAmount, spent));
+                }
+
+                setCategoryBudgets(updatedCategoryBudgets);
+            };
+
+            const unsubscribeBudgets = onSnapshot(budgetsCollectionRef, fetchAndUpdate);
+            const unsubscribeSummary = onSnapshot(summaryDocRef, fetchAndUpdate);
+
+
+            // Unsubscribe from changes when the effect is cleaned up
+            return () => {
+                unsubscribeBudgets();
+                unsubscribeSummary();
+            };
+        }
+    }, [user]);
+
+    return categoryBudgets;
+};
+
 
 export async function addCategory(user: User | null, category: string, icon: string) {
     // TODO test this function
