@@ -1,6 +1,5 @@
 import {useAuth} from "@/app/context";
-import {Category} from "@/lib/Interfaces";
-import {getUserCategories} from "@/lib/firebase";
+import {getCategories} from "@/lib/firebase";
 import {Select} from "@mantine/core";
 import React,  { useState, useEffect } from "react";
 
@@ -17,9 +16,11 @@ export function CategoryPicker({ onCategoryChange }: {onCategoryChange: (categor
 
     // not sure if there's a better way to get output from the async function
     useEffect(() => {
-        getUserCategories(user)
-            .then((res) => setData(res))
+        if (user) {
+            getCategories(user)
+            .then((res) => setData(Object.keys(res)))
             .catch(console.error);
+        }
     }, [user])
    
     return (

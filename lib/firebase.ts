@@ -316,7 +316,6 @@ export async function getCategories(user: User | null): Promise<{ [key: string]:
     } else {
         throw new Error("User not found")
     }
-
 }
 
 export async function addCategory(user: User | null, category: string, icon: string) {
@@ -418,22 +417,6 @@ export function useCategories(user: User | null): Category[] {
     }, [user]);
 
     return categories;
-}
-
-export async function getUserCategories(user: User | null): Promise<string[]> {
-    // get category names only (stored as part of User document)
-    if (user?.uid) {
-        const db = getFirestore();
-
-        const userRef = doc(db, usersDirectory, user.uid);
-        const userSnap = await getDoc(userRef);
-
-        if (userSnap.exists()) {
-            return Object.keys(userSnap.data()["categories"]);
-        }
-    }
-
-    return ["Error returning categories"];
 }
 
 // noinspection JSUnusedGlobalSymbols
