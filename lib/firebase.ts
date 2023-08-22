@@ -295,7 +295,13 @@ export async function getCategoryBudgets(user: User | null): Promise<CategoryBud
     }
 }
 
-export const useCategoryBudgets_currentMonth = (user: User | null): CategoryBudget[] | null => {
+export const useCategoryBudgets_currentMonth = (user: User | null): CategoryBudget[] => {
+    /**
+     * This function is a React hook that returns the current month's
+     * categorybudgets for a specific user from the Firestore database.
+     * This differes from getCategories insofar as it is reactive: i.e. it does not get the data once but listens for changes in the data.
+     * This function is expected to be called from a React component.
+     */
     const [categoryBudgets, setCategoryBudgets] = useState<CategoryBudget[] | null>(null);
 
     useEffect(() => {
@@ -346,7 +352,10 @@ export const useCategoryBudgets_currentMonth = (user: User | null): CategoryBudg
             };
         }
     }, [user]);
-
+    if (categoryBudgets === null) {
+        console.warn("Category budgets is null. See Firebase.tsx file")
+        return [];
+    }
     return categoryBudgets;
 };
 
