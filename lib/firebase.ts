@@ -100,7 +100,7 @@ export async function saveUserToDatabase_depricated(user: User) {
     }
 }
 
-export async function saveUserToDatabaseNew(user: User) {
+export async function saveUserToDatabase(user: User) {
     const db = getFirestore();
     const {uid, email, displayName, photoURL} = user;
     const ref = doc(db, usersDirectory, uid);
@@ -161,7 +161,7 @@ export async function saveUserToDatabaseNew(user: User) {
 
 }
 
-export async function sendExpenseToFirebaseNew(user: User, expense: ExpenseClass) {
+export async function sendExpenseToFirebase(user: User, expense: ExpenseClass) {
     // this function sends an expense to firebase
     // this function is not reactive. It is used to send a single expense to firebase
     if (user?.uid) {
@@ -300,7 +300,7 @@ export async function getCurrentSummary(user: User | null): Promise<MonthSummary
     }
 }
 
-export async function getCategoriesNew(user: User | null): Promise<{ [key: string]: string }> {
+export async function getCategories(user: User | null): Promise<{ [key: string]: string }> {
     if (user) {
         // get category dict from User document
         const db = getFirestore();

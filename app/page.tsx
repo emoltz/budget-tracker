@@ -15,7 +15,7 @@ import AddNewExpense from "@/components/AddNewExpense";
 import Loading from "@/app/loading";
 import ComponentFrameCenter from "@/components/layouts/ComponentFrameCenter";
 import BudgetCard from "@/components/BudgetCard";
-import {getCategoriesNew, getCurrentSummary} from "@/lib/firebase";
+import {getCategories, getCurrentSummary} from "@/lib/firebase";
 import {MonthSummaryClass} from "@/lib/Interfaces";
 import LoadingAtAGlance from "@/components/layouts/LoadingAtAGlance";
 // import {useCategories} from "@/lib/firebase";
@@ -37,7 +37,7 @@ export default function Home() {
         async function fetchData() {
             if (user) {
                 const summaryData: MonthSummaryClass = await getCurrentSummary(user);
-                const categories: { [key: string]: string } = await getCategoriesNew(user);
+                const categories: { [key: string]: string } = await getCategories(user);
                 setUserData(summaryData);
                 setUserCategories(categories);
                 // TODO fuse this data into new Category interface? then pass to component?
