@@ -9,7 +9,7 @@ import {
     signInWithPopup
 } from "firebase/auth";
 // @ts-ignore
-import {auth, saveUserToDatabase_depricated} from "@/lib/firebase";
+import {auth, saveUserToDatabase_deprecated} from "@/lib/firebase";
 import GoogleButton from "react-google-button";
 import {Spacer} from "@nextui-org/react";
 
@@ -22,7 +22,7 @@ export default function LoginButton(): ReactElement {
             const user = result.user;
             const isNewUser = result.additionalUserInfo?.isNewUser;
             if (user && isNewUser) {
-                await saveUserToDatabase_depricated(user);
+                await saveUserToDatabase_deprecated(user);
             }
         }
     }
@@ -45,7 +45,7 @@ export default function LoginButton(): ReactElement {
                     console.log("registered!");
                 });
                 // @ts-ignore
-                await saveUserToDatabase_depricated(auth.currentUser).then(() => {
+                await saveUserToDatabase_deprecated(auth.currentUser).then(() => {
                     console.log("User successfully sent to database!");
                 });
 

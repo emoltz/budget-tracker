@@ -16,7 +16,16 @@ import {
     updateDoc,
     where
 } from 'firebase/firestore';
-import {Budget, BudgetClass, Category, CategoryClass, Expense, ExpenseClass, MonthSummary} from "./Interfaces";
+import {
+    Budget,
+    BudgetClass,
+    Category,
+    CategoryBudget,
+    CategoryClass,
+    Expense,
+    ExpenseClass,
+    MonthSummary
+} from "./Interfaces";
 import {useEffect, useState} from "react";
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -69,7 +78,7 @@ export {app, auth, analytics};
 // }
 
 // noinspection JSCommentMatchesSignature
-export async function saveUserToDatabase_depricated(user: User) {
+export async function saveUserToDatabase_deprecated(user: User) {
     const db = getFirestore();
     const {uid, email, displayName, photoURL} = user;
     const ref = doc(db, usersDirectory, uid);
@@ -242,6 +251,114 @@ export async function getCategoriesNew(user: User | null): Promise<{ [key: strin
     }
 
 }
+
+function consolidateBudgetAndCategory(category: string, icon: string, budgetAmount: number, spent: number): CategoryBudget {
+    return {
+        category: category,
+        icon: icon,
+        budgetAmount: budgetAmount,
+        spent: spent
+    };
+}
+
+export async function getCategoryBudgets(user: User | null): Promise<CategoryBudget[]> {
+    if (user) {
+        // first, get the user's categories
+        const categories = await getCategoriesNew(user);
+        // then, get the user's budgets
+        const db = getFirestore();
+        const budgetsCollectionRef = collection(db, usersDirectory, user.uid, "Budgets");
+        const budgetsSnapshot = await getDocs(budgetsCollectionRef);
+        const budgets: Budget[] = [];
+        budgetsSnapshot.forEach((doc) => {
+            budgets.push(doc.data() as Budget);
+        });
+
+        // get summary
+        const summary: MonthSummary = await getCurrentSummary(user);
+
+        // finally, consolidate the two into a list of CategoryBudgets
+        const categoryBudgets: CategoryBudget[] = [];
+        for (const budget of budgets) {
+            const category = budget.category_name;
+            const icon = categories[category];
+            const budgetAmount = budget.amount;
+            const spent = summary.categoryTotals[category + "Total"]
+            categoryBudgets.push(consolidateBudgetAndCategory(category, icon, budgetAmount, spent));
+        }
+
+        // console.log(categoryBudgets)
+        return categoryBudgets;
+
+    } else {
+        throw new Error("User not found");
+    }
+}
+
+export const useCategoryBudgets_currentMonth = (user: User | null): CategoryBudget[] => {
+    /**
+     * This function is a React hook that returns the current month's
+     * categorybudgets for a specific user from the Firestore database.
+     * This differes from getCategories insofar as it is reactive: i.e. it does not get the data once but listens for changes in the data.
+     * This function is expected to be called from a React component.
+     */
+    const [categoryBudgets, setCategoryBudgets] = useState<CategoryBudget[] | null>(null);
+
+    useEffect(() => {
+        if (user) {
+            const db = getFirestore();
+            const budgetsCollectionRef = collection(db, usersDirectory, user.uid, "Budgets");
+
+            const monthCollection = getCurrentMonthString();
+            const monthRef = collection(doc(collection(db, usersDirectory), user.uid), monthCollection);
+            const summaryDocRef = doc(monthRef, "summary");
+
+
+            const fetchAndUpdate = async () => {
+                // console.log('Fetching and updating data...');
+
+                const budgetsSnapshot = await getDocs(budgetsCollectionRef);
+                const summaryDoc = await getDoc(doc(monthRef, "summary"));
+                const summary: MonthSummary = summaryDoc.data() as MonthSummary;
+                console.log("Summary: ", summary)
+
+                const budgets: Budget[] = [];
+                budgetsSnapshot.forEach((doc) => {
+                    budgets.push(doc.data() as Budget);
+                });
+
+                const categories = await getCategoriesNew(user);
+
+                const updatedCategoryBudgets: CategoryBudget[] = [];
+                for (const budget of budgets) {
+                    const category = budget.category_name;
+                    const icon = categories[category];
+                    const budgetAmount = budget.amount;
+                    const spent = summary.categoryTotals[category + "Total"];
+                    updatedCategoryBudgets.push(consolidateBudgetAndCategory(category, icon, budgetAmount, spent));
+                }
+
+                setCategoryBudgets(updatedCategoryBudgets);
+            };
+
+            const unsubscribeBudgets = onSnapshot(budgetsCollectionRef, fetchAndUpdate);
+            const unsubscribeSummary = onSnapshot(summaryDocRef, fetchAndUpdate);
+
+
+            // Unsubscribe from changes when the effect is cleaned up
+            return () => {
+                unsubscribeBudgets();
+                unsubscribeSummary();
+            };
+        }
+    }, [user]);
+    if (categoryBudgets === null) {
+        console.warn("Category budgets is null. See Firebase.tsx file")
+        return [];
+    }
+    return categoryBudgets;
+};
+
 
 export async function addCategory(user: User | null, category: string, icon: string) {
     // TODO test this function

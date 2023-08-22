@@ -3,6 +3,8 @@ import {Badge, createStyles, Group, Paper, Popover, Progress, rem, Text, ThemeIc
 import React, {useState} from "react";
 import IconPicker from "@/components/IconPicker";
 import {icons} from "@/lib/icons";
+import Link from "next/link";
+
 
 const ICON_SIZE = rem(60);
 
@@ -39,8 +41,8 @@ export default function BudgetCard({budgetName, budgetAmount, spent, id, iconNam
     const {classes} = useStyles();
     const icon = icons.find(icon => icon.name === iconName);
     const [selectedIcon, setSelectedIcon] = useState(icon)
-    let moneyLeft: number = budgetAmount - spent;
-    let percentProgress = (spent / budgetAmount) * 100;
+    const moneyLeft: number = budgetAmount - spent;
+    const percentProgress = (spent / budgetAmount) * 100;
 
     const handleIconSelect = (iconId: string) => {
         const selectedIcon = icons.find(icon => icon.name === iconId);
@@ -55,6 +57,7 @@ export default function BudgetCard({budgetName, budgetAmount, spent, id, iconNam
                      position={"right-start"}
                      withArrow
                      shadow={"lg"}>
+
                 <Popover.Target>
 
                     <ThemeIcon className={classes.icon}
@@ -82,20 +85,30 @@ export default function BudgetCard({budgetName, budgetAmount, spent, id, iconNam
                     Progress
                 </Text>
                 <Text fz="sm" color="dimmed" data-test={"budget-progress-percent"}>
-                    {percentProgress.toFixed(0)}%
+                    {
+                        percentProgress.toFixed(0) === "NaN" ? "0" : percentProgress.toFixed(0)
+                    }%
                 </Text>
             </Group>
 
             <Progress value={percentProgress} mt={5} data-test={"budget-progress-bar"}/>
 
             <Group position="apart" mt="md">
+                <Link href={"#"}>
+                    {/*TODO: make this go to the page where we can edit budget info*/}
+                    <Badge className={"hover:shadow"}>
+                        edit
+                    </Badge>
+                </Link>
                 <span/>
                 <Badge
                     color={moneyLeft > 0 ? "green" : "red"}
                     size="sm"
                     data-test={"money-left"}
                 >
-                    ${moneyLeft.toFixed(2)} left
+                    ${
+                    moneyLeft.toFixed(2) === "NaN" ? "0.00" : moneyLeft.toFixed(2)
+                } left
                 </Badge>
             </Group>
         </Paper>

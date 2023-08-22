@@ -71,7 +71,6 @@ export interface Expense {
 }
 
 export interface MonthSummary {
-    // TODO modify this to include the category's icon
     month: number;
     year: number;
     monthTotal: number;
@@ -199,11 +198,11 @@ export class ExpenseClass implements Expense {
 
 // should have budget and icons
 // similar to Category, this is just here before the above gets implemented
-interface CategorySummary {
+export interface CategoryBudget {
     category : string,
-    amount: number,
-    icon?: string
-
+    budgetAmount: number,
+    spent: number,
+    icon: string,
 }
 
 export class MonthSummaryClass implements MonthSummary {
@@ -240,14 +239,12 @@ export class MonthSummaryClass implements MonthSummary {
         }
     }
 
-    // return totals as list of dicts
-    // TODO: get icons in here somehow
     getTotals() {
-        const totals: CategorySummary[] = [];
+        const totals: CategoryBudget[] = [];
 
         if (this.categoryTotals !== undefined) {
             Object.entries(this.categoryTotals).forEach(([k, v]) => {
-                totals.push({category : k, amount : v} as CategorySummary)
+                totals.push({category : k, budgetAmount : v} as CategoryBudget)
             });
         }
         return totals;
