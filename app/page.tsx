@@ -262,7 +262,7 @@ const AtAGlance = ({userData}: AtAGlanceProps) => {
                         return (
                             <BudgetCard
                                 key={idx}
-                                id={idx.toString()}
+                                id={category.category_name}
                                 budgetName={category.category_name}
                                 budgetAmount={category.budget}
                                 spent={category.spent}

@@ -515,17 +515,29 @@ export async function sendExpenseToFirebase_depricated(user: User, expense: Expe
     }
 }
 
-export async function changeCategoryIcon(user: User, iconName: string, categoryID: string): Promise<void> {
+export async function changeCategoryIcon(user: User, iconName: string, category: string): Promise<void> {
+    // if (user?.uid) {
+    //     const db: Firestore = getFirestore();
+    //     try {
+    //         const categoryRef = doc(db, 'Users', user.uid, 'Categories', categoryID);
+    //         await updateDoc(categoryRef, {iconName: iconName});
+    //     } catch (error) {
+    //         console.log("Error changing category icon in firebase.tsx: ", error)
+    //     }
+    // }
+
+    // version for new db structure
     if (user?.uid) {
         const db: Firestore = getFirestore();
         try {
-            const categoryRef = doc(db, 'Users', user.uid, 'Categories', categoryID);
-            await updateDoc(categoryRef, {iconName: iconName});
+            const userRef = doc(db, usersDirectory, user.uid);
+            await updateDoc(userRef, {
+                ["categories." + category]: iconName
+            });
         } catch (error) {
             console.log("Error changing category icon in firebase.tsx: ", error)
         }
     }
-
 }
 
 function getCurrentMonthString(): string {
