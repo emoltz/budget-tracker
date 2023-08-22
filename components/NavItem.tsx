@@ -14,7 +14,7 @@ export default function NavItem({name, Icon, href, isActive, collapsed, children
   return (
       <Link
         href={href}
-        className={`flex flex-row py-2 px-3 gap-x-3 items-center rounded-md ${isActive && 'bg-slate-300' }`}
+        className={`flex flex-row py-2 px-3 gap-x-3 hover:bg-slate-300 items-center rounded-md ${isActive && 'bg-sky-300' }`}
       >
         <Icon 
           stroke={1.5}
