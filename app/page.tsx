@@ -120,7 +120,7 @@ const CustomButtons = () => {
     return (
         <>
             <ComponentFrameCenter
-                PRIMARY_COL_HEIGHT={"300px"}
+                PRIMARY_COL_HEIGHT={PRIMARY_COL_HEIGHT}
                 title={"Custom Buttons"}
             >
                 <div
