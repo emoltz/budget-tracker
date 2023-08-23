@@ -33,9 +33,9 @@ import {useEffect, useState} from "react";
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 /*
     TODO:
-    [] handle monthly expenses
-    [] handle yearly expenses
-    [] firebase-admin for server-side authentication
+        [] handle monthly expenses
+        [] handle yearly expenses
+        [] firebase-admin for server-side authentication
  */
 
 const firebaseConfig = {
@@ -62,20 +62,6 @@ if (typeof window !== 'undefined') {
 }
 
 export {app, auth, analytics};
-
-
-// export function postToJSON(doc: DocumentSnapshot) {
-//     const data = doc.data();
-//     return {
-//         ...data,
-//         // firestore timestamp NOT serializable to JSON. Must convert to milliseconds
-//         created_date: data?.created_date.toMillis() || 0,
-//     };
-// }
-
-// function timestampToDate(timestamp: number) {
-//     return new Date(timestamp * 1000);
-// }
 
 // noinspection JSCommentMatchesSignature
 export async function saveUserToDatabase_deprecated(user: User) {
@@ -138,8 +124,6 @@ export async function saveUserToDatabaseNew(user: User) {
     // create summary document for current month
     // this will need to happen for each new month >> write into addExpense (if currMonth doc doesn't exist, create it)
     const summaryRef = doc(monthRef, "summary");
-
-    // TODO: connect to budget
 
     const budgetsCollectionRef = collection(db, usersDirectory, uid, "Budgets");
 
