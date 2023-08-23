@@ -260,13 +260,13 @@ const AtAGlance = ({categoryBudgets}: AtAGlanceProps) => {
                 className={"grid md:grid-cols-2 sm:grid-cols-1 gap-5"}
             >
 
-                {categoryBudgets ? categoryBudgets.map((category, idx) => {
+                {categoryBudgets ? categoryBudgets.map((category: CategoryBudget, idx: number) => {
                         return (
                             <BudgetCard
                                 key={idx}
                                 id={idx.toString()}
                                 budgetName={category.category}
-                                budgetAmount={category.budgetAmount} // fake budget
+                                budgetAmount={category.budgetAmount}
                                 spent={category.spent}
                                 iconName={category.icon}
                             />
@@ -274,46 +274,6 @@ const AtAGlance = ({categoryBudgets}: AtAGlanceProps) => {
                     }) :
                     <LoadingAtAGlance/>
                 }
-
-
-                {/*{userData === undefined ?*/}
-                {/*    <LoadingAtAGlance/> :*/}
-
-                {/*    userData?.getTotals().map((category, idx) => {*/}
-                {/*        return (*/}
-                {/*            // <li key={idx}>category</li>*/}
-                {/*            <BudgetCard*/}
-                {/*                key={idx}*/}
-                {/*                id={idx.toString()}*/}
-                {/*                budgetName={category.category}*/}
-                {/*                budgetAmount={500} // fake budget*/}
-                {/*                spent={category.budgetAmount}*/}
-                {/*                iconName={"dashboard"}*/}
-                {/*            />*/}
-                {/*        )*/}
-                {/*    })*/}
-
-                {/*    // categories.map((category, index) => {*/}
-                {/*    // const icon = icons.find(icon => icon.name === category.iconName);*/}
-                {/*    // let name = category.iconName;*/}
-                {/*    // if (!icon) {*/}
-                {/*    //     name = "dashboard";*/}
-                {/*    // } else {*/}
-                {/*    //     name = icon.name;*/}
-                {/*    // }*/}
-                {/*    // return (*/}
-                {/*    //     <BudgetCard*/}
-                {/*    //         key={index}*/}
-                {/*    //         id={category.id}*/}
-                {/*    //         budgetName={category.category_name}*/}
-                {/*    //         budgetAmount={category.budget}*/}
-                {/*    //         spent={category.spent}*/}
-                {/*    //         iconName={category.iconName ? name : "dashboard"}*/}
-                {/*    //     />*/}
-                {/*    // )*/}
-                {/*    // })*/}
-
-                {/*}*/}
             </div>
         </ComponentFrameCenter>
     )

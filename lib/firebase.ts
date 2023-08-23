@@ -556,12 +556,20 @@ export async function sendExpenseToFirebase_depricated(user: User, expense: Expe
     }
 }
 
-export async function changeCategoryIcon(user: User, iconName: string, categoryID: string): Promise<void> {
+export async function changeCategoryIcon(user: User, iconName: string, categoryName: string): Promise<void> {
     if (user?.uid) {
         const db: Firestore = getFirestore();
         try {
-            const categoryRef = doc(db, 'Users', user.uid, 'Categories', categoryID);
-            await updateDoc(categoryRef, {iconName: iconName});
+            //    path is: Users -> user.uid -> categories
+            //     categories is a dictionary with key=category name, value=icon name
+            const userRef = doc(db, usersDirectory, user.uid);
+            const userSnap = await getDoc(userRef);
+            if (!userSnap.exists()) {
+                throw new Error('User document not found');
+            }
+            const userData = userSnap.data();
+            const newCategories = {...userData["categories"], [categoryName]: iconName};
+            await updateDoc(userRef, {categories: newCategories});
         } catch (error) {
             console.log("Error changing category icon in firebase.tsx: ", error)
         }

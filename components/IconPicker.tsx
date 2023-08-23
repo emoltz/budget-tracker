@@ -8,15 +8,15 @@ import Loading from "@/app/login/loading";
 
 interface IconPickerProps {
     onSelect: (iconName: string) => void;
-    categoryID: string;
+    categoryName: string;
 }
 
 // @ts-ignore
-export default function IconPicker({onSelect, categoryID}: IconPickerProps): React.JSX.Element {
+export default function IconPicker({onSelect, categoryName}: IconPickerProps): React.JSX.Element {
     const {user, loading} = useAuth();
-    const onIconChange = async (categoryID: string, iconName: string) => {
+    const onIconChange = async (categoryName: string, iconName: string) => {
         if (user) {
-            await changeCategoryIcon(user, iconName, categoryID).then(() => {
+            await changeCategoryIcon(user, iconName, categoryName).then(() => {
                 // console.log("Icon changed")
             });
         }
@@ -35,7 +35,7 @@ export default function IconPicker({onSelect, categoryID}: IconPickerProps): Rea
                         key={icon.name}
                         onClick={() => {
                             onSelect(icon.name)
-                            onIconChange(categoryID, icon.name).then(r => {
+                            onIconChange(categoryName, icon.name).then(r => {
                                 console.log("Icon changed: ", r)
                             });
                         }}

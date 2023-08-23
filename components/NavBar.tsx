@@ -36,10 +36,6 @@ export default function NavBar() {
     const {colorScheme} = useMantineColorScheme();
 
     useEffect(() => {
-        console.log(colorScheme);
-    }, [colorScheme]);
-
-    useEffect(() => {
         setCollapsed(window.innerWidth < 640)
     }, [])
 

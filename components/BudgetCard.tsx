@@ -69,7 +69,7 @@ export default function BudgetCard({budgetName, budgetAmount, spent, id, iconNam
                     </ThemeIcon>
                 </Popover.Target>
                 <Popover.Dropdown>
-                    <IconPicker onSelect={handleIconSelect} categoryID={id}/>
+                    <IconPicker onSelect={handleIconSelect} categoryName={budgetName}/>
                 </Popover.Dropdown>
             </Popover>
 
