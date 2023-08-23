@@ -577,6 +577,27 @@ export async function getExpenses_currentMonth(user: User | null) {
     }
 }
 
+export async function getExpenses(user: User | null, month: number, year: number){
+    if (user){
+        const monthString = createMonthYearString(month, year);
+        const db = getFirestore();
+        const userRef = doc(db, usersDirectory, user.uid);
+        const expensesRef = collection(userRef, monthString);
+        const expensesSnapshot = await getDocs(expensesRef);
+        const expenses: Expense[] = [];
+        expensesSnapshot.forEach((doc) => {
+            if (doc.id !== "summary"){
+                // this prevents `summary` from getting in here
+                expenses.push(doc.data() as Expense);
+            }
+        });
+        return expenses;
+    }
+    else {
+        throw new Error("User not found")
+    }
+}
+
 function getCurrentMonthString(): string {
     // helper function to return the name of the current month's collection
     const currentDate = new Date();
@@ -584,4 +605,9 @@ function getCurrentMonthString(): string {
     const currentMonth = currentDate.getMonth() + 1; // getMonth returns month index starting from 0
 
     return currentMonth.toString() + '_' + currentYear.toString();
+}
+
+function createMonthYearString(month: number, year: number): string{
+    return month.toString() + '_' + year.toString();
+
 }

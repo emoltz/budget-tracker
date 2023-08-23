@@ -12,7 +12,7 @@ import {
 
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table"
 import {Expense} from "@/lib/Interfaces";
-import {Button} from "@mantine/core";
+import {Button, useMantineTheme} from "@mantine/core";
 import {useState} from "react";
 
 /*
@@ -49,6 +49,8 @@ export function DataTable<TData, TValue>({
         },
     });
 
+    const {colorScheme} = useMantineTheme();
+
 
     return (
         <>
@@ -81,7 +83,7 @@ export function DataTable<TData, TValue>({
                                     data-state={row.getIsSelected() && "selected"}
                                 >
                                     {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
+                                        <TableCell key={cell.id} className={`${colorScheme == 'dark' ? "text-white" : ""}`}>
                                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                         </TableCell>
                                     ))}
