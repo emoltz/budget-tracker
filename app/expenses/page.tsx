@@ -13,7 +13,7 @@ import Loading from "@/app/loading";
 import {useMantineTheme} from "@mantine/core";
 
 
-export default function page() {
+export default function Page() {
 
     const dateData: DateData = {
         month: 8,
