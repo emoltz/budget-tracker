@@ -70,6 +70,10 @@ export const columns: ColumnDef<Expense>[] = [
     //     header: "Description",
     // },
     {
+        accessorKey: "date",
+        header: "Date",
+    },
+    {
         accessorKey: "actions",
         header: "Actions",
         id: "actions",

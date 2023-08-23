@@ -577,18 +577,35 @@ export async function getExpenses_currentMonth(user: User | null) {
     }
 }
 
-export async function getExpenses(user: User | null, month: number, year: number){
+export async function getExpenses(user: User | null, month?: number, year?: number): Promise<Expense[]>{
+
     if (user){
-        const monthString = createMonthYearString(month, year);
+        let monthString: string;
+        if (!month || !year){
+            monthString = getCurrentMonthString();
+        }
+        else{
+            monthString = createMonthYearString(month, year);
+        }
         const db = getFirestore();
         const userRef = doc(db, usersDirectory, user.uid);
         const expensesRef = collection(userRef, monthString);
         const expensesSnapshot = await getDocs(expensesRef);
         const expenses: Expense[] = [];
         expensesSnapshot.forEach((doc) => {
-            if (doc.id !== "summary"){
-                // this prevents `summary` from getting in here
-                expenses.push(doc.data() as Expense);
+
+            if (doc.id !== "summary"){ // this prevents `summary` from getting in here
+                // convert timestamp
+                const expenseData = doc.data() as Expense;
+                if (expenseData.date){
+                    // @ts-ignore
+                    const date = expenseData.date.toDate();
+                    console.log("Date: ", date);
+                    expenseData.date = date.toLocaleDateString();
+                }
+
+
+                expenses.push(expenseData);
             }
         });
         return expenses;
