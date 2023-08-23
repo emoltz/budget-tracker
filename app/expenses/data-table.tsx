@@ -30,6 +30,7 @@ interface DataTableProps<Expense, TValue> {
     data: Expense[]
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function DataTable<TData, TValue>({
                                              columns,
                                              data,

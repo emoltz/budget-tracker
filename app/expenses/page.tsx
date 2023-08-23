@@ -1,13 +1,15 @@
 "use client"
 import {DataTable} from "./data-table"
 import {columns} from "./columns";
-import {fakeData} from '@/lib/fakeData/fakeExpenseData'
-import {
-    IconArrowBigLeft,
-    IconArrowBigRight
-} from "@tabler/icons-react";
+import {IconArrowBigLeft, IconArrowBigRight} from "@tabler/icons-react";
 // import {Button} from "@mantine/core";
 import {Button} from "@/components/ui/button";
+import {getExpenses_currentMonth} from "@/lib/firebase";
+import {useAuth} from "@/app/context";
+import {Expense} from "@/lib/Interfaces";
+import React, {useEffect, useState} from 'react';
+import LoginMantine from "@/components/LoginMantine";
+import Loading from "@/app/loading";
 
 export default function page() {
 
@@ -15,6 +17,19 @@ export default function page() {
         month: "August",
         year: 2023,
     }
+    const [currentExpenses, setCurrentExpenses] = useState<Expense[]>([]);
+    const {user, loading} = useAuth();
+    useEffect(() => {
+        if (user) {
+            getExpenses_currentMonth(user).then(expenses => {
+                setCurrentExpenses(expenses)
+                console.log(expenses)
+            })
+        }
+    }, [user])
+
+    if (loading) return <Loading/>
+    if (!user) return <LoginMantine/>
     return (
         <>
             <div className={"pt-5 pl-5"}>
@@ -34,7 +49,7 @@ export default function page() {
                         <div className={"text-2xl font-bold"}>
                             <Button variant={"outline"}>
                                 <IconArrowBigRight/>
-                            {/*    TODO this should change the month back and forth*/}
+                                {/*    TODO this should change the month back and forth*/}
                             </Button>
                         </div>
                     </div>
@@ -42,7 +57,7 @@ export default function page() {
 
             </div>
             <div className="container mx-auto py-10">
-                <DataTable columns={columns} data={fakeData}/>
+                <DataTable columns={columns} data={currentExpenses}/>
             </div>
 
 

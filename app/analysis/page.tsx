@@ -2,7 +2,7 @@
 import React from 'react';
 import {useAuth} from "@/app/context";
 import {Category} from "@/lib/Interfaces";
-import {useCategories} from "@/lib/firebase";
+import {useCategories_deprecated} from "@/lib/firebase";
 import Loading from "@/app/loading";
 import ChartView from "@/components/ChartView"
 
@@ -11,21 +11,20 @@ import {
   Card,
   Flex,
   Grid,
-  Icon,
   Metric,
   ProgressBar,
-  Title,
-  Text,
   Tab,
-  TabList,
   TabGroup,
+  TabList,
   TabPanel,
   TabPanels,
+  Text,
+  Title,
 } from "@tremor/react";
 
 export default function Page() {
   const {user, loading} = useAuth();
-  const categories: Category[] = useCategories(user);
+  const categories: Category[] = useCategories_deprecated(user);
   // console.log(user)
   // console.log(categories)
 

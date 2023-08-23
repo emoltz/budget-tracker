@@ -407,28 +407,8 @@ export async function deleteCategory(user: User | null, category: string) {
     }
 }
 
-export async function getExpenses(user: User | null): Promise<Expense[]> {
-    if (user) {
-        const db = getFirestore();
-        const userRef = doc(db, usersDirectory, user.uid);
 
-        // Construct the path to the current month and year's document
-        const monthYearRef = collection(userRef, getCurrentMonthString());
-
-        // Get the document snapshot
-        const expensesSnapshot = await getDocs(monthYearRef);
-        const expenses: Expense[] = [];
-        expensesSnapshot.forEach((doc) => {
-            expenses.push(doc.data() as Expense);
-        });
-        return expenses;
-    } else {
-        throw new Error("User not found");
-    }
-}
-
-
-export function useCategories(user: User | null): Category[] {
+export function useCategories_deprecated(user: User | null): Category[] {
     const [categories, setCategories] = useState<Category[]>([]);
 
     useEffect(() => {
@@ -575,6 +555,26 @@ export async function changeCategoryIcon(user: User, iconName: string, categoryN
         }
     }
 
+}
+
+export async function getExpenses_currentMonth(user: User | null) {
+    if (user) {
+        const currentMonthString = getCurrentMonthString();
+        const db = getFirestore();
+        const userRef = doc(db, usersDirectory, user.uid);
+        const expensesRef = collection(userRef, currentMonthString);
+        const expensesSnapshot = await getDocs(expensesRef);
+        const expenses: Expense[] = [];
+        expensesSnapshot.forEach((doc) => {
+            if (doc.id !== "summary"){
+                // this prevents `summary` from getting in here
+                expenses.push(doc.data() as Expense);
+            }
+        });
+        return expenses;
+    } else {
+        throw new Error("User not found")
+    }
 }
 
 function getCurrentMonthString(): string {
