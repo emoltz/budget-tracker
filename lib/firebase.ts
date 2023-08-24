@@ -219,7 +219,7 @@ export async function getCurrentSummary(user: User | null): Promise<MonthSummary
 
 export async function getCategoriesNew(user: User | null): Promise<{ [key: string]: string }> {
     if (user) {
-        // get category dict from User document
+        // get category dictionary from User document
         const db = getFirestore();
         const userRef = doc(db, usersDirectory, user.uid);
         const userSnap = await getDoc(userRef);
