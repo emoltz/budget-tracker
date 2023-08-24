@@ -23,6 +23,7 @@ export default function AddNewExpense() {
         validate: {
             amount: (value) => (value > 0 ? null 
                              : (value === 0 ? "Amount cannot be zero" : "Amount cannot be negative") ),
+            name: (value) => (value === "" ? "Please enter a name for the expense" : null),
             category: (value) => (value === "" ? "Please choose a category" : null)
         }
     });
