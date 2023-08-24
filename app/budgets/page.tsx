@@ -18,12 +18,13 @@ import { useAuth } from "@/app/context";
 import { getCategoriesNew } from "@/lib/firebase";
 
 export default function Budgets() {
-  const user = useAuth();
+  //   const user = useAuth();
+  const { user, loading } = useAuth();
   if (user) {
-    let categoryObjects = getCategoriesNew(user.user);
+    let categoryObjects = getCategoriesNew(user);
     console.log(categoryObjects);
   }
-  let categoryObjects = getCategoriesNew(user.user);
+  let categoryObjects = getCategoriesNew(user);
   let categories = [
     "Food/Drink",
     "Groceries",
