@@ -23,6 +23,7 @@ export default function AddNewExpense() {
         validate: {
             amount: (value) => (value > 0 ? null 
                              : (value === 0 ? "Amount cannot be zero" : "Amount cannot be negative") ),
+            category: (value) => (value === "" ? "Please choose a category" : null)
         }
     });
 
@@ -82,6 +83,7 @@ export default function AddNewExpense() {
                 />
                 <CategoryPicker
                     onCategoryChange={handleCategoryChange}
+                    {...form.getInputProps('category')}
                 />
                 <Radio.Group
                     name={"frequency"}
