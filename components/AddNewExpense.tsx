@@ -19,6 +19,10 @@ export default function AddNewExpense() {
             category: "",
             is_monthly: false,
             is_yearly: false,
+        },
+        validate: {
+            amount: (value) => (value > 0 ? null 
+                             : (value === 0 ? "Amount cannot be zero" : "Amount cannot be negative") ),
         }
     });
 
