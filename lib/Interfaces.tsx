@@ -251,3 +251,9 @@ export class MonthSummaryClass implements MonthSummary {
     }
 
 }
+
+export interface DateData{
+    month: number,
+    year: number,
+    monthName: string
+}

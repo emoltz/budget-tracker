@@ -52,7 +52,7 @@ export const columns: ColumnDef<Expense>[] = [
         }
     },
     {
-        accessorKey: "categoryID",
+        accessorKey: "category",
         header: ({column}) => {
             return (
                 <Button
@@ -65,9 +65,13 @@ export const columns: ColumnDef<Expense>[] = [
             )
         },
     },
+    // {
+    //     accessorKey: "description",
+    //     header: "Description",
+    // },
     {
-        accessorKey: "description",
-        header: "Description",
+        accessorKey: "date",
+        header: "Date",
     },
     {
         accessorKey: "actions",
