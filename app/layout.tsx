@@ -61,7 +61,7 @@ export default function RootLayout({
                     <AuthProvider>
                         <body>
                         {/*<ChakraProvider>*/}
-                          <div className={"flex relative h-screen overflow-hidden"} >
+                          <div className={`flex relative h-screen overflow-hidden ${colorScheme == 'dark' ? "bg-slate-900" : ""}`} >
 
                             <NavBar/>
                                     
