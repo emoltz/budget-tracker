@@ -4,8 +4,11 @@ import {getUserCategories} from "@/lib/firebase";
 import {Select} from "@mantine/core";
 import React,  { useState, useEffect } from "react";
 
-
-export function CategoryPicker({ onCategoryChange }: {onCategoryChange: (category: string) => void}){
+interface Props {
+    onCategoryChange: (category: string) => void,
+    [restProps : string] : any;
+}
+export function CategoryPicker({ onCategoryChange, ...restProps}: Props){
     const {user, loading} = useAuth();
     //// const categories: Category[] = useCategories(user);
     // const data = userCategories.map((category) => category.category_name);
@@ -31,6 +34,8 @@ export function CategoryPicker({ onCategoryChange }: {onCategoryChange: (categor
                 searchable
                 clearable
                 onChange={onCategoryChange}
+                value={restProps["value"] || ""}
+                error={restProps["error"]}
         />
     )
 }
