@@ -18,10 +18,8 @@ import BudgetCard from "@/components/BudgetCard";
 import {useCategoryBudgets_currentMonth} from "@/lib/firebase";
 import {CategoryBudget} from "@/lib/Interfaces";
 import LoadingAtAGlance from "@/components/layouts/LoadingAtAGlance";
-// import {useCategories} from "@/lib/firebase";
-// import {Category} from "@/lib/Interfaces";
-// import {User} from "firebase/auth";
-// import {icons} from "@/lib/icons";
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs"
+import MonthlyExpenses from "@/components/MonthlyExpenses";
 
 const PRIMARY_COL_HEIGHT = rem(400);
 
@@ -242,40 +240,56 @@ const CustomButton = ({icon, label, color, onClick}: CustomButtonProps) => {
 }
 
 interface AtAGlanceProps {
-    // userData: MonthSummaryClass | undefined;
     categoryBudgets: CategoryBudget[] | null;
-    // user: User | null,
 }
 
 const AtAGlance = ({categoryBudgets}: AtAGlanceProps) => {
-    // const [categoryBudgets, setCategoryBudgets] = useState<CategoryBudget[] | null>(null);
-
 
     return (
-        <ComponentFrameCenter
-            PRIMARY_COL_HEIGHT={"600px"}
-            title={"At a Glance"}
-        >
-            <div
-                className={"grid md:grid-cols-2 sm:grid-cols-1 gap-5"}
-            >
 
-                {categoryBudgets ? categoryBudgets.map((category: CategoryBudget, idx: number) => {
-                        return (
-                            <BudgetCard
-                                key={idx}
-                                id={idx.toString()}
-                                budgetName={category.category}
-                                budgetAmount={category.budgetAmount}
-                                spent={category.spent}
-                                iconName={category.icon}
-                            />
-                        )
-                    }) :
-                    <LoadingAtAGlance/>
-                }
-            </div>
-        </ComponentFrameCenter>
+        <>
+         <ComponentFrameCenter
+                PRIMARY_COL_HEIGHT={"600px"}
+                title={"At a Glance"}
+            >
+            <Tabs defaultValue={"budgets"} className={""}>
+                <TabsList>
+                    <TabsTrigger value={"budgets"}>Budgets</TabsTrigger>
+                    <TabsTrigger value={"monthly"}>Monthly Expenses</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value={"budgets"}>
+                    <div
+                    className={"grid md:grid-cols-2 sm:grid-cols-1 gap-5"}
+                >
+
+                    {categoryBudgets ? categoryBudgets.map((category: CategoryBudget, idx: number) => {
+                            return (
+                                <BudgetCard
+                                    key={idx}
+                                    id={idx.toString()}
+                                    budgetName={category.category}
+                                    budgetAmount={category.budgetAmount}
+                                    spent={category.spent}
+                                    iconName={category.icon}
+                                />
+                            )
+                        }) :
+                        <LoadingAtAGlance/>
+                    }
+                </div>
+                </TabsContent>
+                <TabsContent value={"monthly"}>
+                    <MonthlyExpenses
+
+                    />
+                </TabsContent>
+
+            </Tabs>
+
+
+            </ComponentFrameCenter>
+        </>
     )
 }
 
