@@ -7,7 +7,12 @@ import {Input} from "@/components/ui/input"
 import {IconPlus} from "@tabler/icons-react";
 import {ChangeEvent, useState} from "react";
 
-export default function MonthlyExpenses() {
+interface MonthlyExpensesProps {
+    width?: string;
+    height?: string;
+}
+
+export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = {width: "w-full", height: "h-full"}) {
 
     const monthlyExpensesSampleData: Expense[] = [
         {
@@ -108,12 +113,30 @@ export default function MonthlyExpenses() {
         toggleForm();
     };
     return (
-        <div className={""}>
+        <div className={`${width} ${height}`}>
+            <div className={"flex justify-between items-center mb-5 mt-5"}>
+                <div className={"flex-grow text-center"}>
+                    <div className={"text-2xl font-medium"}>
+                        Monthly Expenses
+                    </div>
+                </div>
+
+                <div>
+                    <Button
+                        className={"mr-16"}
+                        variant={"secondary"}
+                        size={"sm"}
+                        onClick={showForm ? toggleForm : toggleForm}
+                    >
+                        <IconPlus/>
+                    </Button>
+                </div>
+            </div>
             <Table className={""}>
 
                 <TableHeader>
                     <TableRow>
-                        <TableHead className=" text-left">Name</TableHead>
+                        <TableHead className={"text-left"}>Name</TableHead>
                         <TableHead className={"text-center"}>Category</TableHead>
                         <TableHead className={"text-center"}>Amount</TableHead>
                         <TableHead className={" text-center"}>Action</TableHead>
@@ -124,60 +147,56 @@ export default function MonthlyExpenses() {
                         monthlyExpenses.map((expense, index) => {
                                 return (
                                     <TableRow key={index}>
-                                        <TableCell className={"text-left"}>{expense.name}</TableCell>
-                                        <TableCell className={"text-center"}>{expense.category}</TableCell>
-                                        <TableCell className={"text-center"}>${expense.amount.toFixed(2)}</TableCell>
+                                        <TableCell className={"w-[150px] text-left"}>{expense.name}</TableCell>
+                                        <TableCell className={"w-[30px] text-center"}>{expense.category}</TableCell>
+                                        <TableCell
+                                            className={"text-center font-mono w-[15px]"}>${expense.amount.toFixed(2)}</TableCell>
 
-                                        <TableCell className={"text-center"}>
-                                            <Button variant={"outline"}>...</Button>
+                                        <TableCell className={"text-center text-2xl w-[20px]"}>
+                                            <button className={" pr-2 pl-2 pb-1"}>...</button>
                                         </TableCell>
                                     </TableRow>
                                 )
                             }
                         )
                     }
-                    {
-                        showForm && (
-                            <TableRow>
-                                <TableCell>
-                                    <Input placeholder="Name" value={newExpenseRow.name}
-                                           onChange={(e) => handleInputChange(e, "name")}/>
-                                </TableCell>
-                                <TableCell>
-                                    <Input placeholder="Category" value={newExpenseRow.category_name}
-                                           onChange={(e) => handleInputChange(e, "category_name")}/>
-                                </TableCell>
-                                <TableCell>
-                                    <Input placeholder="Amount" value={newExpenseRow.amount}
-                                           onChange={(e) => handleInputChange(e, "amount")}/>
-                                </TableCell>
+                    {showForm &&
 
-                                <TableCell>
-                                    <Button onClick={addNewExpense}
-                                            variant={"secondary"}
-                                    >
-                                        <IconPlus/>
-                                    </Button>
-                                </TableCell>
-                            </TableRow>
-                        )
+                        <TableRow>
+                            <TableCell className={""}>
+                                <Input
+                                    placeholder={"Expense Name"}
+                                    onChange={(e) => handleInputChange(e, "name")}
+                                />
+                            </TableCell>
+                            <TableCell className={""}>
+                                <Input
+                                    placeholder={""}
+                                    onChange={(e) => handleInputChange(e, "category_name")}
+                                />
+                            </TableCell>
+                            <TableCell className={""}>
+                                <Input
+                                    placeholder={"$"}
+                                    onChange={(e) => handleInputChange(e, "amount")}
+                                />
+                            </TableCell>
+                            <TableCell className={" text-center "}>
+                                <button
+                                    className={"pr-2 pl-2 pb-1"}
+                                    // variant={"ghost"}
+                                    onClick={handleSubmit}
+                                >
+                                    <IconPlus/>
+                                </button>
+                            </TableCell>
+                        </TableRow>
                     }
+
 
                 </TableBody>
             </Table>
-            {!showForm &&
 
-                <div className={"text-right pt-5"}>
-                    <Button
-                        variant={"secondary"}
-                        onClick={toggleForm}
-                    >
-
-                        <IconPlus/>
-
-                    </Button>
-                </div>
-            }
 
         </div>
     )
