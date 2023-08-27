@@ -3,7 +3,7 @@ import {Expense, ExpenseClass} from "@/lib/Interfaces";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table"
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input"
-
+import {CategoryPicker} from "@/components/CategoryPicker";
 import {IconPlus} from "@tabler/icons-react";
 import {ChangeEvent, MutableRefObject, useEffect, useRef, useState} from "react";
 
@@ -155,12 +155,14 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
                                             className={"w-[150px] text-left"}
                                             initialValue={expense.name}
                                             onEdit={(newValue) => handleCellEdit(newValue, index, "name")}
+                                            type={"text"}
                                         />
 
                                         <EditableTableCell
                                             className={"w-[30px] text-center"}
                                             initialValue={expense.category}
                                             onEdit={(newValue) => handleCellEdit(newValue, index, "category")}
+                                            type={"category"}
                                         />
                                         <EditableTableCell
                                             className={"text-center font-mono w-[15px]"}
@@ -235,9 +237,10 @@ interface EditableTableCellProps {
     onEdit: (newValue: string | number) => void;
     isCurrency?: boolean;
     className?: string;
+    type?: "text" | "category" | "amount";
 }
 
-const EditableTableCell = ({initialValue, onEdit, isCurrency, className}: EditableTableCellProps) => {
+const EditableTableCell = ({initialValue, onEdit, isCurrency, className, type}: EditableTableCellProps) => {
     const [isEditing, setIsEditing] = useState(false);
     const [value, setValue] = useState<string | number>(initialValue);
     const inputRef: MutableRefObject<HTMLInputElement | null> = useRef(null);
@@ -276,6 +279,13 @@ const EditableTableCell = ({initialValue, onEdit, isCurrency, className}: Editab
         >
 
             {isEditing ? (
+                type === "category" ? (
+                    <CategoryPicker onCategoryChange={(newValue) => {
+                        setValue(newValue);
+                        handleEdit();
+                    }}/>
+                    )
+                    :
                     <Input
                         type={"text"}
                         value={value}
