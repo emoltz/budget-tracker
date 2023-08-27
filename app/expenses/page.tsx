@@ -33,7 +33,32 @@ export default function Page() {
     if (loading) return <LoadingTable/>
     if (!user) return <LoginMantine/>
     return (
-        <>
+        <div className={"m-5"}>
+            <div className={`text-4xl font-bold pb-2 mt-5 ${colorScheme == 'dark' ? "text-white" : ""}`}>
+                {dateData.monthName} {dateData.year}
+            </div>
+            <div className={"flex flex-row justify-between mb-10 mt-1"}>
+                <div className={"flex flex-row gap-1"}>
+                    <div className={"text-2xl font-bold"}>
+                        <Button
+                            variant={"outline"}
+                        >
+                            <IconArrowBigLeft/>
+
+                        </Button>
+
+                    </div>
+                    <div className={"text-2xl font-bold"}>
+                        <Button
+                            variant={"outline"}
+                        >
+                            <IconArrowBigRight/>
+                            {/*    TODO this should change the month back and forth*/}
+                        </Button>
+                    </div>
+                </div>
+            </div>
+
             <Tabs defaultValue={"expenses"}
                   variant={"outline"}
                   radius={"lg"}
@@ -44,34 +69,10 @@ export default function Page() {
                 </Tabs.List>
                 <Tabs.Panel value={"expenses"} pt={"xs"}>
                     <div className={"pt-5 pl-5"}>
-                        <div className={`text-4xl font-bold pb-2 ${colorScheme == 'dark' ? "text-white" : ""}`}>
-                            {dateData.monthName} {dateData.year}
-                        </div>
 
-                        <div className={"flex flex-row justify-between"}>
-                            <div className={"flex flex-row gap-1"}>
-                                <div className={"text-2xl font-bold"}>
-                                    <Button
-                                        variant={"outline"}
-                                    >
-                                        <IconArrowBigLeft/>
-
-                                    </Button>
-
-                                </div>
-                                <div className={"text-2xl font-bold"}>
-                                    <Button
-                                        variant={"outline"}
-                                    >
-                                        <IconArrowBigRight/>
-                                        {/*    TODO this should change the month back and forth*/}
-                                    </Button>
-                                </div>
-                            </div>
-                        </div>
 
                     </div>
-                    <div className="container mx-auto py-10">
+                    <div className={""}>
                         <DataTable columns={columns} data={currentExpenses}/>
                     </div>
                 </Tabs.Panel>
@@ -81,6 +82,6 @@ export default function Page() {
             </Tabs>
 
 
-        </>
+        </div>
     )
 }
