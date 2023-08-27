@@ -1,99 +1,177 @@
 "use client";
-import React from 'react';
+import React , { useState, useEffect } from 'react';
 import { useAuth } from "@/app/context";
-import { Category } from "@/lib/Interfaces";
-import { useCategories_deprecated } from "@/lib/firebase";
+import { CategoryBudget } from "@/lib/Interfaces";
+import { getCategoryBudgets } from "@/lib/firebase";
 import { useMantineColorScheme } from '@mantine/core';
 import Loading from "@/app/loading";
 import ChartView from "@/components/ChartView"
 
 import {
-  BadgeDelta,
-  Card,
-  Flex,
-  Grid,
-  Metric,
-  ProgressBar,
-  Tab,
-  TabGroup,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Text,
-  Title,
+    BadgeDelta,
+    BarChart,
+    Card,
+    Flex,
+    Grid,
+    Metric,
+    ProgressBar,
+    Subtitle,
+    Tab,
+    TabGroup,
+    TabList,
+    TabPanel,
+    TabPanels,
+    Text,
+    Title,
 } from "@tremor/react";
 
 export default function Page() {
-  const {user, loading} = useAuth();
-  const {colorScheme} = useMantineColorScheme();
-  const categories: Category[] = useCategories_deprecated(user);
-  // console.log(user)
-  // console.log(categories)
+    const {user, loading} = useAuth();
+    const {colorScheme} = useMantineColorScheme();
 
-  const totalSpent = categories.map((category) => category.spent)
-                               .reduce((sum, curr) => sum + curr, 0);
+    // this is typed just as a dict so that it can be used with charts
+    const [categoryBudgets, setCategoryBudgets] = useState<{[key : string] : any;}[]>([]);
+    const [totalSpent, setTotalSpent] = useState<number>(0);
+    const [totalBudgets, setTotalBudgets] = useState<number>(0);
+    const [numExceeded, setExceeded] = useState<number>(0);
+    // let numExceeded = 0;
+    // TODO consolidate states
 
-  if (loading) {
-      return <Loading/>; // Or return a loading spinner
-  }
+    useEffect(() => {
+        async function fetchData() {
+            if (user) {
+                setCategoryBudgets([]); // reset so appending doesn't duplicate data
+                const data : CategoryBudget[] = await getCategoryBudgets(user);
+                data.map((cb) => {
+                    let amtSpent = cb["spent"] || 0;
+                    let amtLeft = cb["budgetAmount"] - amtSpent;
+                    let amtOver = 0
 
-  if (!user) {
-    return <p>Please log in</p>
-      // return <LoginMantine/>;
-  }
+                    setTotalSpent((spent) => spent + amtSpent);
+                    setTotalBudgets((budget) => budget + cb["budgetAmount"]);
+                    
+                    if (amtLeft < 0) {
+                        amtOver = amtSpent - cb["budgetAmount"];
+                        amtSpent = cb["budgetAmount"]; // not ideal
+                        amtLeft = 0;
+                        setExceeded((num) => num + 1);
+                    }
 
-  return (
-    <div className={`p-4 ${colorScheme == 'dark' ? "dark" : ""}`}>
+                    const chartData = {
+                        ...cb,
+                        "Amount Spent" : amtSpent,
+                        "Amount Left" : amtLeft,
+                        "Amount Over" : amtOver
+                    }
+                    
+                    setCategoryBudgets((categoryBudgets) =>
+                        [...categoryBudgets, chartData])
+                    
+                    
+                })
+            }
+        }
+  
+        // noinspection JSIgnoredPromiseFromCall
+        fetchData();
+        // setTotal(categoryBudgets && categoryBudgets.map((category) => category["spent"] || 0)
+        //                         .reduce((sum, curr) => sum + curr, 0));
+        
+                                
+    }, [user])
 
-      <TabGroup className="mt-2">
-        <TabList>
-          {/* <Tab>Overview</Tab> */}
-          <Tab>Spending</Tab>
-          <Tab>Income</Tab>
-        </TabList>
-        <TabPanels>
-          <TabPanel>
-            <Grid numItemsMd={2} numItemsLg={2} className="gap-6 mt-6">
-              <Card>
-              <Flex alignItems="start">
-                <div className="truncate">
-                  <Text>Spent this month</Text>
-                  <Metric className="truncate">${totalSpent}</Metric>
-                </div>
-                {/* dummy badgeDelta data below */}
-                <BadgeDelta deltaType="moderateIncrease">12.5%</BadgeDelta>
-              </Flex>
-              </Card>
-              <Card>
-              <Flex alignItems="start">
-                <div className="truncate">
-                  <Text>Budgets exceeded</Text>
-                  <Metric className="truncate">0 / 5</Metric>
-                </div>
-              </Flex>
-              <Flex className="mt-4 space-x-2">
-                    <Text className="truncate">{`$81% ($434)`}</Text>
-                    <Text>{`$500`}</Text>
-                  </Flex>
-                  <ProgressBar value={81} className="mt-2" />
-              </Card>
-            </Grid>
-            <div className="mt-6">
-              <Card>
-                <ChartView />
-              </Card>
-            </div>
-          </TabPanel>
-          <TabPanel>
-            <div className="mt-6">
-              <Card>
-                <div className="h-96" />
-              </Card>
-            </div>
-          </TabPanel>
-          
-        </TabPanels>
-      </TabGroup>
-    </div>
-  );
+    // console.log(totalSpent)
+
+    if (loading) {
+        return <Loading/>; // Or return a loading spinner
+    }
+
+    if (!user) {
+        return <p>Please log in</p>
+        // return <LoginMantine/>;
+    }
+
+    const numberFormatter = (number: number) =>
+        `$ ${Intl.NumberFormat("us").format(number).toString()}`
+
+    return (
+        <div className={`p-4 ${colorScheme == 'dark' ? "dark" : ""}`}>
+            <TabGroup className="mt-2">
+                <TabList>
+                <Tab>This Month</Tab>
+                <Tab>Spending Over Time</Tab>
+                <Tab>Income Over Time</Tab>
+                </TabList>
+
+                <TabPanels>
+                    <TabPanel>
+                        <Grid numItemsMd={2} numItemsLg={2} className="gap-6 mt-6">
+                            <Card>
+                                <Flex alignItems="start">
+                                    <div className="truncate">
+                                        <Text>Spent so far</Text>
+                                        <Metric className="truncate">
+                                            ${ `${Intl.NumberFormat("us").format(totalSpent as number)}`}
+                                        </Metric>
+                                    </div>
+                                    {/* dummy badgeDelta data below */}
+                                    <BadgeDelta deltaType="moderateIncrease">12.5%</BadgeDelta>
+                                </Flex>
+                                <Flex className="mt-4 space-x-2">
+                                    <Text className="truncate">
+                                        {`${(totalSpent / totalBudgets * 100).toFixed()}%`}
+                                    </Text>
+                                    <Text>{`$ ${Intl.NumberFormat("us").format(totalBudgets)}`}</Text>
+                                </Flex>
+                                <ProgressBar value={Math.trunc(totalSpent / totalBudgets * 100)} className="mt-2" />
+                            </Card>
+                            <Card>
+                                <Flex alignItems="start">
+                                    <div className="truncate">
+                                        <Text>Budgets exceeded</Text>
+                                        <Metric className="truncate">{numExceeded} / {categoryBudgets.length}</Metric>
+                                    </div>
+                                </Flex>
+                                
+                            </Card>
+                        </Grid>
+                        <Flex className='mt-6'>
+                            <Card>
+                                <Title>Budget Progress</Title>
+                                <Subtitle>Amount spent per category this month</Subtitle>
+                                <BarChart
+                                    className="grow"
+                                    data={categoryBudgets}
+                                    index="category"
+                                    categories={["Amount Spent", "Amount Left", "Amount Over"]}
+                                    colors={["teal", "gray", "fuchsia"]}
+                                    valueFormatter={numberFormatter}
+                                    stack={true}
+                                    layout="vertical"
+                                    yAxisWidth={90}
+                                />
+                            </Card>
+                        </Flex>
+                    </TabPanel>
+
+                    <TabPanel>
+                        <div className="mt-6">
+                            <Card>
+                                <ChartView />
+                            </Card>
+                        </div>
+                    </TabPanel>
+
+                    <TabPanel>
+                        <div className="mt-6">
+                            <Card>
+                                <div className="h-96" />
+                            </Card>
+                        </div>
+                    </TabPanel>
+                
+                </TabPanels>
+            </TabGroup>
+        </div>
+    );
 }
