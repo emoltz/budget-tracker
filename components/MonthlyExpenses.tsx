@@ -5,42 +5,53 @@ import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input"
 
 import {IconPlus} from "@tabler/icons-react";
-import {useState} from "react";
+import {ChangeEvent, useState} from "react";
 
 export default function MonthlyExpenses() {
-
 
     const monthlyExpensesSampleData: Expense[] = [
         {
             id: "1",
-            amount: 1000,
-            category_name: "Housing",
-            name: "Rent",
-            vendor: "Landlord",
-            description: "Rent for the month of January",
-            is_monthly: true,
+            name: "Groceries",
+            amount: 100,
+            vendor: "Supermart",
+            description: "Monthly grocery expenses",
+            category: "Food",
+            categoryID: "food-1",
+            date: "2023-08-01",
+            month: 8,
+            year: 2023,
             is_yearly: false,
+            is_monthly: true,
         },
         {
             id: "2",
-            amount: 50,
-            category_name: "Utilities",
-            name: "Electricity",
-            vendor: "BC Hydro",
-            description: "Electricity bill for the month of January",
-            is_monthly: true,
+            name: "Rent",
+            amount: 1200,
+            vendor: "Property Management Inc.",
+            description: "Monthly rent payment",
+            category: "Housing",
+            categoryID: "housing-1",
+            date: "2023-08-05",
+            month: 8,
+            year: 2023,
             is_yearly: false,
+            is_monthly: true,
         },
         {
             id: "3",
-            amount: 50,
-            category_name: "Utilities",
             name: "Internet",
-            vendor: "Telus",
-            description: "Internet bill for the month of January",
-            is_monthly: true,
+            amount: 50,
+            vendor: "ISP Co.",
+            description: "Monthly internet bill",
+            category: "Utilities",
+            categoryID: "utilities-1",
+            date: "2023-08-10",
+            month: 8,
+            year: 2023,
             is_yearly: false,
-        }
+            is_monthly: true,
+        },
     ]
     const [monthlyExpenses, setMonthlyExpenses] = useState<Expense[]>(monthlyExpensesSampleData);
     const [showForm, setShowForm] = useState<boolean>(false);
@@ -51,17 +62,24 @@ export default function MonthlyExpenses() {
         description: ""
     });
     const addNewExpense = () => {
-        const newExpense = {
+        const newExpense: Expense = {
             id: Date.now().toString(),
-            ...newExpenseRow,
+            name: newExpenseRow.name,
             amount: parseFloat(newExpenseRow.amount),
+            vendor: "",  // provide a default value or make this field optional
+            description: newExpenseRow.description,
+            category: newExpenseRow.category_name,
+            categoryID: "",  // provide a default value or make this field optional
+            date: "",  // provide a default value or make this field optional
+            month: 0,  // provide a default value or make this field optional
+            year: 0,  // provide a default value or make this field optional
+            is_yearly: false,
             is_monthly: true,
-            is_yearly: false
         };
         setMonthlyExpenses([...monthlyExpenses, newExpense]);
         toggleForm();
-    }
-    const handleInputChange = (e, field) => {
+    };
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement>, field: string) => {
         setNewExpenseRow({
             ...newExpenseRow,
             [field]: e.target.value
@@ -72,11 +90,25 @@ export default function MonthlyExpenses() {
         setShowForm(!showForm);
     }
     const handleSubmit = () => {
-        setMonthlyExpenses([...monthlyExpenses, {...newExpense, id: Date.now().toString()}]);
+        const newExpense: Expense = {
+            id: Date.now().toString(),
+            name: newExpenseRow.name,
+            amount: parseFloat(newExpenseRow.amount),
+            vendor: "",  // provide a default value or make this field optional
+            description: newExpenseRow.description,
+            category: newExpenseRow.category_name,
+            categoryID: "",  // provide a default value or make this field optional
+            date: "",  // provide a default value or make this field optional
+            month: 0,  // provide a default value or make this field optional
+            year: 0,  // provide a default value or make this field optional
+            is_yearly: false,
+            is_monthly: true,
+        };
+        setMonthlyExpenses([...monthlyExpenses, newExpense]);
         toggleForm();
-    }
+    };
     return (
-        <div className={"ml-20 mr-20"}>
+        <div className={""}>
             <Table className={""}>
 
                 <TableHeader>
@@ -84,7 +116,6 @@ export default function MonthlyExpenses() {
                         <TableHead className=" text-left">Name</TableHead>
                         <TableHead className={"text-center"}>Category</TableHead>
                         <TableHead className={"text-center"}>Amount</TableHead>
-                        <TableHead className={" text-center"}>Description</TableHead>
                         <TableHead className={" text-center"}>Action</TableHead>
                     </TableRow>
                 </TableHeader>
@@ -94,10 +125,10 @@ export default function MonthlyExpenses() {
                                 return (
                                     <TableRow key={index}>
                                         <TableCell className={"text-left"}>{expense.name}</TableCell>
-                                        <TableCell>{expense.category_name}</TableCell>
-                                        <TableCell>${expense.amount.toFixed(2)}</TableCell>
-                                        <TableCell>{expense.description}</TableCell>
-                                        <TableCell>
+                                        <TableCell className={"text-center"}>{expense.category}</TableCell>
+                                        <TableCell className={"text-center"}>${expense.amount.toFixed(2)}</TableCell>
+
+                                        <TableCell className={"text-center"}>
                                             <Button variant={"outline"}>...</Button>
                                         </TableCell>
                                     </TableRow>
@@ -120,13 +151,10 @@ export default function MonthlyExpenses() {
                                     <Input placeholder="Amount" value={newExpenseRow.amount}
                                            onChange={(e) => handleInputChange(e, "amount")}/>
                                 </TableCell>
-                                <TableCell className={"w-[10px]"}>
-                                    <Input placeholder="Description" value={newExpenseRow.description}
-                                           onChange={(e) => handleInputChange(e, "description")}/>
-                                </TableCell>
+
                                 <TableCell>
                                     <Button onClick={addNewExpense}
-                                    variant={"secondary"}
+                                            variant={"secondary"}
                                     >
                                         <IconPlus/>
                                     </Button>
@@ -137,18 +165,18 @@ export default function MonthlyExpenses() {
 
                 </TableBody>
             </Table>
-            { !showForm &&
+            {!showForm &&
 
-            <div className={"text-right pt-5"}>
-                <Button
-                    variant={"secondary"}
-                    onClick={toggleForm}
-                >
+                <div className={"text-right pt-5"}>
+                    <Button
+                        variant={"secondary"}
+                        onClick={toggleForm}
+                    >
 
-                    <IconPlus/>
+                        <IconPlus/>
 
-                </Button>
-            </div>
+                    </Button>
+                </div>
             }
 
         </div>
