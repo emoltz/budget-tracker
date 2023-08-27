@@ -130,8 +130,9 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
                                     <TableRow key={index}>
                                         <TableCell className={"w-[150px] text-left"}>{expense.name}</TableCell>
                                         <TableCell className={"w-[30px] text-center"}>{expense.category}</TableCell>
-                                        <TableCell
-                                            className={"text-center font-mono w-[15px]"}>${expense.amount.toFixed(2)}</TableCell>
+                                        <TableCell className={"text-center font-mono w-[15px]"}>
+                                            ${expense.amount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                                        </TableCell>
 
                                         <TableCell className={"text-center text-2xl w-[20px]"}>
                                             <button className={" pr-2 pl-2 pb-1"}>...</button>
@@ -172,6 +173,16 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
                             </TableCell>
                         </TableRow>
                     }
+                    {/* TOTALS */}
+                    <TableRow>
+                        <TableCell className={"text-right font-mono"} colSpan={2}>
+                            {/*Total:*/}
+                        </TableCell>
+                        <TableCell className={"text-center font-mono font-bold"}>
+                            ${monthlyExpenses.reduce((total, expense) => total + expense.amount, 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+
+                        </TableCell>
+                    </TableRow>
 
 
                 </TableBody>
