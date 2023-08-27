@@ -9,8 +9,8 @@ import {useAuth} from "@/app/context";
 import {DateData, Expense} from "@/lib/Interfaces";
 import React, {useEffect, useState} from 'react';
 import LoginMantine from "@/components/LoginMantine";
-import Loading from "@/app/loading";
 import {useMantineTheme} from "@mantine/core";
+import LoadingTable from "@/app/expenses/LoadingTable";
 
 
 export default function Page() {
@@ -31,7 +31,7 @@ export default function Page() {
         }
     }, [user])
     const {colorScheme} = useMantineTheme();
-    if (loading) return <Loading/>
+    if (loading) return <LoadingTable/>
     if (!user) return <LoginMantine/>
     return (
         <>

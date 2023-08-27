@@ -541,63 +541,52 @@ export async function changeCategoryIcon(user: User, iconName: string, categoryN
 
 }
 
-export async function getExpenses_currentMonth(user: User | null) {
+export async function getExpenses(user: User | null, month?: number, year?: number, monthly?: boolean): Promise<Expense[]> {
     if (user) {
-        const currentMonthString = getCurrentMonthString();
-        const db = getFirestore();
-        const userRef = doc(db, usersDirectory, user.uid);
-        const expensesRef = collection(userRef, currentMonthString);
-        const expensesSnapshot = await getDocs(expensesRef);
-        const expenses: Expense[] = [];
-        expensesSnapshot.forEach((doc) => {
-            if (doc.id !== "summary"){
-                // this prevents `summary` from getting in here
-                expenses.push(doc.data() as Expense);
-            }
-        });
-        return expenses;
-    } else {
-        throw new Error("User not found")
-    }
-}
-
-export async function getExpenses(user: User | null, month?: number, year?: number): Promise<Expense[]>{
-
-    if (user){
         let monthString: string;
-        if (!month || !year){
+        if (!month || !year) {
             monthString = getCurrentMonthString();
-        }
-        else{
+        } else {
             monthString = createMonthYearString(month, year);
         }
+
         const db = getFirestore();
         const userRef = doc(db, usersDirectory, user.uid);
         const expensesRef = collection(userRef, monthString);
         const expensesSnapshot = await getDocs(expensesRef);
         const expenses: Expense[] = [];
-        expensesSnapshot.forEach((doc) => {
 
-            if (doc.id !== "summary"){ // this prevents `summary` from getting in here
+        expensesSnapshot.forEach((doc) => {
+            if (doc.id !== "summary") {
                 // convert timestamp
                 const expenseData = doc.data() as Expense;
-                if (expenseData.date){
+
+                if (expenseData.date) {
                     // @ts-ignore
                     const date = expenseData.date.toDate();
                     console.log("Date: ", date);
                     expenseData.date = date.toLocaleDateString();
                 }
 
-
-                expenses.push(expenseData);
+                // Logic to include or exclude entries based on `monthly` and `is_monthly`
+                if (monthly === undefined || !monthly) {
+                    if (!expenseData.is_monthly) {
+                        expenses.push(expenseData);
+                    }
+                } else if (monthly) {
+                    if (expenseData.is_monthly) {
+                        expenses.push(expenseData);
+                    }
+                }
             }
         });
+
         return expenses;
-    }
-    else {
-        throw new Error("User not found")
+    } else {
+        throw new Error("User not found");
     }
 }
+
 
 function getCurrentMonthString(): string {
     // helper function to return the name of the current month's collection
@@ -608,7 +597,7 @@ function getCurrentMonthString(): string {
     return currentMonth.toString() + '_' + currentYear.toString();
 }
 
-function createMonthYearString(month: number, year: number): string{
+function createMonthYearString(month: number, year: number): string {
     return month.toString() + '_' + year.toString();
 
 }
