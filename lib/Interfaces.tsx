@@ -129,19 +129,19 @@ export class ExpenseClass implements Expense {
     is_monthly = false;
 
 
-    constructor(amount: number, categoryName: string, name: string, vendor: string, description: string, is_monthly: boolean, is_yearly: boolean) {
+    constructor(amount: number, categoryName: string, name: string, vendor?: string, description?: string, is_monthly?: boolean, is_yearly?: boolean) {
         // random number
         const newID: string = this.generateExpenseId(categoryName);
+        this.category = categoryName;
         this.amount = amount;
         this.name = name;
-        this.vendor = vendor;
-        this.description = description;
-        this.is_monthly = is_monthly;
-        this.is_yearly = is_yearly;
+        this.vendor = vendor ?? "";
+        this.description = description ?? "";
+        this.is_monthly = is_monthly ?? false;
+        this.is_yearly = is_yearly ?? false;
         this.year = new Date().getFullYear();
         this.month = new Date().getMonth() + 1;
         this.id = newID;
-        this.category = categoryName;
         this.categoryID = this.getCategoryID(categoryName);
     }
 

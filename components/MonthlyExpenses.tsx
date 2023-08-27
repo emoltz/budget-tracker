@@ -1,5 +1,5 @@
 "use client";
-import {Expense} from "@/lib/Interfaces";
+import {Expense, ExpenseClass} from "@/lib/Interfaces";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table"
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input"
@@ -62,53 +62,34 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
     const [showForm, setShowForm] = useState<boolean>(false);
     const [newExpenseRow, setNewExpenseRow] = useState({
         name: "",
-        category_name: "",
-        amount: "",
+        category: "",
+        amount: 0,
         description: ""
     });
-    const addNewExpense = () => {
-        const newExpense: Expense = {
-            id: Date.now().toString(),
-            name: newExpenseRow.name,
-            amount: parseFloat(newExpenseRow.amount),
-            vendor: "",  // provide a default value or make this field optional
-            description: newExpenseRow.description,
-            category: newExpenseRow.category_name,
-            categoryID: "",  // provide a default value or make this field optional
-            date: "",  // provide a default value or make this field optional
-            month: 0,  // provide a default value or make this field optional
-            year: 0,  // provide a default value or make this field optional
-            is_yearly: false,
-            is_monthly: true,
-        };
-        setMonthlyExpenses([...monthlyExpenses, newExpense]);
-        toggleForm();
-    };
+
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>, field: string) => {
+        const value = field === 'amount' ? parseFloat(e.target.value) : e.target.value;
         setNewExpenseRow({
             ...newExpenseRow,
-            [field]: e.target.value
+            [field]: value,
         });
-    }
+    };
 
     const toggleForm = () => {
         setShowForm(!showForm);
     }
+
     const handleSubmit = () => {
-        const newExpense: Expense = {
-            id: Date.now().toString(),
-            name: newExpenseRow.name,
-            amount: parseFloat(newExpenseRow.amount),
-            vendor: "",  // provide a default value or make this field optional
-            description: newExpenseRow.description,
-            category: newExpenseRow.category_name,
-            categoryID: "",  // provide a default value or make this field optional
-            date: "",  // provide a default value or make this field optional
-            month: 0,  // provide a default value or make this field optional
-            year: 0,  // provide a default value or make this field optional
-            is_yearly: false,
-            is_monthly: true,
-        };
+        const _newExpense = new ExpenseClass(
+            newExpenseRow.amount,
+            newExpenseRow.category,
+            newExpenseRow.name,
+            "",
+            newExpenseRow.description,
+            true
+        )
+
+        const newExpense = _newExpense.toObject();
         setMonthlyExpenses([...monthlyExpenses, newExpense]);
         toggleForm();
     };
@@ -172,7 +153,7 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
                             <TableCell className={""}>
                                 <Input
                                     placeholder={""}
-                                    onChange={(e) => handleInputChange(e, "category_name")}
+                                    onChange={(e) => handleInputChange(e, "category")}
                                 />
                             </TableCell>
                             <TableCell className={""}>
@@ -181,10 +162,9 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
                                     onChange={(e) => handleInputChange(e, "amount")}
                                 />
                             </TableCell>
-                            <TableCell className={" text-center "}>
+                            <TableCell className={"text-center "}>
                                 <button
                                     className={"pr-2 pl-2 pb-1"}
-                                    // variant={"ghost"}
                                     onClick={handleSubmit}
                                 >
                                     <IconPlus/>
