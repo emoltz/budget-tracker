@@ -5,7 +5,7 @@ import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input"
 
 import {IconPlus} from "@tabler/icons-react";
-import {ChangeEvent, useState} from "react";
+import {ChangeEvent, MutableRefObject, useEffect, useRef, useState} from "react";
 
 interface MonthlyExpensesProps {
     width?: string;
@@ -75,6 +75,29 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
         });
     };
 
+    const handleCellEdit = (
+        newValue: string | number,
+        expenseIndex: number,
+        field: keyof Expense
+    ) => {
+        const updatedExpenses = [...monthlyExpenses];
+        let processedValue = newValue;
+
+        if (field === "amount") {
+            processedValue = parseFloat(String(newValue).replace(/,/g, ""));
+        }
+
+        if (typeof updatedExpenses[expenseIndex] !== "undefined") {
+            updatedExpenses[expenseIndex] = {
+                ...updatedExpenses[expenseIndex],
+                [field]: processedValue,
+            };
+        }
+
+        setMonthlyExpenses(updatedExpenses);
+    };
+
+
     const toggleForm = () => {
         setShowForm(!showForm);
     }
@@ -128,11 +151,24 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
                         monthlyExpenses.map((expense, index) => {
                                 return (
                                     <TableRow key={index}>
-                                        <TableCell className={"w-[150px] text-left"}>{expense.name}</TableCell>
-                                        <TableCell className={"w-[30px] text-center"}>{expense.category}</TableCell>
-                                        <TableCell className={"text-center font-mono w-[15px]"}>
-                                            ${expense.amount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
-                                        </TableCell>
+                                        <EditableTableCell
+                                            className={"w-[150px] text-left"}
+                                            initialValue={expense.name}
+                                            onEdit={(newValue) => handleCellEdit(newValue, index, "name")}
+                                        />
+
+                                        <EditableTableCell
+                                            className={"w-[30px] text-center"}
+                                            initialValue={expense.category}
+                                            onEdit={(newValue) => handleCellEdit(newValue, index, "category")}
+                                        />
+                                        <EditableTableCell
+                                            className={"text-center font-mono w-[15px]"}
+                                            initialValue={`${expense.amount}`}
+                                            onEdit={(newValue) => handleCellEdit(newValue, index, "amount")}
+                                            isCurrency
+                                        />
+
 
                                         <TableCell className={"text-center text-2xl w-[20px]"}>
                                             <button className={" pr-2 pl-2 pb-1"}>...</button>
@@ -191,4 +227,81 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
 
         </div>
     )
+}
+
+
+interface EditableTableCellProps {
+    initialValue: string | number;
+    onEdit: (newValue: string | number) => void;
+    isCurrency?: boolean;
+    className?: string;
+}
+
+const EditableTableCell = ({initialValue, onEdit, isCurrency, className}: EditableTableCellProps) => {
+    const [isEditing, setIsEditing] = useState(false);
+    const [value, setValue] = useState<string | number>(initialValue);
+    const inputRef: MutableRefObject<HTMLInputElement | null> = useRef(null);
+
+    const handleClickOutside = (event: MouseEvent) => {
+        if (inputRef.current && !inputRef.current.contains(event.target as Node)) {
+            handleEdit();
+        }
+    };
+
+    useEffect(() => {
+        if (isEditing) {
+            document.addEventListener("mousedown", handleClickOutside);
+        }
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        }
+    }, [isEditing])
+
+
+    const handleEdit = () => {
+        onEdit(value);
+        setIsEditing(false);
+    }
+
+    const handleCellClick = () => {
+        if (!isEditing) {
+            setIsEditing(true);
+        }
+    };
+    return (
+        <TableCell
+            className={`${className}`}
+            style={{cursor: isEditing ? 'text' : 'pointer'}}
+            onClick={handleCellClick}
+        >
+
+            {isEditing ? (
+                    <Input
+                        type={"text"}
+                        value={value}
+                        onChange={(e) => setValue(e.target.value)}
+                        onBlur={handleEdit}
+                        onKeyDown={(e) => {
+                            e.key === 'Enter' && handleEdit()
+                        }}
+                        className={isCurrency ? "text-center text-mono" : "text-left"}
+                    />
+                )
+                :
+                (
+                    <span
+                        style={{display: 'block', width: '100%', height: '100%'}}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setIsEditing(true)
+                        }}
+                    >
+                        {isCurrency ? `$${Number(value).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}` : value}
+                    </span>
+                )
+            }
+        </TableCell>
+    );
+
 }
