@@ -542,6 +542,10 @@ export async function changeCategoryIcon(user: User, iconName: string, categoryN
 }
 
 export async function getExpenses(user: User | null, month?: number, year?: number, monthly?: boolean): Promise<Expense[]> {
+    /**
+     *  this function returns a list of expenses for a given month and year
+     *  if no month or year is given, it returns the current month's expenses
+     */
     if (user) {
         let monthString: string;
         if (!month || !year) {

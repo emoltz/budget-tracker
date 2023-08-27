@@ -1,11 +1,13 @@
 "use client";
-import {Expense, ExpenseClass} from "@/lib/Interfaces";
+import {DateData, Expense, ExpenseClass} from "@/lib/Interfaces";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table"
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input"
 import {CategoryPicker} from "@/components/CategoryPicker";
 import {IconPlus} from "@tabler/icons-react";
 import {ChangeEvent, MutableRefObject, useEffect, useRef, useState} from "react";
+import {getExpenses} from "@/lib/firebase";
+import {useAuth} from "@/app/context";
 
 interface MonthlyExpensesProps {
     width?: string;
@@ -66,6 +68,22 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
         amount: 0,
         description: ""
     });
+    const {user, loading} = useAuth();
+    const sampleDateData: DateData = {
+        month: 8,
+        year: 2023,
+        monthName: "August"
+    }
+
+    const [currentExpenses, setCurrentExpenses] = useState<Expense[]>([]);
+    useEffect(() => {
+        if (user) {
+            getExpenses(user, sampleDateData.month, sampleDateData.year, true).then(expenses => {
+                setCurrentExpenses(expenses)
+
+            })
+        }
+    }, [user])
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>, field: string) => {
         const value = field === 'amount' ? parseFloat(e.target.value) : e.target.value;
@@ -116,6 +134,8 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
         setMonthlyExpenses([...monthlyExpenses, newExpense]);
         toggleForm();
     };
+    // TODO replace with custom loading skeleton
+    if (loading) return <div>Loading...</div>
     return (
         <div className={`${width} ${height}`}>
             <div className={"flex justify-between items-center mb-5 mt-5"}>
@@ -148,7 +168,7 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
                 </TableHeader>
                 <TableBody>
                     {
-                        monthlyExpenses.map((expense, index) => {
+                        currentExpenses.map((expense, index) => {
                                 return (
                                     <TableRow key={index}>
                                         <EditableTableCell
@@ -217,7 +237,8 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
                             {/*Total:*/}
                         </TableCell>
                         <TableCell className={"text-center font-mono font-bold"}>
-                            ${monthlyExpenses.reduce((total, expense) => total + expense.amount, 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                            {/*TODO put this in summary document...? */}
+                            ${currentExpenses.reduce((total, expense) => total + expense.amount, 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
 
                         </TableCell>
                     </TableRow>
@@ -279,23 +300,23 @@ const EditableTableCell = ({initialValue, onEdit, isCurrency, className, type}: 
         >
 
             {isEditing ? (
-                type === "category" ? (
-                    <CategoryPicker onCategoryChange={(newValue) => {
-                        setValue(newValue);
-                        handleEdit();
-                    }}/>
-                    )
-                    :
-                    <Input
-                        type={"text"}
-                        value={value}
-                        onChange={(e) => setValue(e.target.value)}
-                        onBlur={handleEdit}
-                        onKeyDown={(e) => {
-                            e.key === 'Enter' && handleEdit()
-                        }}
-                        className={isCurrency ? "text-center text-mono" : "text-left"}
-                    />
+                    type === "category" ? (
+                            <CategoryPicker onCategoryChange={(newValue) => {
+                                setValue(newValue);
+                                handleEdit();
+                            }}/>
+                        )
+                        :
+                        <Input
+                            type={"text"}
+                            value={value}
+                            onChange={(e) => setValue(e.target.value)}
+                            onBlur={handleEdit}
+                            onKeyDown={(e) => {
+                                e.key === 'Enter' && handleEdit()
+                            }}
+                            className={isCurrency ? "text-center text-mono" : "text-left"}
+                        />
                 )
                 :
                 (
