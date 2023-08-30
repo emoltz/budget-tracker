@@ -6,11 +6,13 @@ import { getCategoryBudgets } from "@/lib/firebase";
 import { useMantineColorScheme } from '@mantine/core';
 import Loading from "@/app/loading";
 import ChartView from "@/components/ChartView"
+import { ChartBarIcon, ChartPieIcon } from "@heroicons/react/solid";
 
 import {
     BadgeDelta,
     BarChart,
     Card,
+    DonutChart,
     Flex,
     Grid,
     Metric,
@@ -36,13 +38,14 @@ export default function Page() {
     const [numExceeded, setExceeded] = useState<number>(0);
     // let numExceeded = 0;
     // TODO consolidate states
+    const [currentIdx, setIndex] = useState<number>(0)
 
     useEffect(() => {
         async function fetchData() {
             if (user) {
                 setCategoryBudgets([]); // reset so appending doesn't duplicate data
                 const data : CategoryBudget[] = await getCategoryBudgets(user);
-                data.map((cb) => {
+                data.forEach((cb) => {
                     let amtSpent = cb["spent"] || 0;
                     let amtLeft = cb["budgetAmount"] - amtSpent;
                     let amtOver = 0
@@ -98,9 +101,9 @@ export default function Page() {
         <div className={`p-4 ${colorScheme == 'dark' ? "dark" : ""}`}>
             <TabGroup className="mt-2">
                 <TabList>
-                <Tab>This Month</Tab>
-                <Tab>Spending Over Time</Tab>
-                <Tab>Income Over Time</Tab>
+                    <Tab>This Month</Tab>
+                    <Tab>Spending Over Time</Tab>
+                    <Tab>Income Over Time</Tab>
                 </TabList>
 
                 <TabPanels>
@@ -137,19 +140,45 @@ export default function Page() {
                         </Grid>
                         <Flex className='mt-6'>
                             <Card>
-                                <Title>Budget Progress</Title>
-                                <Subtitle>Amount spent per category this month</Subtitle>
-                                <BarChart
-                                    className="grow"
-                                    data={categoryBudgets}
-                                    index="category"
-                                    categories={["Amount Spent", "Amount Left", "Amount Over"]}
-                                    colors={["teal", "gray", "fuchsia"]}
-                                    valueFormatter={numberFormatter}
-                                    stack={true}
-                                    layout="vertical"
-                                    yAxisWidth={90}
-                                />
+                                <TabGroup onIndexChange={() => setIndex(currentIdx === 0 ? 1 : 0)}>
+                                    <div className="flex justify-between">
+                                        <div>
+                                            <Title>{currentIdx === 0 ? "Budget progress" : "Spending breakdown"}</Title>
+                                        </div>
+                                        <div>
+                                            <TabList variant={"solid"} className="self-justify-left">
+                                                <Tab icon={ChartBarIcon}></Tab>
+                                                <Tab icon={ChartPieIcon}></Tab>
+                                            </TabList>  
+                                        </div>
+                                    </div>
+                                
+                                    <TabPanels>
+                                        <TabPanel>
+                                            <BarChart
+                                                className="grow h-80"
+                                                data={categoryBudgets}
+                                                index="category"
+                                                categories={["Amount Spent", "Amount Left", "Amount Over"]}
+                                                colors={["teal", "gray", "fuchsia"]}
+                                                valueFormatter={numberFormatter}
+                                                stack={true}
+                                                layout="vertical"
+                                                yAxisWidth={90}
+                                            />
+                                        </TabPanel>
+                                        <TabPanel>
+                                            <DonutChart
+                                                className="grow h-80"
+                                                data={categoryBudgets}
+                                                category="Amount Spent" // TODO: fix this
+                                                index="category"
+                                                valueFormatter={numberFormatter}
+                                                colors={["teal", "gray", "violet", "indigo", "rose", "cyan", "amber"]}
+                                                />
+                                        </TabPanel>
+                                    </TabPanels>
+                                </TabGroup>
                             </Card>
                         </Flex>
                     </TabPanel>
