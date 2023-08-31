@@ -75,16 +75,17 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
         }
 
         if (typeof updatedExpenses[expenseIndex] !== "undefined") {
+            // Only update if the value has changed
+            if (updatedExpenses[expenseIndex][field] !== processedValue) {
+                updatedExpenses[expenseIndex] = {
+                    ...updatedExpenses[expenseIndex],
+                    [field]: processedValue,
+                };
 
-            updatedExpenses[expenseIndex] = {
-                ...updatedExpenses[expenseIndex],
-                [field]: processedValue,
-            };
-
-            await updateExpense(user, updatedExpenses[expenseIndex]).then(() => {
-                console.log("Expense updated: ", updatedExpenses[expenseIndex])
-            });
-
+                await updateExpense(user, updatedExpenses[expenseIndex]).then(() => {
+                    console.log("Expense updated: ", updatedExpenses[expenseIndex])
+                });
+            }
         }
 
         setCurrentExpenses(updatedExpenses);
@@ -276,7 +277,8 @@ const EditableTableCell = ({initialValue, onEdit, isCurrency, className, type}: 
         setIsEditing(false);
     }
 
-    const debounceOnEdit = debounce(onEdit, 4000);
+    const debounceOnEdit = debounce(onEdit, 5000);
+
     useEffect(() => {
         if (!isEditing) {
             debounceOnEdit(value);
