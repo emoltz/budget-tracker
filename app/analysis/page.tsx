@@ -33,31 +33,37 @@ export default function Page() {
 
     // this is typed just as a dict so that it can be used with charts
     const [categoryBudgets, setCategoryBudgets] = useState<{[key : string] : any;}[]>([]);
-    const [totalSpent, setTotalSpent] = useState<number>(0);
-    const [totalBudgets, setTotalBudgets] = useState<number>(0);
-    const [numExceeded, setExceeded] = useState<number>(0);
-    // let numExceeded = 0;
-    // TODO consolidate states
-    const [currentIdx, setIndex] = useState<number>(0)
+    const [budgetInfo, setBudgetInfo] = useState<{[key : string] : number;}>({
+            totalSpent : 0,
+            totalBudget: 0,
+            budgetsExceeded: 0,
+        })
+    const [currentIndex, setIndex] = useState<number>(0)
 
     useEffect(() => {
         async function fetchData() {
             if (user) {
                 setCategoryBudgets([]); // reset so appending doesn't duplicate data
                 const data : CategoryBudget[] = await getCategoryBudgets(user);
+                
+                let info = {
+                    totalSpent : 0,
+                    totalBudget: 0,
+                    budgetsExceeded: 0,
+                }
                 data.forEach((cb) => {
                     let amtSpent = cb["spent"] || 0;
                     let amtLeft = cb["budgetAmount"] - amtSpent;
                     let amtOver = 0
-
-                    setTotalSpent((spent) => spent + amtSpent);
-                    setTotalBudgets((budget) => budget + cb["budgetAmount"]);
+                   
+                    info.totalSpent += amtSpent,
+                    info.totalBudget += cb["budgetAmount"]
                     
                     if (amtLeft < 0) {
                         amtOver = amtSpent - cb["budgetAmount"];
                         amtSpent = cb["budgetAmount"]; // not ideal
-                        amtLeft = 0;
-                        setExceeded((num) => num + 1);
+                        amtLeft = 0;                    
+                        info.budgetsExceeded += 1
                     }
 
                     const chartData = {
@@ -69,21 +75,17 @@ export default function Page() {
                     
                     setCategoryBudgets((categoryBudgets) =>
                         [...categoryBudgets, chartData])
-                    
-                    
+
                 })
+
+                setBudgetInfo(info);
             }
         }
   
         // noinspection JSIgnoredPromiseFromCall
-        fetchData();
-        // setTotal(categoryBudgets && categoryBudgets.map((category) => category["spent"] || 0)
-        //                         .reduce((sum, curr) => sum + curr, 0));
-        
+        fetchData();   
                                 
     }, [user])
-
-    // console.log(totalSpent)
 
     if (loading) {
         return <Loading/>; // Or return a loading spinner
@@ -114,7 +116,7 @@ export default function Page() {
                                     <div className="truncate">
                                         <Text>Spent so far</Text>
                                         <Metric className="truncate">
-                                            ${ `${Intl.NumberFormat("us").format(totalSpent as number)}`}
+                                            ${ `${Intl.NumberFormat("us").format(budgetInfo.totalSpent as number)}`}
                                         </Metric>
                                     </div>
                                     {/* dummy badgeDelta data below */}
@@ -122,17 +124,17 @@ export default function Page() {
                                 </Flex>
                                 <Flex className="mt-4 space-x-2">
                                     <Text className="truncate">
-                                        {`${(totalSpent / totalBudgets * 100).toFixed()}%`}
+                                        {`${(budgetInfo.totalSpent / budgetInfo.totalBudget * 100).toFixed()}%`}
                                     </Text>
-                                    <Text>{`$ ${Intl.NumberFormat("us").format(totalBudgets)}`}</Text>
+                                    <Text>{`$ ${Intl.NumberFormat("us").format(budgetInfo.totalBudget)}`}</Text>
                                 </Flex>
-                                <ProgressBar value={Math.trunc(totalSpent / totalBudgets * 100)} className="mt-2" />
+                                <ProgressBar value={Math.trunc(budgetInfo.totalSpent / budgetInfo.totalBudget * 100)} className="mt-2" />
                             </Card>
                             <Card>
                                 <Flex alignItems="start">
                                     <div className="truncate">
                                         <Text>Budgets exceeded</Text>
-                                        <Metric className="truncate">{numExceeded} / {categoryBudgets.length}</Metric>
+                                        <Metric className="truncate">{budgetInfo.budgetsExceeded} / {categoryBudgets.length}</Metric>
                                     </div>
                                 </Flex>
                                 
@@ -140,10 +142,10 @@ export default function Page() {
                         </Grid>
                         <Flex className='mt-6'>
                             <Card>
-                                <TabGroup onIndexChange={() => setIndex(currentIdx === 0 ? 1 : 0)}>
+                                <TabGroup onIndexChange={() => setIndex(currentIndex === 0 ? 1 : 0)}>
                                     <div className="flex justify-between">
                                         <div>
-                                            <Title>{currentIdx === 0 ? "Budget progress" : "Spending breakdown"}</Title>
+                                            <Title>{currentIndex === 0 ? "Budget progress" : "Spending breakdown"}</Title>
                                         </div>
                                         <div>
                                             <TabList variant={"solid"} className="self-justify-left">
