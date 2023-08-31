@@ -25,7 +25,7 @@ export default function Page({params}: { params: { id: string } }) {
                 </span>
                 <span className={"pl-1"}>
 
-                {expense.categoryID.slice(0, expense.categoryID.indexOf("_"))}
+
                 </span>
 
             </div>

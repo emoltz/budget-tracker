@@ -14,6 +14,7 @@ import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/
 import {Expense} from "@/lib/Interfaces";
 import {Button, useMantineTheme} from "@mantine/core";
 import {useState} from "react";
+import LoadingRow from "@/components/loadingSkeletons/LoadingRow";
 
 /*
     TODO
@@ -92,7 +93,7 @@ export function DataTable<TData, TValue>({
                         ) : (
                             <TableRow>
                                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    No results.
+                                    <LoadingRow/>
                                 </TableCell>
                             </TableRow>
                         )}

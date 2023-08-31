@@ -62,7 +62,7 @@ export interface Expense {
     vendor: string;
     description: string; // or "notes"
     category: string;
-    categoryID: string;
+    monthID: string;
     date: Timestamp | FieldValue | string;
     month: number;
     year: number;
@@ -118,7 +118,7 @@ export class ExpenseClass implements Expense {
     id = "";
     amount = 0;
     category = "";
-    categoryID = "";
+    monthID = "";
     vendor = "";
     description = "";
     is_yearly = false;
@@ -129,28 +129,28 @@ export class ExpenseClass implements Expense {
     is_monthly = false;
 
 
-    constructor(amount: number, categoryName: string, name: string, vendor: string, description: string, is_monthly: boolean, is_yearly: boolean) {
+    constructor(amount: number, categoryName: string, name: string, vendor?: string, description?: string, is_monthly?: boolean, is_yearly?: boolean) {
         // random number
-        const newID: string = this.generateExpenseId(categoryName);
+        const newID: string = this.generateExpenseId(name);
+        this.category = categoryName;
         this.amount = amount;
         this.name = name;
-        this.vendor = vendor;
-        this.description = description;
-        this.is_monthly = is_monthly;
-        this.is_yearly = is_yearly;
+        this.vendor = vendor ?? "";
+        this.description = description ?? "";
+        this.is_monthly = is_monthly ?? false;
+        this.is_yearly = is_yearly ?? false;
         this.year = new Date().getFullYear();
         this.month = new Date().getMonth() + 1;
         this.id = newID;
-        this.category = categoryName;
-        this.categoryID = this.getCategoryID(categoryName);
+        this.monthID = this.getMonthID();
     }
 
-    generateExpenseId(categoryId: string): string {
+    generateExpenseId(name: string): string {
         // Get current timestamp
         const timestamp = Date.now();
 
         // Construct the ID
-        return `${categoryId}_${timestamp}`;
+        return `${name}_${timestamp}`;
     }
 
     toObject() {
@@ -158,7 +158,6 @@ export class ExpenseClass implements Expense {
         return {
             amount: this.amount,
             category: this.category,
-            categoryID: this.categoryID,
             description: this.description,
             name: this.name,
             vendor: this.vendor,
@@ -167,13 +166,14 @@ export class ExpenseClass implements Expense {
             is_monthly: this.is_monthly,
             month: this.month,
             year: this.year,
+            monthID: this.monthID,
             id: this.id,
         }
     }
 
-    getCategoryID(categoryName: string): string {
+    getMonthID(): string {
         // this helps us marry it to the category inside Firebase
-        return categoryName + "_" + this.month + "_" + this.year;
+        return this.month + "_" + this.year;
     }
 
 }
