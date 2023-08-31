@@ -17,14 +17,15 @@ interface MonthlyExpensesProps {
 
 export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = {width: "w-full", height: "h-full"}) {
 
-
-    const [showForm, setShowForm] = useState<boolean>(false);
-    const [newExpenseRow, setNewExpenseRow] = useState({
+    const initialExpenseRow = {
         name: "",
         category: "",
         amount: 0,
         description: ""
-    });
+    };
+
+    const [showForm, setShowForm] = useState<boolean>(false);
+    const [newExpenseRow, setNewExpenseRow] = useState(initialExpenseRow);
     const {user, loading} = useAuth();
     const sampleDateData: DateData = {
         month: 8,
@@ -94,6 +95,7 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
         setShowForm(!showForm);
     }
 
+
     const handleSubmit = async () => {
         const _newExpense = new ExpenseClass(
             newExpenseRow.amount,
@@ -106,10 +108,13 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
 
         const newExpense = _newExpense.toObject();
         await updateExpense(user, newExpense)
-        // TODO test the above, also should monthly expenses go into summary doc? I think not.
+
 
         setCurrentExpenses([...currentExpenses, newExpense]);
         toggleForm();
+
+        // reset form fields
+        setNewExpenseRow(initialExpenseRow);
     };
 
     return (
@@ -271,7 +276,7 @@ const EditableTableCell = ({initialValue, onEdit, isCurrency, className, type}: 
         setIsEditing(false);
     }
 
-    const debounceOnEdit = debounce(onEdit, 1000);
+    const debounceOnEdit = debounce(onEdit, 4000);
     useEffect(() => {
         if (!isEditing) {
             debounceOnEdit(value);

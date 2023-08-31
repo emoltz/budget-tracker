@@ -131,7 +131,7 @@ export class ExpenseClass implements Expense {
 
     constructor(amount: number, categoryName: string, name: string, vendor?: string, description?: string, is_monthly?: boolean, is_yearly?: boolean) {
         // random number
-        const newID: string = this.generateExpenseId(categoryName);
+        const newID: string = this.generateExpenseId(name);
         this.category = categoryName;
         this.amount = amount;
         this.name = name;
@@ -145,12 +145,12 @@ export class ExpenseClass implements Expense {
         this.monthID = this.getMonthID();
     }
 
-    generateExpenseId(categoryId: string): string {
+    generateExpenseId(name: string): string {
         // Get current timestamp
         const timestamp = Date.now();
 
         // Construct the ID
-        return `${categoryId}_${timestamp}`;
+        return `${name}_${timestamp}`;
     }
 
     toObject() {
