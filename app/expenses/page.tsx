@@ -11,6 +11,7 @@ import React, {useEffect, useState} from 'react';
 import LoginMantine from "@/components/LoginMantine";
 import LoadingTable from "@/app/expenses/LoadingTable";
 import MonthlyExpenses from "@/components/MonthlyExpenses";
+import AddButton from "@/components/ui/addButton";
 
 export default function Page() {
 
@@ -69,10 +70,19 @@ export default function Page() {
                 </Tabs.List>
                 <Tabs.Panel value={"expenses"} pt={"xs"}>
 
+                    <div className="flex justify-between">
 
-                    <div className={"text-2xl font-medium m-2 "}>
-                        All Expenses
+                        <div className={"text-2xl font-medium m-2 "}>
+                            All Expenses
+                        </div>
+                        <AddButton
+                            onClick={() => {
+                                console.log("clicked")
+                            }}
+                        />
+
                     </div>
+
 
                     <div className={""}>
                         <DataTable columns={columns} data={currentExpenses}/>
