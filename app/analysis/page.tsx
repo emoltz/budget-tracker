@@ -1,8 +1,8 @@
 "use client";
 import React , { useState, useEffect } from 'react';
 import { useAuth } from "@/app/context";
-import { CategoryBudget } from "@/lib/Interfaces";
-import { getCategoryBudgets } from "@/lib/firebase";
+// import { CategoryBudget } from "@/lib/Interfaces";
+import { getCategoryBudgets, getExpenses } from "@/lib/firebase";
 import { useMantineColorScheme } from '@mantine/core';
 import Loading from "@/app/loading";
 import AreaChartView from "@/components/AreaChartView"
@@ -36,27 +36,26 @@ export default function Page() {
             totalSpent : 0,
             totalBudget: 0,
             budgetsExceeded: 0,
-        })
-    const [currentIndex, setIndex] = useState<number>(0)
+        });
+    const [currentIndex, setIndex] = useState<number>(0);
+    const [dailyData, setDailyData] = useState< {[key : string] : any}[]>([]);
 
     useEffect(() => {
-        async function fetchData() {
-            if (user) {
-                const data : CategoryBudget[] = await getCategoryBudgets(user);
-                
+        if (user) {
+            getCategoryBudgets(user).then(data => {
                 let info = {
                     totalSpent : 0,
                     totalBudget: 0,
                     budgetsExceeded: 0,
                 }
                 let categories : {[key : string] : any}[] = []
-
+    
                 data.forEach((cb) => {
                     // generate meta-stats about budgets
                     let amtSpent = cb["spent"] || 0;
                     let amtLeft = cb["budgetAmount"] - amtSpent;
                     let amtOver = 0
-                   
+                    
                     info.totalSpent += amtSpent,
                     info.totalBudget += cb["budgetAmount"]
                     
@@ -66,7 +65,7 @@ export default function Page() {
                         amtLeft = 0;                    
                         info.budgetsExceeded += 1
                     }
-
+    
                     // add calculated fields to CategoryBudgets for bar chart display
                     const chartData = {
                         ...cb,
@@ -77,15 +76,41 @@ export default function Page() {
                     
                     categories.push(chartData)
                 })
-
+    
                 setBudgetInfo(info);
                 setCategoryBudgets(categories);
-            }
+            }).catch(error => console.log("getCategoryBudgets error" + error)) 
+            
+            const currentDate = new Date();
+            
+            let dailies : {[key : string] : any}[] = []
+            getExpenses(user, currentDate.getMonth() + 1, currentDate.getFullYear())
+                .then(expenses => {
+                    expenses.forEach((exp) => {
+                        let key = new Date(exp.date as string).getDate();
+
+                        if (!dailies[key]) {
+                            dailies[key] = {
+                                Day: key,
+                                Food: 0,
+                                Activities: 0,
+                                Transportation: 0,
+                                Groceries: 0,
+                                Housing: 0,
+                                "Medical & Healthcare": 0,
+                                "Personal Spending" : 0
+                            }
+                        }
+                        // if (!dailies[key][exp.category])
+                        // dailies[key][exp.category] = 0
+
+                        dailies[key][exp.category] += exp.amount
+                    })
+                    setDailyData(Object.values(dailies))
+                    // console.log(Object.values(dailyData))
+                }).catch(error => console.log("getExpenses error" + error))
         }
-  
-        // noinspection JSIgnoredPromiseFromCall
-        fetchData();   
-                                
+                                  
     }, [user])
 
     if (loading) {
@@ -189,7 +214,7 @@ export default function Page() {
                     <TabPanel>
                         <div className="mt-6">
                             <Card>
-                                <AreaChartView title="Trends" data={[]}/>
+                                <AreaChartView title="Trends" data={Object.values(dailyData)}/>
                             </Card>
                         </div>
                     </TabPanel>
