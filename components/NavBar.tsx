@@ -33,16 +33,11 @@ interface Props {
 }
 
 export default function NavBar({collapsed}: Props) {
-//   const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
   const {colorScheme} = useMantineColorScheme();
   // NOTE: seems like transitions work without setting animationCompleted?
 //   let animationDuration = 100;
 //   const [animationCompleted, setAnimationCompleted] = useState(true);
-
-//   useEffect(() => {
-//     setCollapsed(window.innerWidth < 640)
-//   }, [])
 
 //   useEffect(() => {
 //     setAnimationCompleted(false);
@@ -53,7 +48,9 @@ export default function NavBar({collapsed}: Props) {
 //   }, [animationDuration, collapsed])
 
   return (
-    <aside className={`flex absolute md:relative h-full z-10 border-r ${colorScheme == 'dark' ? "dark" : ""}  ${collapsed?"w-0 overflow-hidden sm:w-[4.5rem]":"w-64"} transition-all`}>
+    <aside className={`flex absolute md:relative h-full z-10 border-r 
+            ${colorScheme == 'dark' ? "dark bg-slate-900" : "bg-white"}  
+            ${collapsed ? "w-0 overflow-hidden sm:w-[4.5rem]" : "w-64"} transition-all`}>
       <nav className="flex flex-col m-3 gap-2 divide-y w-full">
           {/* <div className="flex flex-row px-2 py-1 gap-3 items-center">
             {animationCompleted && !collapsed && 

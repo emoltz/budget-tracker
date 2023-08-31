@@ -65,22 +65,22 @@ export default function RootLayout({
                     </Head>
                     
                     <AuthProvider>
-                        <body className="h-screen">
+                        <body className={`h-[calc(100vh-0.1rem)] ${colorScheme == 'dark' ? "bg-slate-900" : ""} `}>
                         {/*<ChakraProvider>*/}
                             <Header 
                                 collapsed={collapsed}
                                 onCollapse={() => setCollapsed(!collapsed)}
                             />
-                                <div className={"flex relative overflow-hidden h-[calc(100%-3.5rem)]"} >
-                                    <NavBar collapsed={collapsed}/>
-                                    <main
-                                        className={`flex-1 overflow-y-scroll ${colorScheme === 'dark' ? "bg-gray-900" : "bg-white"}`}
-                                    >
-                                        {children}
-                                    </main>
+                            <div className={"flex relative overflow-hidden h-[calc(100%-3.5rem)]"} >
+                                <NavBar collapsed={collapsed}/>
+                                <main
+                                    className={`flex-1 overflow-y-auto ${colorScheme === 'dark' ? "bg-slate-900" : "bg-white"}`}
+                                >
+                                    {children}
+                                </main>
                             {/*<Footer links={footerLinks}/>*/}
 
-                                </div>
+                            </div>
 
                         {/*</ChakraProvider>*/}
                         </body>
