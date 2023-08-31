@@ -6,8 +6,9 @@ import {Input} from "@/components/ui/input"
 import {CategoryPicker} from "@/components/CategoryPicker";
 import {IconPlus} from "@tabler/icons-react";
 import {ChangeEvent, MutableRefObject, useEffect, useRef, useState} from "react";
-import {getExpenses} from "@/lib/firebase";
+import {getExpenses, updateExpense} from "@/lib/firebase";
 import {useAuth} from "@/app/context";
+import {debounce} from "lodash"
 
 interface MonthlyExpensesProps {
     width?: string;
@@ -16,51 +17,7 @@ interface MonthlyExpensesProps {
 
 export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = {width: "w-full", height: "h-full"}) {
 
-    const monthlyExpensesSampleData: Expense[] = [
-        {
-            id: "1",
-            name: "Groceries",
-            amount: 100,
-            vendor: "Supermart",
-            description: "Monthly grocery expenses",
-            category: "Food",
-            categoryID: "food-1",
-            date: "2023-08-01",
-            month: 8,
-            year: 2023,
-            is_yearly: false,
-            is_monthly: true,
-        },
-        {
-            id: "2",
-            name: "Rent",
-            amount: 1200,
-            vendor: "Property Management Inc.",
-            description: "Monthly rent payment",
-            category: "Housing",
-            categoryID: "housing-1",
-            date: "2023-08-05",
-            month: 8,
-            year: 2023,
-            is_yearly: false,
-            is_monthly: true,
-        },
-        {
-            id: "3",
-            name: "Internet",
-            amount: 50,
-            vendor: "ISP Co.",
-            description: "Monthly internet bill",
-            category: "Utilities",
-            categoryID: "utilities-1",
-            date: "2023-08-10",
-            month: 8,
-            year: 2023,
-            is_yearly: false,
-            is_monthly: true,
-        },
-    ]
-    const [monthlyExpenses, setMonthlyExpenses] = useState<Expense[]>(monthlyExpensesSampleData);
+
     const [showForm, setShowForm] = useState<boolean>(false);
     const [newExpenseRow, setNewExpenseRow] = useState({
         name: "",
@@ -80,10 +37,14 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
         if (user) {
             getExpenses(user, sampleDateData.month, sampleDateData.year, true).then(expenses => {
                 setCurrentExpenses(expenses)
+                console.log("Expenses: ", expenses)
 
             })
         }
     }, [user])
+
+    // TODO replace with custom loading skeleton
+    if (loading) return <div>Loading...</div>
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>, field: string) => {
         const value = field === 'amount' ? parseFloat(e.target.value) : e.target.value;
@@ -93,12 +54,12 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
         });
     };
 
-    const handleCellEdit = (
+    const handleCellEdit = async (
         newValue: string | number,
         expenseIndex: number,
         field: keyof Expense
     ) => {
-        const updatedExpenses = [...monthlyExpenses];
+        const updatedExpenses = [...currentExpenses];
         let processedValue = newValue;
 
         if (field === "amount") {
@@ -106,13 +67,19 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
         }
 
         if (typeof updatedExpenses[expenseIndex] !== "undefined") {
+
             updatedExpenses[expenseIndex] = {
                 ...updatedExpenses[expenseIndex],
                 [field]: processedValue,
             };
+
+            await updateExpense(user, updatedExpenses[expenseIndex]).then(() => {
+                console.log("Expense updated: ", updatedExpenses[expenseIndex])
+            });
+
         }
 
-        setMonthlyExpenses(updatedExpenses);
+        setCurrentExpenses(updatedExpenses);
     };
 
 
@@ -120,7 +87,7 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
         setShowForm(!showForm);
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = async () =>  {
         const _newExpense = new ExpenseClass(
             newExpenseRow.amount,
             newExpenseRow.category,
@@ -131,15 +98,17 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
         )
 
         const newExpense = _newExpense.toObject();
-        setMonthlyExpenses([...monthlyExpenses, newExpense]);
+        await updateExpense(user, newExpense)
+        // TODO test the above, also should monthly expenses go into summary doc? I think not.
+
+        setCurrentExpenses([...currentExpenses, newExpense]);
         toggleForm();
     };
-    // TODO replace with custom loading skeleton
-    if (loading) return <div>Loading...</div>
+
     return (
         <div className={`${width} ${height}`}>
             <div className={"flex justify-between items-center mb-5 mt-5"}>
-                <div className={"flex-grow text-center"}>
+                <div className={"flex-grow "}>
                     <div className={"text-2xl font-medium"}>
                         Monthly Expenses
                     </div>
@@ -210,6 +179,8 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
                                 />
                             </TableCell>
                             <TableCell className={""}>
+
+
                                 <Input
                                     placeholder={""}
                                     onChange={(e) => handleInputChange(e, "category")}
@@ -282,10 +253,18 @@ const EditableTableCell = ({initialValue, onEdit, isCurrency, className, type}: 
     }, [isEditing])
 
 
+
     const handleEdit = () => {
         onEdit(value);
         setIsEditing(false);
     }
+
+    const debounceOnEdit = debounce(onEdit, 1000);
+    useEffect (() => {
+        if (!isEditing){
+            debounceOnEdit(value);
+        }
+    }, [isEditing])
 
     const handleCellClick = () => {
         if (!isEditing) {

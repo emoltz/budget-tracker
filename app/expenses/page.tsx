@@ -68,10 +68,12 @@ export default function Page() {
                     <Tabs.Tab value={"monthly"}>Monthly</Tabs.Tab>
                 </Tabs.List>
                 <Tabs.Panel value={"expenses"} pt={"xs"}>
-                    <div className={"pt-5 pl-5"}>
 
 
+                    <div className={"text-2xl font-medium m-2 "}>
+                        All Expenses
                     </div>
+
                     <div className={""}>
                         <DataTable columns={columns} data={currentExpenses}/>
                     </div>
