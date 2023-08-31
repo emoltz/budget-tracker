@@ -1,3 +1,5 @@
+// noinspection JSIgnoredPromiseFromCall
+
 "use client";
 import {useEffect, useState} from 'react';
 
@@ -12,10 +14,11 @@ import {
     IconSettings,
 } from '@tabler/icons-react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation'
+import {usePathname} from 'next/navigation'
 import {auth} from "@/lib/firebase";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
 import NavItem from '@/components/NavItem';
+import {useMantineColorScheme} from "@mantine/core";
 
 const data = [
     {link: '/', label: 'Dashboard', icon: IconDashboard},
@@ -32,6 +35,7 @@ interface Props {
 export default function NavBar({collapsed}: Props) {
 //   const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
+  const {colorScheme} = useMantineColorScheme();
   // NOTE: seems like transitions work without setting animationCompleted?
 //   let animationDuration = 100;
 //   const [animationCompleted, setAnimationCompleted] = useState(true);
@@ -49,7 +53,7 @@ export default function NavBar({collapsed}: Props) {
 //   }, [animationDuration, collapsed])
 
   return (
-    <aside className={`flex absolute md:relative h-full z-10 border-r bg-white ${collapsed?"w-0 overflow-hidden sm:w-[4.5rem]":"w-64"} transition-all`}>
+    <aside className={`flex absolute md:relative h-full z-10 border-r ${colorScheme == 'dark' ? "dark" : ""}  ${collapsed?"w-0 overflow-hidden sm:w-[4.5rem]":"w-64"} transition-all`}>
       <nav className="flex flex-col m-3 gap-2 divide-y w-full">
           {/* <div className="flex flex-row px-2 py-1 gap-3 items-center">
             {animationCompleted && !collapsed && 
@@ -91,9 +95,8 @@ export default function NavBar({collapsed}: Props) {
                         key={item.label}
                         isActive={pathname.endsWith(item.link)}
                         collapsed={collapsed}
-                    >
+                    />
                       {/* TODO: .endsWith won't work for dynamic paths */}
-                    </NavItem>
                   </div>
               ))}
           </div>
@@ -106,8 +109,7 @@ export default function NavBar({collapsed}: Props) {
                     href={"/profile"}
                     isActive={pathname.startsWith("/profile")}
                     collapsed={collapsed}
-                >
-                </NavItem>
+                />
             </div>
             
             <div onClick={() => {
@@ -120,8 +122,7 @@ export default function NavBar({collapsed}: Props) {
                     href={"/login"}
                     isActive={pathname.startsWith("/debug")}
                     collapsed={collapsed}
-                    >
-                </NavItem>
+                />
             </div>
         </div>
     </nav>

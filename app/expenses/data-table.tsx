@@ -12,8 +12,9 @@ import {
 
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table"
 import {Expense} from "@/lib/Interfaces";
-import {Button} from "@mantine/core";
+import {Button, useMantineTheme} from "@mantine/core";
 import {useState} from "react";
+import LoadingRow from "@/components/loadingSkeletons/LoadingRow";
 
 /*
     TODO
@@ -30,6 +31,7 @@ interface DataTableProps<Expense, TValue> {
     data: Expense[]
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function DataTable<TData, TValue>({
                                              columns,
                                              data,
@@ -47,6 +49,8 @@ export function DataTable<TData, TValue>({
             sorting,
         },
     });
+
+    const {colorScheme} = useMantineTheme();
 
 
     return (
@@ -80,7 +84,7 @@ export function DataTable<TData, TValue>({
                                     data-state={row.getIsSelected() && "selected"}
                                 >
                                     {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
+                                        <TableCell key={cell.id} className={`${colorScheme == 'dark' ? "text-white" : ""}`}>
                                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                         </TableCell>
                                     ))}
@@ -89,7 +93,7 @@ export function DataTable<TData, TValue>({
                         ) : (
                             <TableRow>
                                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    No results.
+                                    <LoadingRow/>
                                 </TableCell>
                             </TableRow>
                         )}

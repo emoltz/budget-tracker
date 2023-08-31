@@ -19,13 +19,6 @@ import {
 } from "@tabler/icons-react";
 import React from "react";
 
-
-interface IconProps {
-    size?: string | number;
-    stroke?: string | number;
-    color?: string;
-}
-
 export type IconType = {
     name: string;
     component: React.JSX.Element;

@@ -23,8 +23,7 @@ import {
     User,
     UserCredential
 } from "firebase/auth";
-// @ts-ignore
-import {auth, saveUserToDatabase} from "@/lib/firebase";
+import {auth, saveUserToDatabaseNew} from "@/lib/firebase";
 import GoogleButton from "react-google-button";
 import {doc, getDoc, getFirestore} from "firebase/firestore";
 import React from "react";
@@ -43,7 +42,7 @@ export default function LoginMantine(props: PaperProps) {
                 const userDocSnap = await getDoc(userDocRef);
                 if (!userDocSnap.exists()) {
                     // The user does not exist in the database, save the user
-                    await saveUserToDatabase(user);
+                    await saveUserToDatabaseNew(user);
                 }
             }
         }
@@ -79,7 +78,7 @@ export default function LoginMantine(props: PaperProps) {
                         displayName: name
                     });
 
-                    await saveUserToDatabase(auth.currentUser).then(() => {
+                    await saveUserToDatabaseNew(auth.currentUser).then(() => {
                         console.log("User successfully sent to database!");
                         console.log(auth.currentUser)
                     });
