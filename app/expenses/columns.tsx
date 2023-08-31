@@ -107,10 +107,16 @@ export const columns: ColumnDef<Expense>[] = [
                             View Category
                         </DropdownMenuItem>
                         <DropdownMenuItem>
-                            <div className={"text-red-600 font-bold"}>
+                            <button
+                                className={"text-red-600 font-bold cursor-pointer"}
+                                onClick={() => {
+                                    console.log("Delete")
+                                }}
+
+                            >
 
                                 Delete
-                            </div>
+                            </button>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
