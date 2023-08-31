@@ -17,7 +17,6 @@ import {
     Grid,
     Metric,
     ProgressBar,
-    Subtitle,
     Tab,
     TabGroup,
     TabList,
@@ -43,7 +42,6 @@ export default function Page() {
     useEffect(() => {
         async function fetchData() {
             if (user) {
-                setCategoryBudgets([]); // reset so appending doesn't duplicate data
                 const data : CategoryBudget[] = await getCategoryBudgets(user);
                 
                 let info = {
@@ -51,7 +49,10 @@ export default function Page() {
                     totalBudget: 0,
                     budgetsExceeded: 0,
                 }
+                let categories : {[key : string] : any}[] = []
+
                 data.forEach((cb) => {
+                    // generate meta-stats about budgets
                     let amtSpent = cb["spent"] || 0;
                     let amtLeft = cb["budgetAmount"] - amtSpent;
                     let amtOver = 0
@@ -66,6 +67,7 @@ export default function Page() {
                         info.budgetsExceeded += 1
                     }
 
+                    // add calculated fields to CategoryBudgets for bar chart display
                     const chartData = {
                         ...cb,
                         "Amount Spent" : amtSpent,
@@ -73,12 +75,11 @@ export default function Page() {
                         "Amount Over" : amtOver
                     }
                     
-                    setCategoryBudgets((categoryBudgets) =>
-                        [...categoryBudgets, chartData])
-
+                    categories.push(chartData)
                 })
 
                 setBudgetInfo(info);
+                setCategoryBudgets(categories);
             }
         }
   
@@ -173,7 +174,7 @@ export default function Page() {
                                             <DonutChart
                                                 className="grow h-80"
                                                 data={categoryBudgets}
-                                                category="Amount Spent" // TODO: fix this
+                                                category="Amount Spent" // TODO: fix this for over-budget categories
                                                 index="category"
                                                 valueFormatter={numberFormatter}
                                                 colors={["teal", "gray", "violet", "indigo", "rose", "cyan", "amber"]}
