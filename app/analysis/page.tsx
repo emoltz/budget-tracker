@@ -31,24 +31,24 @@ export default function Page() {
     const {colorScheme} = useMantineColorScheme();
 
     // this is typed just as a dict so that it can be used with charts
-    const [categoryBudgets, setCategoryBudgets] = useState<{[key : string] : any;}[]>([]);
+    const [categoryBudgets, setCategoryBudgets] = useState<{[key : string] : string | number;}[]>([]);
     const [budgetInfo, setBudgetInfo] = useState<{[key : string] : number;}>({
             totalSpent : 0,
             totalBudget: 0,
             budgetsExceeded: 0,
         });
     const [currentIndex, setIndex] = useState<number>(0);
-    const [dailyData, setDailyData] = useState< {[key : string] : any}[]>([]);
+    const [dailyData, setDailyData] = useState< {[key : string] : number | string}[]>([]);
 
     useEffect(() => {
         if (user) {
             getCategoryBudgets(user).then(data => {
-                let info = {
+                const info = {
                     totalSpent : 0,
                     totalBudget: 0,
                     budgetsExceeded: 0,
                 }
-                let categories : {[key : string] : any}[] = []
+                const categories : {[key : string] : string | number}[] = []
     
                 data.forEach((cb) => {
                     // generate meta-stats about budgets
@@ -83,11 +83,11 @@ export default function Page() {
             
             const currentDate = new Date();
             
-            let dailies : {[key : string] : any}[] = []
+            const dailies : {[key : string] : number}[] = []
             getExpenses(user, currentDate.getMonth() + 1, currentDate.getFullYear())
                 .then(expenses => {
                     expenses.forEach((exp) => {
-                        let key = new Date(exp.date as string).getDate();
+                        const key = new Date(exp.date as string).getDate();
 
                         if (!dailies[key]) {
                             dailies[key] = {

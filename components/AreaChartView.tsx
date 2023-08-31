@@ -15,7 +15,7 @@ import { IconInfoCircleFilled } from '@tabler/icons-react';
 
 interface Props {
     title: string,
-    data: {}[],
+    data: object[],
 }
 export default function AreaChartView({title, data} : Props) {
     const [selectedIndex, setSelectedIndex] = useState(0);
