@@ -27,6 +27,7 @@ import {
     MonthSummary
 } from "./Interfaces";
 import {useEffect, useState} from "react";
+import {Timestamp} from "@firebase/firestore";
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
@@ -191,6 +192,64 @@ export async function sendExpenseToFirebaseNew(user: User, expense: ExpenseClass
         }
     }
 }
+
+export async function addMonthlyExpense(user: User | null, expense: Expense){
+    // check if expense is monthly
+    if (!expense.is_monthly){
+        console.warn(`Expense ${expense.id} is not monthly`)
+        return;
+    }
+
+    if (user){
+        const db = getFirestore();
+        try{
+            // get reference to current month
+            const currentMonth = createMonthYearString(expense.month, expense.year);
+            const userRef = doc(db, usersDirectory, user.uid);
+            const expensesRef = collection(userRef, currentMonth);
+            const expenseRef = doc(expensesRef, expense.id);
+
+            // add doc
+            await setDoc(expenseRef, expense);
+            console.log(`Expense document written with ID: ${expense.id}`);
+
+        }
+        catch (e){
+            console.error("Error adding document: ", e);
+        }
+    }
+}
+
+export async function updateExpense(user: User | null, expense: Expense) {
+    if (user) {
+        const db = getFirestore();
+        const currentMonth = createMonthYearString(expense.month, expense.year);
+        const userRef = doc(db, usersDirectory, user.uid);
+        const expensesRef = collection(userRef, currentMonth);
+        const expenseRef = doc(expensesRef, expense.id);
+
+        // Fetch the document from Firestore to check if it exists
+        const expenseDoc = await getDoc(expenseRef);
+
+        if (expenseDoc.exists()) {
+            // Update the existing document
+            await updateDoc(expenseRef, {
+                name: expense.name,
+                amount: expense.amount,
+                category: expense.category,
+            });
+            console.log(`Expense document updated with ID: ${expense.id}`);
+        } else {
+            // Add a new document
+            console.log(`Monthly expense added because no document was found. ID: ${expense.id}`)
+            await addMonthlyExpense(user, expense)
+        }
+    } else {
+        throw new Error("User not found: updateExpense function failed.");
+    }
+}
+
+
 
 export async function getCurrentSummary(user: User | null): Promise<MonthSummary> {
     /**
@@ -441,25 +500,7 @@ export async function getUserCategories(user: User | null): Promise<string[]> {
     return ["Error returning categories"];
 }
 
-// noinspection JSUnusedGlobalSymbols
-// export async function addCategory(user: User, category: CategoryClass) {
-//     // this function adds a category to the database
-//     // this function is not reactive. It is used to send a single category to firebase
-//     // TODO finish this and make sure that it saved it with the proper month and year
-//     if (user?.uid) {
-//         const db: Firestore = getFirestore();
-//         const categoryObject = category.toObject();
-//         // TODO do checks to make sure category object has correct info
-//         try {
-//             const docRef = await addDoc(collection(db, 'Users', user.uid, 'Categories'), categoryObject);
-//             console.log("Category document written with ID: ", docRef.id);
-//         } catch (e) {
-//             console.error("Error adding document: ", e);
-//         }
-//     }
-// }
-
-async function saveExpenseToCategory(user: User, expense: ExpenseClass) {
+async function saveExpenseToCategory_deprecated(user: User, expense: ExpenseClass) {
     /*
         The purpose of this function is to marry the expense to the category in firebase and keep a record of all expenses
         It's a helper function to `sendExpenseToFirebase`
@@ -469,7 +510,7 @@ async function saveExpenseToCategory(user: User, expense: ExpenseClass) {
         const db: Firestore = getFirestore();
         // const expenseObject = expense.toObject();
         try {
-            const categoryIdentifier = expense.categoryID;
+            const categoryIdentifier = expense.monthID;
             const categoryRef = doc(collection(doc(collection(db, 'Users'), user.uid), 'Categories'), categoryIdentifier);
             const categorySnapshot = await getDoc(categoryRef);
             if (!categorySnapshot.exists()) {
@@ -511,7 +552,7 @@ export async function sendExpenseToFirebase_depricated(user: User, expense: Expe
 
             // Write the document with the generated ID
             await setDoc(docRef, expenseObject);
-            await saveExpenseToCategory(user, expense);
+            await saveExpenseToCategory_deprecated(user, expense);
 
             console.log("Document written with ID: ", docRef.id);
         } catch (e) {
@@ -541,63 +582,54 @@ export async function changeCategoryIcon(user: User, iconName: string, categoryN
 
 }
 
-export async function getExpenses_currentMonth(user: User | null) {
+export async function getExpenses(user: User | null, month?: number, year?: number, monthly?: boolean): Promise<Expense[]> {
+    /**
+     *  this function returns a list of expenses for a given month and year
+     *  if no month or year is given, it returns the current month's expenses
+     */
     if (user) {
-        const currentMonthString = getCurrentMonthString();
-        const db = getFirestore();
-        const userRef = doc(db, usersDirectory, user.uid);
-        const expensesRef = collection(userRef, currentMonthString);
-        const expensesSnapshot = await getDocs(expensesRef);
-        const expenses: Expense[] = [];
-        expensesSnapshot.forEach((doc) => {
-            if (doc.id !== "summary"){
-                // this prevents `summary` from getting in here
-                expenses.push(doc.data() as Expense);
-            }
-        });
-        return expenses;
-    } else {
-        throw new Error("User not found")
-    }
-}
-
-export async function getExpenses(user: User | null, month?: number, year?: number): Promise<Expense[]>{
-
-    if (user){
         let monthString: string;
-        if (!month || !year){
+        if (!month || !year) {
             monthString = getCurrentMonthString();
-        }
-        else{
+        } else {
             monthString = createMonthYearString(month, year);
         }
+
         const db = getFirestore();
         const userRef = doc(db, usersDirectory, user.uid);
         const expensesRef = collection(userRef, monthString);
         const expensesSnapshot = await getDocs(expensesRef);
         const expenses: Expense[] = [];
-        expensesSnapshot.forEach((doc) => {
 
-            if (doc.id !== "summary"){ // this prevents `summary` from getting in here
+        expensesSnapshot.forEach((doc) => {
+            if (doc.id !== "summary") {
                 // convert timestamp
                 const expenseData = doc.data() as Expense;
-                if (expenseData.date){
-                    // @ts-ignore
-                    const date = expenseData.date.toDate();
-                    console.log("Date: ", date);
+
+                if (expenseData.date instanceof Timestamp) {
+                    const date: Date = expenseData.date.toDate();
                     expenseData.date = date.toLocaleDateString();
                 }
 
-
-                expenses.push(expenseData);
+                // Logic to include or exclude entries based on `monthly` and `is_monthly`
+                if (monthly === undefined || !monthly) {
+                    if (!expenseData.is_monthly) {
+                        expenses.push(expenseData);
+                    }
+                } else if (monthly) {
+                    if (expenseData.is_monthly) {
+                        expenses.push(expenseData);
+                    }
+                }
             }
         });
+
         return expenses;
-    }
-    else {
-        throw new Error("User not found")
+    } else {
+        throw new Error("User not found");
     }
 }
+
 
 function getCurrentMonthString(): string {
     // helper function to return the name of the current month's collection
@@ -608,7 +640,7 @@ function getCurrentMonthString(): string {
     return currentMonth.toString() + '_' + currentYear.toString();
 }
 
-function createMonthYearString(month: number, year: number): string{
+function createMonthYearString(month: number, year: number): string {
     return month.toString() + '_' + year.toString();
 
 }
