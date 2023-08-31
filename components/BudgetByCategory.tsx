@@ -13,13 +13,11 @@ import {
 } from "react-icons/fi";
 import { Category } from "@/lib/Interfaces";
 
-export default function BudgetByCategory(props: any): JSX.Element {
-  // TODO add category interface
+export default function BudgetByCategory({ category_name }: Category) {
   return (
     <>
       <Paper shadow="xs" radius="xl" p="md" withBorder>
-        <IoFastFoodOutline></IoFastFoodOutline>
-        <p>{props.category}</p>
+        <p>{category_name}</p>
 
         <TextInput type="number" placeholder="1000" label="Budget amount" />
       </Paper>
