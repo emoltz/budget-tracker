@@ -5,7 +5,7 @@ import { CategoryBudget } from "@/lib/Interfaces";
 import { getCategoryBudgets } from "@/lib/firebase";
 import { useMantineColorScheme } from '@mantine/core';
 import Loading from "@/app/loading";
-import ChartView from "@/components/ChartView"
+import AreaChartView from "@/components/AreaChartView"
 import { ChartBarIcon, ChartPieIcon } from "@heroicons/react/solid";
 
 import {
@@ -188,7 +188,7 @@ export default function Page() {
                     <TabPanel>
                         <div className="mt-6">
                             <Card>
-                                <ChartView />
+                                <AreaChartView title="Trends" data={[]}/>
                             </Card>
                         </div>
                     </TabPanel>
