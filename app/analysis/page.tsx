@@ -1,8 +1,9 @@
 "use client";
 import React from 'react';
-import {useAuth} from "@/app/context";
-import {Category} from "@/lib/Interfaces";
-import {useCategories_deprecated} from "@/lib/firebase";
+import { useAuth } from "@/app/context";
+import { Category } from "@/lib/Interfaces";
+import { useCategories_deprecated } from "@/lib/firebase";
+import { useMantineColorScheme } from '@mantine/core';
 import Loading from "@/app/loading";
 import ChartView from "@/components/ChartView"
 
@@ -24,6 +25,7 @@ import {
 
 export default function Page() {
   const {user, loading} = useAuth();
+  const {colorScheme} = useMantineColorScheme();
   const categories: Category[] = useCategories_deprecated(user);
   // console.log(user)
   // console.log(categories)
@@ -41,11 +43,9 @@ export default function Page() {
   }
 
   return (
-    <main className="px-12 py-12">
-      <Title>Dashboard</Title>
-      <Text>Lorem ipsum dolor sit amet, consetetur sadipscing elitr.</Text>
+    <div className={`p-4 ${colorScheme == 'dark' ? "dark" : ""}`}>
 
-      <TabGroup className="mt-6">
+      <TabGroup className="mt-2">
         <TabList>
           {/* <Tab>Overview</Tab> */}
           <Tab>Spending</Tab>
@@ -94,6 +94,6 @@ export default function Page() {
           
         </TabPanels>
       </TabGroup>
-    </main>
+    </div>
   );
 }

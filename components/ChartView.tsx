@@ -88,7 +88,7 @@ export default function ChartView() {
         className="mt-4 h-80"
         data={data}
         categories={["Food", "Activities", "Transportation"]}
-        index="Month"
+        index={Object.keys(data[0])[0]}
         colors={["indigo", "fuchsia", "lime"]}
         yAxisWidth={60}
         valueFormatter={(number: number) =>
