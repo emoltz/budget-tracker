@@ -54,6 +54,13 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
         });
     };
 
+    const handleCategoryPickerChange = (newValue: string) => {
+        setNewExpenseRow({
+            ...newExpenseRow,
+            category: newValue,
+        });
+    }
+
     const handleCellEdit = async (
         newValue: string | number,
         expenseIndex: number,
@@ -87,7 +94,7 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
         setShowForm(!showForm);
     }
 
-    const handleSubmit = async () =>  {
+    const handleSubmit = async () => {
         const _newExpense = new ExpenseClass(
             newExpenseRow.amount,
             newExpenseRow.category,
@@ -179,12 +186,15 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
                                 />
                             </TableCell>
                             <TableCell className={""}>
-
-
-                                <Input
-                                    placeholder={""}
-                                    onChange={(e) => handleInputChange(e, "category")}
+                                <CategoryPicker
+                                    onCategoryChange={handleCategoryPickerChange}
+                                    value={newExpenseRow.category}
                                 />
+
+                                {/*<Input*/}
+                                {/*    placeholder={""}*/}
+                                {/*    onChange={(e) => handleInputChange(e, "category")}*/}
+                                {/*/>*/}
                             </TableCell>
                             <TableCell className={""}>
                                 <Input
@@ -209,7 +219,10 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
                         </TableCell>
                         <TableCell className={"text-center font-mono font-bold"}>
                             {/*TODO put this in summary document...? */}
-                            ${currentExpenses.reduce((total, expense) => total + expense.amount, 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                            ${currentExpenses.reduce((total, expense) => total + expense.amount, 0).toLocaleString('en-US', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        })}
 
                         </TableCell>
                     </TableRow>
@@ -253,15 +266,14 @@ const EditableTableCell = ({initialValue, onEdit, isCurrency, className, type}: 
     }, [isEditing])
 
 
-
     const handleEdit = () => {
         onEdit(value);
         setIsEditing(false);
     }
 
     const debounceOnEdit = debounce(onEdit, 1000);
-    useEffect (() => {
-        if (!isEditing){
+    useEffect(() => {
+        if (!isEditing) {
             debounceOnEdit(value);
         }
     }, [isEditing])
@@ -307,7 +319,10 @@ const EditableTableCell = ({initialValue, onEdit, isCurrency, className, type}: 
                             setIsEditing(true)
                         }}
                     >
-                        {isCurrency ? `$${Number(value).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}` : value}
+                        {isCurrency ? `$${Number(value).toLocaleString('en-US', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        })}` : value}
                     </span>
                 )
             }
