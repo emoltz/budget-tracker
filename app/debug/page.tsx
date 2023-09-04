@@ -1,18 +1,43 @@
 "use client"
-import {Button, Input, NumberInput, useMantineTheme} from "@mantine/core";
+import {Input, NumberInput, useMantineTheme} from "@mantine/core";
 import {useRef, useState} from "react";
+import {Button} from "@/components/ui/button";
 import {CategoryPicker} from "@/components/CategoryPicker";
 import {IconPlus} from "@tabler/icons-react";
 import toast from "react-hot-toast";
-
+import {Popover, PopoverContent, PopoverTrigger,} from "@/components/ui/popover"
 
 export default function Debug() {
 
     return (
         <>
-            <AddExpenseModal/>
+            <Popover>
+                <PopoverTrigger>
+
+                    <div className="hover:shadow w-[100px] flex gap-2 p-3 bg-blue-500 font-bold text-white">
+
+                        New
+                        <IconPlus/>
+
+                    </div>
+
+                </PopoverTrigger>
+                <PopoverContent>
+                    <AddExpenseModal/>
+                </PopoverContent>
+            </Popover>
 
 
+        </>
+    )
+}
+
+function PlusIcon() {
+    return (
+        <>
+            <button>
+                <IconPlus/>
+            </button>
         </>
     )
 }
@@ -74,16 +99,26 @@ function AddExpenseModal() {
                 </div>
 
 
-                <Button
-                    onClick={() => {
-                        toast.success("Added expense: " + nameRef.current?.value)
-                    }}
-                    variant={"outline"}
-                >
-                    <IconPlus/>
+                <div className={""}>
+                    <Button
+                        onClick={() => {
+                            if(nameRef.current?.value == "") {
+                                toast.error("Please enter a name")
+                                return;
+                            }
+                            if (category == "") {
+                                toast.error("Please choose a category")
+                                return;
+                            }
 
-                </Button>
+                            toast.success("Added expense: " + nameRef.current?.value)
+                        }}
+                        variant={"outline"}
+                    >
+                        <IconPlus/>
 
+                    </Button>
+                </div>
             </div>
         </>
     )
