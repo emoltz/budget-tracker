@@ -1,28 +1,52 @@
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
-import {IconPlus} from "@tabler/icons-react";
-import {Input, NumberInput, useMantineTheme} from "@mantine/core";
+import {IconChevronDown, IconPlus} from "@tabler/icons-react";
+import {Button, Input, NumberInput, useMantineColorScheme, useMantineTheme} from "@mantine/core";
 import {useRef, useState} from "react";
 import {CategoryPicker} from "@/components/CategoryPicker";
-import {Button} from "@/components/ui/button";
 import toast from "react-hot-toast";
 
 export default function AddExpensePopover() {
+    const {colorScheme} = useMantineColorScheme();
 
     return (
-        <Popover
-        >
-            <PopoverTrigger>
-                <div className="hover:shadow w-[100px] flex gap-2 p-3 bg-blue-500 font-bold text-white">
-                    New
-                    <IconPlus/>
+        <>
 
-                </div>
+            <div className={"flex"}>
+                <Popover>
+                    <PopoverTrigger>
+                        <div
+                            className="hover:shadow w-[50px] rounded-l-2xl flex p-3 bg-blue-500 font-semibold text-white">
+                            New
 
-            </PopoverTrigger>
-            <PopoverContent>
-                <AddExpenseForm/>
-            </PopoverContent>
-        </Popover>
+                        </div>
+
+                    </PopoverTrigger>
+                    <PopoverContent
+                        className={`${colorScheme == 'dark' ? "bg-black border-gray-700 shadow-2xl" : ""} `}
+                    >
+                        <AddExpenseForm/>
+                    </PopoverContent>
+                </Popover>
+
+
+                <Popover>
+                    <PopoverTrigger>
+
+                        <button
+                            className={"hover:shadow w-[30px] h-[48px] pl-1 pt-1 rounded-r-2xl bg-blue-500 hover:bg-blue-400 text-white"}
+                        >
+                            <IconChevronDown
+                                size={20}
+                            />
+                        </button>
+                    </PopoverTrigger>
+                    <PopoverContent>
+                        Buttons!
+                    </PopoverContent>
+
+                </Popover>
+            </div>
+        </>
     )
 }
 
@@ -41,9 +65,6 @@ function AddExpenseForm() {
     return (
         <>
             <div className={darkModeClass + " grid grid-cols-1 place-items-center space-y-1"}>
-                <div className={"text-2xl font-bold p-3"}>
-                    Add Expense
-                </div>
 
                 <div className={"flex justify-center w-full gap-1"}>
                     <Input

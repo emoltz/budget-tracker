@@ -11,14 +11,14 @@ import React, {useEffect, useState} from 'react';
 import LoginMantine from "@/components/LoginMantine";
 import LoadingTable from "@/app/expenses/LoadingTable";
 import MonthlyExpenses from "@/components/MonthlyExpenses";
-import AddButton from "@/components/ui/addButton";
+import AddExpensePopover from "@/components/AddExpensePopover";
 
 export default function Page() {
 
     const dateData: DateData = {
-        month: 8,
+        month: 9,
         year: 2023,
-        monthName: "August"
+        monthName: "September"
     }
     const [currentExpenses, setCurrentExpenses] = useState<Expense[]>([]);
     const {user, loading} = useAuth();
@@ -75,11 +75,10 @@ export default function Page() {
                         <div className={"text-2xl font-medium m-2 "}>
                             All Expenses
                         </div>
-                        <AddButton
-                            onClick={() => {
-                                console.log("clicked")
-                            }}
-                        />
+                        <div className="p-1">
+
+                        <AddExpensePopover/>
+                        </div>
 
                     </div>
 
