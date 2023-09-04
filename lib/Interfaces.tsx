@@ -68,6 +68,7 @@ export interface Expense {
     year: number;
     is_yearly: boolean;
     is_monthly: boolean;
+    is_deleted: boolean;
 }
 
 export interface MonthSummary {
@@ -127,6 +128,7 @@ export class ExpenseClass implements Expense {
     date = serverTimestamp();
     year = 0;
     is_monthly = false;
+    is_deleted = false;
 
 
     constructor(amount: number, categoryName: string, name: string, vendor?: string, description?: string, is_monthly?: boolean, is_yearly?: boolean) {
@@ -168,6 +170,7 @@ export class ExpenseClass implements Expense {
             year: this.year,
             monthID: this.monthID,
             id: this.id,
+            is_deleted: this.is_deleted
         }
     }
 

@@ -127,7 +127,7 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
                         <div className={`${colorScheme == 'dark' ? "text-white" : ""}`}>
                             Monthly Expenses
 
-                            </div>
+                        </div>
                     </div>
                 </div>
 
