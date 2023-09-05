@@ -72,7 +72,7 @@ export default function Page() {
 
                     <div className="flex justify-between">
 
-                        <div className={"text-2xl font-medium m-2 "}>
+                        <div className={`text-2xl font-medium m-2 ${colorScheme == "dark" ? "text-white" : ""}`}>
                             All Expenses
                         </div>
                         <div className="p-1">
