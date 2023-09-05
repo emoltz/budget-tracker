@@ -242,6 +242,7 @@ export const CustomButtons = () => {
                             />
                              {/* ICON */}
                             <div className={"p-0.5"}>
+                                {/*TODO: consolidate popover stuff into IconPicker component? */}
                                 <Popover
 
                                     // withArrow
