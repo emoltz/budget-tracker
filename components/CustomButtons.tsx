@@ -13,6 +13,17 @@ import toast from "react-hot-toast";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,} from "@/components/ui/tooltip";
 
 // TODO: add drag and drop functionality
+const colorValueOffset = 4;
+const colorMapping: { [key: string]: string } = {
+    [DEFAULT_THEME.colors.red[DEFAULT_THEME.colors.red.length - colorValueOffset + 2]]: "red",
+    [DEFAULT_THEME.colors.yellow[DEFAULT_THEME.colors.yellow.length - colorValueOffset]]: "yellow",
+    [DEFAULT_THEME.colors.green[DEFAULT_THEME.colors.green.length - colorValueOffset]]: "green",
+    [DEFAULT_THEME.colors.cyan[DEFAULT_THEME.colors.cyan.length - colorValueOffset]]: "cyan",
+    [DEFAULT_THEME.colors.blue[DEFAULT_THEME.colors.blue.length - colorValueOffset]]: "blue",
+    [DEFAULT_THEME.colors.violet[DEFAULT_THEME.colors.violet.length - colorValueOffset - 2]]: "violet",
+    [DEFAULT_THEME.colors.pink[DEFAULT_THEME.colors.pink.length - colorValueOffset]]: "pink",
+    [DEFAULT_THEME.colors.gray[DEFAULT_THEME.colors.gray.length - colorValueOffset - 2]]: "gray",
+};
 
 const sampleButtons: CustomButton[] = [
     {
@@ -60,20 +71,12 @@ export const CustomButtons = () => {
     const [buttons, setButtons] = useState<CustomButton[]>(sampleButtons);
     const [opened, {open, close}] = useDisclosure(false);
     const [colorValue, setColorValue] = useState("#000000");
-    const colorValueOffset = 4;
+    const swatches: string[] = Object.keys(colorMapping);
+
     const form = useForm({
         initialValues: {
             label: "",
-            color: {
-                hex: "#000000",
-                rgba: {
-                    r: 0,
-                    g: 0,
-                    b: 0,
-                    a: 1,
-
-                }
-            },
+            color: "000000",
             // for actions:
             cost: 0,
             category: ""
@@ -178,19 +181,20 @@ export const CustomButtons = () => {
                         <ColorPicker
                             format="hex"
                             value={colorValue}
-                            onChange={() => {
+                            onChange={(color) => {
                                 setColorValue(colorValue);
+                                const selectedColorName = colorMapping[color];
+                                form.getInputProps('color').onChange(selectedColorName);
                             }}
                             withPicker={false}
                             fullWidth
-                            swatches={[
-                                DEFAULT_THEME.colors.red[DEFAULT_THEME.colors.red.length - colorValueOffset], // The last (darkest) shade of red
-                                DEFAULT_THEME.colors.green[DEFAULT_THEME.colors.green.length - colorValueOffset], // The last (darkest) shade of orange
-                                DEFAULT_THEME.colors.yellow[DEFAULT_THEME.colors.yellow.length - colorValueOffset], // The last (darkest) shade of yellow
-                                DEFAULT_THEME.colors.blue[DEFAULT_THEME.colors.blue.length - colorValueOffset], // The last (darkest) shade of green
-                                DEFAULT_THEME.colors.cyan[DEFAULT_THEME.colors.cyan.length - colorValueOffset], // The last (darkest) shade of blue
+                            swatches={swatches}
+                            onChangeEnd={
+                                (color) => {
+                                    console.log(color)
+                                }
+                            }
 
-                            ]}
                         />
 
 
