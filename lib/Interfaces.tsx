@@ -226,13 +226,6 @@ export class MonthSummaryClass implements MonthSummary {
         this.categoryTotals = summary.categoryTotals;
     }
 
-    // constructor(month: number, year: number, monthTotal: number, categoryTotals:{}) {
-    //     this.month = month;
-    //     this.year = year;
-    //     this.monthTotal = monthTotal;
-    //     this.categoryTotals = categoryTotals;
-    // }
-
     toObject() {
         return {
             month: this.month,
@@ -262,16 +255,16 @@ export interface DateData{
 }
 
 // CUSTOM BUTTONS
-export type CustomButton = {
-    iconName: string;
-    label: string;
-    color: string;
-    action: CustomButtonAction;
-    onClick: () => void;
-}
-
-export interface CustomButtonAction{
+interface CustomButtonAction{
     cost: number,
     category: string,
 
 }
+
+export interface CustomButton {
+    iconName: string;
+    label: string;
+    color: string;
+    action: CustomButtonAction;
+}
+

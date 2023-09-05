@@ -1,12 +1,18 @@
-import React from "react";
+"use client";
+import React, {useState} from "react";
 import {useDisclosure} from "@mantine/hooks";
 import {Button, Input, Modal, NumberInput, Text} from "@mantine/core";
 import {CategoryPicker} from "@/components/CategoryPicker";
 import {Spacer} from "@nextui-org/react";
 import {ColorPicker} from "@/components/ColorPicker";
 import {CustomButton} from "@/lib/Interfaces";
-import {IconPlus} from "@tabler/icons-react";
+import {IconPencil, IconPlus} from "@tabler/icons-react";
 import {icons} from "@/lib/icons";
+import toast from "react-hot-toast";
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,} from "@/components/ui/tooltip"
+
+
+// TODO: add drag and drop functionality
 
 const sampleButtons: CustomButton[] = [
     {
@@ -14,10 +20,10 @@ const sampleButtons: CustomButton[] = [
         label: "Train",
         color: "cyan",
         action: {
-            cost: 5,
+            cost: 2.90,
             category: "Transportation"
         },
-        onClick: () => console.log("clicked")
+
     },
     {
         iconName: "bell",
@@ -27,7 +33,6 @@ const sampleButtons: CustomButton[] = [
             cost: 15,
             category: "Food"
         },
-        onClick: () => console.log("clicked")
     },
     {
         iconName: "beer",
@@ -37,18 +42,14 @@ const sampleButtons: CustomButton[] = [
             cost: 20,
             category: "Activities"
         },
-        onClick: () => {
-            console.log("clicked");
-        }
     },
 ]
 
 
 export const CustomButtons = () => {
 
-    // const [buttons, setButtons] = useState([]);
+    const [buttons, setButtons] = useState<CustomButton[]>(sampleButtons);
     const [opened, {open, close}] = useDisclosure(false);
-
 
     return (
         <>
@@ -56,28 +57,55 @@ export const CustomButtons = () => {
             <div
                 className={"grid grid-cols-2 gap-2"}
             >
-                {sampleButtons.map((button, index) => (
+                {buttons.map((button, index) => (
                     <CustomButton
                         key={index}
-                        iconName={button.iconName}
-                        action={button.action}
-                        label={button.label}
-                        color={button.color}
-                        onClick={button.onClick}
+                        customButton={button}
+                        onClick={() => {
+                            console.log(button.label, "$" + button.action.cost);
+                            toast.success("Automation successful: " + button.label + " $" + button.action.cost)
+                        }}
                     />))}
 
             </div>
-            {/*ADD NEW BUTTON*/}
-            <div className={"p-2"}/>
-            <div className={""}>
-                <Button
-                    leftIcon={<IconPlus size={20}/>}
-                    variant={"outline"}
-                    compact
-                    onClick={open}
-                >
-                    New
-                </Button>
+            <Spacer y={4}/>
+            <div className={"flex justify-end gap-1"}>
+                {/*EDIT*/}
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger>
+                            <div
+                                className={"p-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 hover:shadow transition-all"}
+
+                            >
+                                <IconPencil size={20}/>
+                            </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            Edit buttons
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
+
+                {/*ADD*/}
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger>
+                            <div
+
+                                className={"p-2 bg-blue-400 text-white rounded-lg hover:bg-blue-500 hover:shadow transition-all"}
+                                onClick={open}
+                            >
+                                <IconPlus size={20}/>
+                            </div>
+
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            Add new button
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
+
             </div>
             <div
                 style={{
@@ -148,10 +176,14 @@ export const CustomButtons = () => {
     )
 }
 
+interface CustomButtonProps {
+    customButton: CustomButton,
+    onClick: () => void
+}
 
-const CustomButton = ({iconName, label, color, action, onClick}: CustomButton) => {
+const CustomButton = ({customButton, onClick}: CustomButtonProps) => {
     //   find icon
-    const iconObject = icons.find(icon => icon.name === iconName);
+    const iconObject = icons.find(icon => icon.name === customButton.iconName);
     const IconComponent: React.JSX.Element | null = iconObject ? iconObject.component : null;
 
 
@@ -159,11 +191,11 @@ const CustomButton = ({iconName, label, color, action, onClick}: CustomButton) =
         <Button
             leftIcon={IconComponent}
             variant={"outline"}
-            color={color}
+            color={customButton.color}
             compact
             onClick={onClick}
         >
-            {label}
+            {customButton.label}
         </Button>
     )
 }
