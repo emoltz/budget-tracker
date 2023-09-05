@@ -19,44 +19,6 @@ interface Props {
 }
 export default function AreaChartView({title, data} : Props) {
     const [selectedIndex, setSelectedIndex] = useState(0);
-    data = [{
-        Day: "",
-        Food: 0,
-        Activities: 0,
-        Transportation: 0,
-        Groceries: 0,
-        Housing: 0,
-        "Medical & Healthcare": 0,
-        "Personal Spending" : 0
-    }, ...data]
-    // console.log(data)
-    // dummy data
-    // data = [
-    //     {
-    //         Month: "Jan 21",
-    //         Food: 150,
-    //         Activities: 50,
-    //         Transportation: 34
-    //     },
-    //     {
-    //         Month: "Feb 21",
-    //         Food: 200,
-    //         Activities: 200,
-    //         Transportation:298
-    //     },
-    //     {
-    //         Month: "Mar 21",
-    //         Food: 200,
-    //         Activities: 0,
-    //         Transportation:24
-    //     },
-    //     {
-    //         Month: "Apr 21",
-    //         Food: 100,
-    //         Activities: 100,
-    //         Transportation: 100
-    //     },
-    // ];
 
     const numberFormatter = (number: number) =>
         `$ ${Intl.NumberFormat("us").format(number).toString()}`
@@ -88,7 +50,7 @@ export default function AreaChartView({title, data} : Props) {
             <div className="mt-8 hidden sm:block">
                 <AreaChart
                     className="mt-4 h-80 w-300"
-                    data={data}
+                    data={data.slice(1)}
                     categories={["Food", "Groceries","Activities", "Transportation", "Housing", "Personal Spending", "Medical & Healthcare"]}
                     // index={Object.keys(data[0])[0]}
                     index="Day"

@@ -83,31 +83,33 @@ export default function Page() {
             
             const currentDate = new Date();
             
-            const dailies : {[key : string] : number}[] = []
+            // create list with values for each day this month up to current date
+            const dailies : {[key : string] : number}[] = 
+                Array.from({ length : currentDate.getDate() + 1 }, (value, index) => ({
+                        Day: index,
+                        Food: 0,
+                        Activities: 0,
+                        Transportation: 0,
+                        Groceries: 0,
+                        Housing: 0,
+                        "Medical & Healthcare": 0,
+                        "Personal Spending" : 0
+                    })
+                )
+            
             getExpenses(user, currentDate.getMonth() + 1, currentDate.getFullYear())
                 .then(expenses => {
                     expenses.forEach((exp) => {
                         const key = new Date(exp.date as string).getDate();
-
-                        if (!dailies[key]) {
-                            dailies[key] = {
-                                Day: key,
-                                Food: 0,
-                                Activities: 0,
-                                Transportation: 0,
-                                Groceries: 0,
-                                Housing: 0,
-                                "Medical & Healthcare": 0,
-                                "Personal Spending" : 0
-                            }
+                        console.log(exp.name, key)
+                        if (dailies[key]) {
+                            dailies[key][exp.category] += exp.amount
                         }
-                        // if (!dailies[key][exp.category])
-                        // dailies[key][exp.category] = 0
-
-                        dailies[key][exp.category] += exp.amount
+                        else
+                        console.log(dailies)
+                        
                     })
                     setDailyData(Object.values(dailies))
-                    // console.log(Object.values(dailyData))
                 }).catch(error => console.log("getExpenses error" + error))
         }
                                   
