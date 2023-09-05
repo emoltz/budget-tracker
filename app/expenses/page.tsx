@@ -3,7 +3,6 @@ import {DataTable} from "./data-table"
 import {columns} from "./columns";
 import {IconArrowBigLeft, IconArrowBigRight} from "@tabler/icons-react";
 import {Button, Tabs, useMantineTheme} from "@mantine/core";
-// import {Button} from "@/components/ui/button";
 import {getExpenses} from "@/lib/firebase";
 import {useAuth} from "@/app/context";
 import {DateData, Expense} from "@/lib/Interfaces";
