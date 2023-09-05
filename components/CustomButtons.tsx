@@ -1,16 +1,16 @@
 "use client";
 import React, {useState} from "react";
 import {useDisclosure} from "@mantine/hooks";
-import {Button, Input, Modal, NumberInput, Text} from "@mantine/core";
+import {Button, ColorPicker, DEFAULT_THEME, Input, Modal, NumberInput, Text, TextInput} from "@mantine/core";
 import {CategoryPicker} from "@/components/CategoryPicker";
 import {Spacer} from "@nextui-org/react";
-import {ColorPicker} from "@/components/ColorPicker";
+// import {ColorPicker} from "@/components/ColorPicker";
+import {useForm} from "@mantine/form";
 import {CustomButton} from "@/lib/Interfaces";
 import {IconPencil, IconPlus} from "@tabler/icons-react";
 import {icons} from "@/lib/icons";
 import toast from "react-hot-toast";
-import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,} from "@/components/ui/tooltip"
-
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,} from "@/components/ui/tooltip";
 
 // TODO: add drag and drop functionality
 
@@ -59,7 +59,27 @@ export const CustomButtons = () => {
 
     const [buttons, setButtons] = useState<CustomButton[]>(sampleButtons);
     const [opened, {open, close}] = useDisclosure(false);
+    const [colorValue, setColorValue] = useState("#000000");
+    const colorValueOffset = 4;
+    const form = useForm({
+        initialValues: {
+            label: "",
+            color: {
+                hex: "#000000",
+                rgba: {
+                    r: 0,
+                    g: 0,
+                    b: 0,
+                    a: 1,
 
+                }
+            },
+            // for actions:
+            cost: 0,
+            category: ""
+        },
+
+    })
     return (
         <>
 
@@ -119,6 +139,117 @@ export const CustomButtons = () => {
                 </TooltipProvider>
 
             </div>
+
+            {/*    ADD BUTTON MODAL */}
+            <Modal
+                opened={opened} onClose={close}
+                className={"w-64"}
+                title={"Add new button automation"}
+                transitionProps={{
+                    transition: 'rotate-left'
+                }}
+            >
+                {/*    Add button form */}
+                <div className={"sm:m-5 md:m-15 "}>
+
+                    <form
+                        onSubmit={form.onSubmit((values) => {
+                            console.log(values);
+                        })}
+                        style={{
+                            overflow: 'visible',
+                        }}
+                        className={"space-y-4"}
+
+                    >
+                        <TextInput
+                            placeholder={"New button name"}
+                            {...form.getInputProps('label')}
+                        />
+                        <CategoryPicker
+                            onCategoryChange={
+                                (category) => {
+                                    form.getInputProps('category').onChange(category);
+                                }
+                            }
+                            value={form.values.category}
+                            dropdownPosition={"bottom"}
+                        />
+                        <ColorPicker
+                            format="hex"
+                            value={colorValue}
+                            onChange={() => {
+                                setColorValue(colorValue);
+                            }}
+                            withPicker={false}
+                            fullWidth
+                            swatches={[
+                                DEFAULT_THEME.colors.red[DEFAULT_THEME.colors.red.length - colorValueOffset], // The last (darkest) shade of red
+                                DEFAULT_THEME.colors.green[DEFAULT_THEME.colors.green.length - colorValueOffset], // The last (darkest) shade of orange
+                                DEFAULT_THEME.colors.yellow[DEFAULT_THEME.colors.yellow.length - colorValueOffset], // The last (darkest) shade of yellow
+                                DEFAULT_THEME.colors.blue[DEFAULT_THEME.colors.blue.length - colorValueOffset], // The last (darkest) shade of green
+                                DEFAULT_THEME.colors.cyan[DEFAULT_THEME.colors.cyan.length - colorValueOffset], // The last (darkest) shade of blue
+
+                            ]}
+                        />
+
+
+                        <div className={"flex justify-end"}>
+
+
+                            <Button
+                                variant={"outline"}
+                                compact
+                                type={"submit"}
+                            >
+                                Submit
+                            </Button>
+                        </div>
+
+
+                    </form>
+                </div>
+
+
+            </Modal>
+
+
+        </>
+    )
+}
+
+interface CustomButtonProps {
+    customButton: CustomButton,
+    onClick: () => void
+}
+
+const CustomButton = ({customButton, onClick}: CustomButtonProps) => {
+    //   find icon
+    const iconObject = icons.find(icon => icon.name === customButton.iconName);
+    const IconComponent: React.JSX.Element | null = iconObject ? iconObject.component : null;
+
+
+    return (
+        <Button
+            leftIcon={IconComponent}
+            variant={"outline"}
+            color={customButton.color}
+            compact
+            onClick={onClick}
+        >
+            {customButton.label}
+        </Button>
+    )
+}
+
+interface AddNewButtonProps {
+    onClick: () => void
+}
+
+const AddNewButton = ({onClick}: AddNewButtonProps) => {
+    const opened = true;
+    return (
+        <>
             <div
                 style={{
                     paddingLeft: '200px'
@@ -182,32 +313,6 @@ export const CustomButtons = () => {
                     </Button>
                 </Modal>
             </div>
-
-
         </>
-    )
-}
-
-interface CustomButtonProps {
-    customButton: CustomButton,
-    onClick: () => void
-}
-
-const CustomButton = ({customButton, onClick}: CustomButtonProps) => {
-    //   find icon
-    const iconObject = icons.find(icon => icon.name === customButton.iconName);
-    const IconComponent: React.JSX.Element | null = iconObject ? iconObject.component : null;
-
-
-    return (
-        <Button
-            leftIcon={IconComponent}
-            variant={"outline"}
-            color={customButton.color}
-            compact
-            onClick={onClick}
-        >
-            {customButton.label}
-        </Button>
     )
 }

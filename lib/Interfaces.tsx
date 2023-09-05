@@ -254,6 +254,12 @@ export interface DateData{
     monthName: string
 }
 
+export interface Color {
+    name: string,
+    displayName: string,
+    value: string,
+}
+
 // CUSTOM BUTTONS
 interface CustomButtonAction{
     cost: number,
