@@ -43,6 +43,15 @@ const sampleButtons: CustomButton[] = [
             category: "Activities"
         },
     },
+    {
+        iconName: "archive",
+        label: "Work",
+        color: "yellow",
+        action: {
+            cost: 0,
+            category: "Work"
+        },
+    },
 ]
 
 
@@ -65,7 +74,10 @@ export const CustomButtons = () => {
                             console.log(button.label, "$" + button.action.cost);
                             toast.success("Automation successful: " + button.label + " $" + button.action.cost)
                         }}
-                    />))}
+                    />
+
+
+                ))}
 
             </div>
             <Spacer y={4}/>
