@@ -4,17 +4,23 @@ import {Button, Input, NumberInput, useMantineColorScheme, useMantineTheme} from
 import {useRef, useState} from "react";
 import {CategoryPicker} from "@/components/CategoryPicker";
 import toast from "react-hot-toast";
+import {CustomButtons} from "@/components/CustomButtons";
 
-export default function AddExpensePopover() {
+interface AddExpensePopoverProps {
+    heightClass?: string
+}
+
+export default function AddExpensePopover({heightClass}: AddExpensePopoverProps) {
     const {colorScheme} = useMantineColorScheme();
-
+    const height = heightClass ? heightClass : `h-[48px]`;
     return (
         <>
             <div className={"flex"}>
                 <Popover>
                     <PopoverTrigger>
                         <div
-                            className="hover:shadow hover:bg-blue-400 w-[50px] rounded-l-2xl flex p-3 bg-blue-500 font-semibold text-white">
+                            className={`${height} + w-[50px] hover:shadow hover:bg-blue-400 rounded-l-2xl  p-3 bg-blue-500 font-semibold text-white`}
+                        >
                             New
 
                         </div>
@@ -31,18 +37,18 @@ export default function AddExpensePopover() {
                 <Popover>
                     <PopoverTrigger>
 
-                        <button
-                            className={"hover:shadow w-[30px] h-[48px] pl-1 pt-1 rounded-r-2xl bg-blue-500 hover:bg-blue-400 text-white"}
+                        <div
+                            className={`${height} + hover:shadow w-[30px]  pl-1 rounded-r-2xl bg-blue-500 hover:bg-blue-400 text-white pt-3.5`}
                         >
                             <IconChevronDown
                                 size={20}
                             />
-                        </button>
+                        </div>
                     </PopoverTrigger>
                     <PopoverContent>
-                        <div className={""}>
-                            Buttons!
-                        </div>
+
+                        <CustomButtons/>
+
                     </PopoverContent>
 
                 </Popover>

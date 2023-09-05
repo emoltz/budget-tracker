@@ -260,3 +260,18 @@ export interface DateData{
     year: number,
     monthName: string
 }
+
+// CUSTOM BUTTONS
+export type CustomButton = {
+    iconName: string;
+    label: string;
+    color: string;
+    action: CustomButtonAction;
+    onClick: () => void;
+}
+
+export interface CustomButtonAction{
+    cost: number,
+    category: string,
+
+}

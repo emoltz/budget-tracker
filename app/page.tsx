@@ -12,7 +12,6 @@ import BudgetCard from "@/components/BudgetCard";
 import {useCategoryBudgets_currentMonth} from "@/lib/firebase";
 import {CategoryBudget} from "@/lib/Interfaces";
 import LoadingAtAGlance from "@/components/layouts/LoadingAtAGlance";
-import AddExpensePopover from "@/components/AddExpensePopover";
 
 const PRIMARY_COL_HEIGHT = rem(400);
 
@@ -33,7 +32,7 @@ export default function Home() {
     return (
         <>
             <ThreeColumnLayout
-                one={<AddExpensePopover/>}
+                one={<></>}
                 two={<></>}
                 three={<AtAGlance
                     // userData={userData}

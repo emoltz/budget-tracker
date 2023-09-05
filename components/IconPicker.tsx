@@ -35,9 +35,7 @@ export default function IconPicker({onSelect, categoryName}: IconPickerProps): R
                         key={icon.name}
                         onClick={() => {
                             onSelect(icon.name)
-                            onIconChange(categoryName, icon.name).then(r => {
-                                console.log("Icon changed: ", r)
-                            });
+                            onIconChange(categoryName, icon.name);
                         }}
                     >
                         {icon.component}
