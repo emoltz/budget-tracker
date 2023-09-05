@@ -5,12 +5,16 @@ import {
     Button,
     ColorPicker,
     ColorSwatch,
+    createStyles,
     DEFAULT_THEME,
     Input,
     Modal,
     NumberInput,
+    Popover,
+    rem,
     Text,
-    TextInput
+    TextInput,
+    ThemeIcon
 } from "@mantine/core";
 import {CategoryPicker} from "@/components/CategoryPicker";
 import {Spacer} from "@nextui-org/react";
@@ -18,9 +22,10 @@ import {Spacer} from "@nextui-org/react";
 import {useForm} from "@mantine/form";
 import {CustomButton} from "@/lib/Interfaces";
 import {IconCheck, IconPencil, IconPlus} from "@tabler/icons-react";
-import {icons} from "@/lib/icons";
+import {icons, IconType} from "@/lib/icons";
 import toast from "react-hot-toast";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,} from "@/components/ui/tooltip";
+import IconPicker from "@/components/IconPicker";
 
 // TODO: add drag and drop functionality
 const colorValueOffset: number = 4;
@@ -34,7 +39,6 @@ const colorMapping: { [key: string]: string } = {
     [DEFAULT_THEME.colors.pink[DEFAULT_THEME.colors.pink.length - colorValueOffset]]: "pink",
     [DEFAULT_THEME.colors.gray[DEFAULT_THEME.colors.gray.length - colorValueOffset]]: "gray",
 };
-
 
 
 const sampleButtons: CustomButton[] = [
@@ -76,23 +80,61 @@ const sampleButtons: CustomButton[] = [
         },
     },
 ]
+const ICON_SIZE = rem(60);
+const useStyles = createStyles((theme) => ({
+    card: {
+        position: 'relative',
+        overflow: 'visible',
+        padding: theme.spacing.xl,
+        paddingTop: `calc(${theme.spacing.xl} * 1.5 + ${ICON_SIZE} / 3)`,
+    },
 
+    icon: {
+        position: 'absolute',
+        top: `calc(-${ICON_SIZE} / 3)`,
+        left: `calc(50% - ${ICON_SIZE} / 2)`,
+    },
+
+    title: {
+        fontFamily: `Greycliff CF, ${theme.fontFamily}`,
+        lineHeight: 1,
+    },
+}));
 
 export const CustomButtons = () => {
 
     const [buttons, setButtons] = useState<CustomButton[]>(sampleButtons);
     const [opened, {open, close}] = useDisclosure(false);
+
+    const [selectedIcon, setSelectedIcon] = useState<IconType>(icons[0])
+    const handleIconSelect = (iconId: string) => {
+        const selectedIcon = icons.find(icon => icon.name === iconId);
+        setSelectedIcon(selectedIcon ? selectedIcon : icons[0]);
+    }
     const [colorValue, setColorValue] = useState("#000000");
+    const {classes} = useStyles();
     const swatches: string[] = Object.keys(colorMapping);
+    const twoDecimalValidator = (value: number) => {
+        const regex = /^\d+(\.\d{1,2})?$/;
+        if (!regex.test(String(value))) {
+            return 'Value must have up to 2 decimal places';
+        }
+        return null;
+    };
+    const formatDollar = (value: number) => `$${value.toFixed(2)}`;
 
     const form = useForm({
         initialValues: {
             label: "",
+            iconName: "",
             color: "000000",
             // for actions:
-            cost: 0,
+            cost: 0.00,
             category: ""
         },
+        validate: {
+            cost: twoDecimalValidator
+        }
 
     });
 
@@ -189,10 +231,46 @@ export const CustomButtons = () => {
                         className={"space-y-4"}
 
                     >
-                        <TextInput
-                            placeholder={"New button name"}
-                            {...form.getInputProps('label')}
-                        />
+                        <div className={"flex gap-3 justify-center"}>
+
+
+
+                            <TextInput
+                                className={"w-full"}
+                                placeholder={"New button name"}
+                                {...form.getInputProps('label')}
+                            />
+                             {/* ICON */}
+                            <div className={"p-0.5"}>
+                                <Popover
+
+                                    // withArrow
+                                >
+                                    <Popover.Target>
+                                        <ThemeIcon
+                                            className={"p-0.5 bg-white text-black rounded-lg hover:bg-gray-500 hover:text-white cursor-pointer"}
+                                            size={30}
+                                            radius={1}
+                                            data-test={"theme-icon"}
+                                        >
+                                            {selectedIcon?.component}
+                                        </ThemeIcon>
+                                    </Popover.Target>
+                                    <Popover.Dropdown>
+                                        <IconPicker
+                                            onSelect={(iconId) => {
+
+                                                const selectedIcon = icons.find(icon => icon.name === iconId);
+                                                form.getInputProps('iconName').onChange(selectedIcon?.name);
+                                                setSelectedIcon(selectedIcon ? selectedIcon : icons[0]);
+                                            }}
+                                        />
+                                    </Popover.Dropdown>
+                                </Popover>
+                            </div>
+
+
+                        </div>
                         <CategoryPicker
                             onCategoryChange={
                                 (category) => {
@@ -202,19 +280,30 @@ export const CustomButtons = () => {
                             value={form.values.category}
                             dropdownPosition={"bottom"}
                         />
-                        <div className={"flex transition-all gap-1"}>
-                            {swatches.map((colorObj) => (
-                                <CustomSwatch
-                                    key={colorObj}
-                                    color={colorObj}
-                                    selectedColor={colorValue}
-                                    onClick={(color:string ) => {
-                                        setColorValue(color);
-                                        const selectedColorName = colorMapping[color];
-                                        form.getInputProps('color').onChange(selectedColorName);
-                                    }}
-                                />
-                            ))}
+                        <div className={"flex gap-2"}>
+
+                            <NumberInput
+                                className={"w-[100px]"}
+                                defaultValue={0}
+                                precision={2}
+                                formatter={(value) => `$${value}`}
+                                {...form.getInputProps('cost')}
+                            />
+                            <div className={"flex transition-all gap-1 pt-1"}>
+                                {swatches.map((colorObj) => (
+                                    <CustomSwatch
+                                        key={colorObj}
+                                        color={colorObj}
+                                        selectedColor={colorValue}
+                                        onClick={(color: string) => {
+                                            setColorValue(color);
+                                            const selectedColorName = colorMapping[color];
+                                            form.getInputProps('color').onChange(selectedColorName);
+                                        }}
+                                    />
+                                ))}
+                            </div>
+
                         </div>
 
 
@@ -356,11 +445,11 @@ const CustomSwatch = ({color, selectedColor, onClick}: CustomSwatchProps) => {
             color={color}
             type={"button"}
             onClick={() => onClick(color)}
-            sx={{ cursor:'pointer'}}
+            sx={{cursor: 'pointer'}}
         >
             <div className={"text-white"}>
 
-            {isSelected && <IconCheck size={20}/>}
+                {isSelected && <IconCheck size={20}/>}
             </div>
         </ColorSwatch>
     );
