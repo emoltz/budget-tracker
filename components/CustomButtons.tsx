@@ -354,6 +354,7 @@ const CustomSwatch = ({color, selectedColor, onClick}: CustomSwatchProps) => {
         <ColorSwatch
             component={"button"}
             color={color}
+            type={"button"}
             onClick={() => onClick(color)}
             sx={{ cursor:'pointer'}}
         >
@@ -364,21 +365,3 @@ const CustomSwatch = ({color, selectedColor, onClick}: CustomSwatchProps) => {
         </ColorSwatch>
     );
 };
-
-// const CustomSwatch = ({color, selectedColor, onClick}: CustomSwatchProps) => {
-//     const isSelected = color === selectedColor;
-//     return (
-//         <div
-//             onClick={() => onClick(color)}
-//             style={{
-//                 backgroundColor: color,
-//                 width: 30,
-//                 height: 30,
-//                 margin: 5,
-//                 cursor: 'pointer',
-//                 border: isSelected ? '2px solid black' : 'none',
-//                 boxSizing: 'border-box'
-//             }}
-//         />
-//     );
-// };
