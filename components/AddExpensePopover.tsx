@@ -10,12 +10,11 @@ export default function AddExpensePopover() {
 
     return (
         <>
-
             <div className={"flex"}>
                 <Popover>
                     <PopoverTrigger>
                         <div
-                            className="hover:shadow w-[50px] rounded-l-2xl flex p-3 bg-blue-500 font-semibold text-white">
+                            className="hover:shadow hover:bg-blue-400 w-[50px] rounded-l-2xl flex p-3 bg-blue-500 font-semibold text-white">
                             New
 
                         </div>
@@ -41,7 +40,9 @@ export default function AddExpensePopover() {
                         </button>
                     </PopoverTrigger>
                     <PopoverContent>
-                        Buttons!
+                        <div className={""}>
+                            Buttons!
+                        </div>
                     </PopoverContent>
 
                 </Popover>
