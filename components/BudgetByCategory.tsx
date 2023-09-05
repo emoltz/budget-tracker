@@ -1,19 +1,10 @@
-import { Flex, Button, TextInput, Paper, Modal, Text } from "@mantine/core";
-import { JsxElement } from "typescript";
-import { IoFastFoodOutline } from "react-icons/io5";
-import {
-  FiHome,
-  FiTrendingUp,
-  FiCompass,
-  FiStar,
-  FiSettings,
-  FiMenu,
-  FiBell,
-  FiChevronDown,
-} from "react-icons/fi";
-import { Category } from "@/lib/Interfaces";
+import {Paper, TextInput} from "@mantine/core";
 
-export default function BudgetByCategory({ category_name }: Category) {
+interface BudgetByCategoryProps {
+    category_name: string;
+}
+
+export default function BudgetByCategory({ category_name }: BudgetByCategoryProps) {
   return (
     <>
       <Paper shadow="xs" radius="xl" p="md" withBorder>
