@@ -1,19 +1,29 @@
 "use client";
 import React, {useState} from "react";
 import {useDisclosure} from "@mantine/hooks";
-import {Button, ColorPicker, DEFAULT_THEME, Input, Modal, NumberInput, Text, TextInput} from "@mantine/core";
+import {
+    Button,
+    ColorPicker,
+    ColorSwatch,
+    DEFAULT_THEME,
+    Input,
+    Modal,
+    NumberInput,
+    Text,
+    TextInput
+} from "@mantine/core";
 import {CategoryPicker} from "@/components/CategoryPicker";
 import {Spacer} from "@nextui-org/react";
 // import {ColorPicker} from "@/components/ColorPicker";
 import {useForm} from "@mantine/form";
 import {CustomButton} from "@/lib/Interfaces";
-import {IconPencil, IconPlus} from "@tabler/icons-react";
+import {IconCheck, IconPencil, IconPlus} from "@tabler/icons-react";
 import {icons} from "@/lib/icons";
 import toast from "react-hot-toast";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,} from "@/components/ui/tooltip";
 
 // TODO: add drag and drop functionality
-const colorValueOffset = 4;
+const colorValueOffset: number = 4;
 const colorMapping: { [key: string]: string } = {
     [DEFAULT_THEME.colors.red[DEFAULT_THEME.colors.red.length - colorValueOffset + 2]]: "red",
     [DEFAULT_THEME.colors.yellow[DEFAULT_THEME.colors.yellow.length - colorValueOffset]]: "yellow",
@@ -22,8 +32,10 @@ const colorMapping: { [key: string]: string } = {
     [DEFAULT_THEME.colors.blue[DEFAULT_THEME.colors.blue.length - colorValueOffset]]: "blue",
     [DEFAULT_THEME.colors.violet[DEFAULT_THEME.colors.violet.length - colorValueOffset - 2]]: "violet",
     [DEFAULT_THEME.colors.pink[DEFAULT_THEME.colors.pink.length - colorValueOffset]]: "pink",
-    [DEFAULT_THEME.colors.gray[DEFAULT_THEME.colors.gray.length - colorValueOffset - 2]]: "gray",
+    [DEFAULT_THEME.colors.gray[DEFAULT_THEME.colors.gray.length - colorValueOffset]]: "gray",
 };
+
+
 
 const sampleButtons: CustomButton[] = [
     {
@@ -82,7 +94,18 @@ export const CustomButtons = () => {
             category: ""
         },
 
-    })
+    });
+
+    const generateSwatches = (selectedColor: any) => {
+        return swatches.map((color) => {
+            if (color === selectedColor) {
+                return (
+                    <div className="border-amber-950" style={{backgroundColor: color}}></div>
+                );
+            }
+            return <div style={{backgroundColor: color}}></div>;
+        });
+    };
     return (
         <>
 
@@ -157,6 +180,7 @@ export const CustomButtons = () => {
 
                     <form
                         onSubmit={form.onSubmit((values) => {
+                            console.log("Form submitted:")
                             console.log(values);
                         })}
                         style={{
@@ -178,24 +202,20 @@ export const CustomButtons = () => {
                             value={form.values.category}
                             dropdownPosition={"bottom"}
                         />
-                        <ColorPicker
-                            format="hex"
-                            value={colorValue}
-                            onChange={(color) => {
-                                setColorValue(colorValue);
-                                const selectedColorName = colorMapping[color];
-                                form.getInputProps('color').onChange(selectedColorName);
-                            }}
-                            withPicker={false}
-                            fullWidth
-                            swatches={swatches}
-                            onChangeEnd={
-                                (color) => {
-                                    console.log(color)
-                                }
-                            }
-
-                        />
+                        <div className={"flex transition-all gap-1"}>
+                            {swatches.map((colorObj) => (
+                                <CustomSwatch
+                                    key={colorObj}
+                                    color={colorObj}
+                                    selectedColor={colorValue}
+                                    onClick={(color:string ) => {
+                                        setColorValue(color);
+                                        const selectedColorName = colorMapping[color];
+                                        form.getInputProps('color').onChange(selectedColorName);
+                                    }}
+                                />
+                            ))}
+                        </div>
 
 
                         <div className={"flex justify-end"}>
@@ -320,3 +340,45 @@ const AddNewButton = ({onClick}: AddNewButtonProps) => {
         </>
     )
 }
+
+
+interface CustomSwatchProps {
+    color: string,
+    selectedColor: string,
+    onClick: (color: string) => void
+}
+
+const CustomSwatch = ({color, selectedColor, onClick}: CustomSwatchProps) => {
+    const isSelected = color === selectedColor;
+    return (
+        <ColorSwatch
+            component={"button"}
+            color={color}
+            onClick={() => onClick(color)}
+            sx={{ cursor:'pointer'}}
+        >
+            <div className={"text-white"}>
+
+            {isSelected && <IconCheck size={20}/>}
+            </div>
+        </ColorSwatch>
+    );
+};
+
+// const CustomSwatch = ({color, selectedColor, onClick}: CustomSwatchProps) => {
+//     const isSelected = color === selectedColor;
+//     return (
+//         <div
+//             onClick={() => onClick(color)}
+//             style={{
+//                 backgroundColor: color,
+//                 width: 30,
+//                 height: 30,
+//                 margin: 5,
+//                 cursor: 'pointer',
+//                 border: isSelected ? '2px solid black' : 'none',
+//                 boxSizing: 'border-box'
+//             }}
+//         />
+//     );
+// };
