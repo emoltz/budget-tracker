@@ -5,6 +5,9 @@ import {useRef, useState} from "react";
 import {CategoryPicker} from "@/components/CategoryPicker";
 import toast from "react-hot-toast";
 import {CustomButtons} from "@/components/CustomButtons";
+import {ExpenseClass} from "@/lib/Interfaces";
+import {sendExpenseToFirebaseNew} from "@/lib/firebase";
+import {useAuth} from "@/app/context";
 
 interface AddExpensePopoverProps {
     heightClass?: string
@@ -58,12 +61,14 @@ export default function AddExpensePopover({heightClass}: AddExpensePopoverProps)
 }
 
 function AddExpenseForm() {
+    const {user} = useAuth();
     const {colorScheme} = useMantineTheme();
     const darkModeClass = `${colorScheme == 'dark' ? "text-white" : ""} `
     const width = `w-[200px]`;
     const halfWidth = `w-[98px]`;
     const categoryRef = useRef("");
     const nameRef = useRef<HTMLInputElement>(null);
+    const priceRef = useRef<HTMLInputElement>(null);
     const [category, setCategory] = useState("");
 
     const handleCategoryChange = (category: string) => {
@@ -85,6 +90,7 @@ function AddExpenseForm() {
                     <NumberInput
                         className={halfWidth}
                         defaultValue={0.00}
+                        ref={priceRef}
                         precision={2}
                         min={-1}
                         step={1}
@@ -123,7 +129,18 @@ function AddExpenseForm() {
                                 return;
                             }
 
-                            toast.success("Added expense: " + nameRef.current?.value)
+                            toast.success("Added expense: " + priceRef.current?.value + " to " + category)
+                            //     TODO add expense to database
+                            // first, make expense class
+                            const priceString = priceRef.current?.value.replace(/\$/, ''); // Remove the dollar sign
+                            const price = priceString ? parseFloat(priceString) : 0;
+                            console.log("Price: ", price)
+
+                            const expense = new ExpenseClass(price, category, nameRef.current!.value)
+                            sendExpenseToFirebaseNew(user, expense).then(() => {
+                                console.log("Expense added: ", expense)
+                            })
+
                         }}
                         variant={"outline"}
                     >

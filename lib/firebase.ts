@@ -153,7 +153,7 @@ export async function saveUserToDatabaseNew(user: User) {
     await setDoc(summaryRef, initialSummary);
 }
 
-export async function sendExpenseToFirebaseNew(user: User, expense: ExpenseClass) {
+export async function sendExpenseToFirebaseNew(user: User | null, expense: ExpenseClass) {
     // this function sends an expense to firebase
     // this function is not reactive. It is used to send a single expense to firebase
     if (user?.uid) {

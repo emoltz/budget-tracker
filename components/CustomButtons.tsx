@@ -107,12 +107,9 @@ export const CustomButtons = () => {
     const [opened, {open, close}] = useDisclosure(false);
 
     const [selectedIcon, setSelectedIcon] = useState<IconType>(icons[0])
-    const handleIconSelect = (iconId: string) => {
-        const selectedIcon = icons.find(icon => icon.name === iconId);
-        setSelectedIcon(selectedIcon ? selectedIcon : icons[0]);
-    }
+
     const [colorValue, setColorValue] = useState("#000000");
-    const {classes} = useStyles();
+
     const swatches: string[] = Object.keys(colorMapping);
     const twoDecimalValidator = (value: number) => {
         const regex = /^\d+(\.\d{1,2})?$/;
@@ -121,7 +118,6 @@ export const CustomButtons = () => {
         }
         return null;
     };
-    const formatDollar = (value: number) => `$${value.toFixed(2)}`;
 
     const form = useForm({
         initialValues: {
@@ -138,16 +134,16 @@ export const CustomButtons = () => {
 
     });
 
-    const generateSwatches = (selectedColor: any) => {
-        return swatches.map((color) => {
-            if (color === selectedColor) {
-                return (
-                    <div className="border-amber-950" style={{backgroundColor: color}}></div>
-                );
-            }
-            return <div style={{backgroundColor: color}}></div>;
-        });
-    };
+    // const generateSwatches = (selectedColor: any) => {
+    //     return swatches.map((color) => {
+    //         if (color === selectedColor) {
+    //             return (
+    //                 <div className="border-amber-950" style={{backgroundColor: color}}></div>
+    //             );
+    //         }
+    //         return <div style={{backgroundColor: color}}></div>;
+    //     });
+    // };
     return (
         <>
 
@@ -220,6 +216,7 @@ export const CustomButtons = () => {
                 {/*    Add button form */}
                 <div className={"sm:m-5 md:m-15 "}>
 
+                    {/*TODO: need to hook this up to backend */}
                     <form
                         onSubmit={form.onSubmit((values) => {
                             console.log("Form submitted:")
