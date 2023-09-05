@@ -12,6 +12,7 @@ import BudgetCard from "@/components/BudgetCard";
 import {useCategoryBudgets_currentMonth} from "@/lib/firebase";
 import {CategoryBudget} from "@/lib/Interfaces";
 import LoadingAtAGlance from "@/components/layouts/LoadingAtAGlance";
+import MiniExpenses from "@/components/miniComponents/MiniExpenses";
 
 const PRIMARY_COL_HEIGHT = rem(400);
 
@@ -32,8 +33,8 @@ export default function Home() {
     return (
         <>
             <ThreeColumnLayout
-                one={<></>}
-                two={<></>}
+                one={<>Another component</>}
+                two={<MiniExpenses/>}
                 three={<AtAGlance
                     // userData={userData}
                     // user={user}
@@ -62,7 +63,6 @@ interface AtAGlanceProps {
 const AtAGlance = ({categoryBudgets}: AtAGlanceProps) => {
 
     return (
-
         <>
             <ComponentFrameCenter
                 PRIMARY_COL_HEIGHT={"600px"}

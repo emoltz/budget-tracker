@@ -3,7 +3,7 @@ import React from "react";
 
 interface Props {
     PRIMARY_COL_HEIGHT: string;
-    title: string;
+    title?: string;
     children: React.ReactNode;
 }
 
@@ -22,7 +22,7 @@ export default function ComponentFrameCenter({PRIMARY_COL_HEIGHT, title, childre
             <div className={"text-center items-center "}>
                 <div className={"text-2xl p-1"}>
                     <div className={"p-2"}>
-                        {title}
+                        {title ? title : ""}
                     </div>
                 </div>
                 {children}
