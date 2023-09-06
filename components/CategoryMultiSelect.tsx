@@ -25,13 +25,14 @@ export default function CategoryMultiSelect({ onCategoriesChange, ...restProps}:
  
     return (
         <MultiSelect data={selectItems}
-            placeholder={"Select a category"}
+            placeholder={"Select categories"}
             maxDropdownHeight={160}
             transitionProps={{duration: 150, transition: 'pop-top-left', timingFunction: 'ease'}}
             dropdownComponent={"div"}
             searchable
             clearable
             onChange={onCategoriesChange}
+            miw={300}
             // value={restProps["value"] || ""}
             // error={restProps["error"]}
         />

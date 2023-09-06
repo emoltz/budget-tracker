@@ -7,14 +7,12 @@ import { useMantineColorScheme } from '@mantine/core';
 import Loading from "@/app/loading";
 import AreaChartView from "@/components/AreaChartView"
 import CategoryMultiSelect from "@/components/CategoryMultiSelect"
-import { ChartBarIcon, ChartPieIcon } from "@heroicons/react/solid";
 
 import {
     Accordion, AccordionHeader, AccordionBody,
     BadgeDelta,
     BarChart,
     Card,
-    DonutChart,
     Flex,
     Grid,
     Metric,
@@ -25,7 +23,6 @@ import {
     TabPanel,
     TabPanels,
     Text,
-    Title,
 } from "@tremor/react";
 
 export default function Page() {
@@ -40,11 +37,11 @@ export default function Page() {
             budgetsExceeded: 0,
         });
     const [selectedTime, setSelectedTime] = useState(0); // time selection
-    const [currentIndex, setIndex] = useState<number>(0); // bars - circle
     const [dailyData, setDailyData] = useState< {[key : string] : number | string}[]>([]);
-    const [selectedCategories, setSelectedCategories] = useState<string[]>(
-        ["Food", "Groceries", "Activities", "Housing", "Transportation", "Medical & Healthcare", "Personal Spending"]
-    )
+
+    const allCategories = ["Food", "Groceries", "Activities", "Housing", "Transportation", "Medical & Healthcare", "Personal Spending"];
+    const [selectedCategories, setSelectedCategories] = useState<string[]>(allCategories)
+    const [selectedTab, setSelectedTab] = useState<number>(0)
 
     useEffect(() => {
         if (user) {
@@ -135,14 +132,44 @@ export default function Page() {
 
     return (
         <Flex className={`p-4 ${colorScheme == 'dark' ? "dark" : ""}`}>
-            <TabGroup className="mt-2 flex-grow">
+            <TabGroup onIndexChange={setSelectedTab} className="mt-2 flex-grow">
                 <TabList>
-                    <Tab>This Month</Tab>
-                    <Tab>Spending Over Time</Tab>
-                    <Tab>Income Over Time</Tab>
+                    <Tab>Budgets</Tab>
+                    <Tab>Spending</Tab>
+                    <Tab>Income</Tab>
                 </TabList>
 
-                <Accordion defaultOpen={true} className="w-full mt-2">
+                {selectedTab == 0 ? 
+                <Grid numItemsMd={2} numItemsLg={2} className="gap-6 mt-6">
+                    <Card>
+                        <Flex alignItems="start">
+                            <div className="truncate">
+                                <Text>Spent so far</Text>
+                                <Metric className="truncate">
+                                    ${ `${Intl.NumberFormat("us").format(budgetInfo.totalSpent as number)}`}
+                                </Metric>
+                            </div>
+                            <BadgeDelta deltaType="moderateIncrease">12.5%</BadgeDelta>
+                        </Flex>
+                        <Flex className="mt-4 space-x-2">
+                            <Text className="truncate">
+                                {`${(budgetInfo.totalSpent / budgetInfo.totalBudget * 100).toFixed()}%`}
+                            </Text>
+                            <Text>{`$ ${Intl.NumberFormat("us").format(budgetInfo.totalBudget)}`}</Text>
+                        </Flex>
+                        <ProgressBar value={Math.trunc(budgetInfo.totalSpent / budgetInfo.totalBudget * 100)} className="mt-2" />
+                    </Card>
+                    <Card>
+                        <Flex alignItems="start">
+                            <div className="truncate">
+                                <Text>Budgets exceeded</Text>
+                                <Metric className="truncate">{budgetInfo.budgetsExceeded} / {categoryBudgets.length}</Metric>
+                            </div>
+                        </Flex>
+                        
+                    </Card>
+                </Grid>
+                : <Accordion defaultOpen={true} className="w-full mt-2">
                     <AccordionHeader>Filters</AccordionHeader>
                     <AccordionBody >
                         <Flex className="place-content-center gap-2">
@@ -154,96 +181,41 @@ export default function Page() {
                                     <Tab>1 Year</Tab>
                                 </TabList>
                             </TabGroup>
-                            <CategoryMultiSelect onCategoriesChange={(vals) => setSelectedCategories(vals)}/>
+                            <CategoryMultiSelect 
+                                onCategoriesChange={setSelectedCategories}
+                                />
                         </Flex>
                     </AccordionBody>
-                </Accordion>
-
+                </Accordion> 
+                }
                 <TabPanels>
                     <TabPanel>
-                        {/* <Grid numItemsMd={2} numItemsLg={2} className="gap-6 mt-6">
-                            <Card>
-                                <Flex alignItems="start">
-                                    <div className="truncate">
-                                        <Text>Spent so far</Text>
-                                        <Metric className="truncate">
-                                            ${ `${Intl.NumberFormat("us").format(budgetInfo.totalSpent as number)}`}
-                                        </Metric>
-                                    </div>
-                                    <BadgeDelta deltaType="moderateIncrease">12.5%</BadgeDelta>
-                                </Flex>
-                                <Flex className="mt-4 space-x-2">
-                                    <Text className="truncate">
-                                        {`${(budgetInfo.totalSpent / budgetInfo.totalBudget * 100).toFixed()}%`}
-                                    </Text>
-                                    <Text>{`$ ${Intl.NumberFormat("us").format(budgetInfo.totalBudget)}`}</Text>
-                                </Flex>
-                                <ProgressBar value={Math.trunc(budgetInfo.totalSpent / budgetInfo.totalBudget * 100)} className="mt-2" />
-                            </Card>
-                            <Card>
-                                <Flex alignItems="start">
-                                    <div className="truncate">
-                                        <Text>Budgets exceeded</Text>
-                                        <Metric className="truncate">{budgetInfo.budgetsExceeded} / {categoryBudgets.length}</Metric>
-                                    </div>
-                                </Flex>
-                                
-                            </Card>
-                        </Grid> */}
                         <Flex className='mt-6'>
                             <Card>
-                                <TabGroup onIndexChange={() => setIndex(currentIndex === 0 ? 1 : 0)}>
-                                    <div className="flex justify-between">
-                                        <div>
-                                            <Title>{currentIndex === 0 ? "Budget progress" : "Spending breakdown"}</Title>
-                                        </div>
-                                        <div>
-                                            <TabList variant={"solid"} className="self-justify-left">
-                                                <Tab icon={ChartBarIcon}></Tab>
-                                                <Tab icon={ChartPieIcon}></Tab>
-                                            </TabList>  
-                                        </div>
-                                    </div>
-                                
-                                    <TabPanels>
-                                        <TabPanel>
-                                            <BarChart
-                                                className="grow h-80"
-                                                data={categoryBudgets}
-                                                index="category"
-                                                categories={["Amount Spent", "Amount Left", "Amount Over"]}
-                                                colors={["teal", "gray", "fuchsia"]}
-                                                valueFormatter={numberFormatter}
-                                                stack={true}
-                                                layout="vertical"
-                                                yAxisWidth={90}
-                                            />
-                                        </TabPanel>
-                                        <TabPanel>
-                                            <DonutChart
-                                                className="grow h-80"
-                                                data={categoryBudgets}
-                                                category="Amount Spent" // TODO: fix this for over-budget categories
-                                                index="category"
-                                                valueFormatter={numberFormatter}
-                                                colors={["teal", "gray", "violet", "indigo", "rose", "cyan", "amber"]}
-                                                />
-                                        </TabPanel>
-                                    </TabPanels>
-                                </TabGroup>
+                                <BarChart
+                                    className="grow h-80"
+                                    data={categoryBudgets}
+                                    index="category"
+                                    categories={["Amount Spent", "Amount Left", "Amount Over"]}
+                                    colors={["teal", "gray", "fuchsia"]}
+                                    valueFormatter={numberFormatter}
+                                    stack={true}
+                                    layout="vertical"
+                                    yAxisWidth={90}
+                                />
                             </Card>
                         </Flex>
                     </TabPanel>
 
                     <TabPanel>
                         <div className="mt-6">
-                            <Card>
-                                <AreaChartView 
-                                    title="Trends" 
-                                    tooltip="Spending over time"
-                                    data={Object.values(dailyData)}
-                                    selectedCategories={selectedCategories}/>
-                            </Card>
+                            <AreaChartView 
+                                title="Trends" 
+                                tooltip="Spending over time"
+                                dataDaily={Object.values(dailyData)}
+                                dataBudgets={categoryBudgets}
+                                selectedCategories={selectedCategories}
+                            />
                         </div>
                     </TabPanel>
 
