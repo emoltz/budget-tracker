@@ -33,8 +33,8 @@ export default function Home() {
     return (
         <>
             <ThreeColumnLayout
-                one={<>Another component</>}
-                two={<MiniExpenses/>}
+                one={<MiniExpenses/>}
+                two={<>[Some component]</>}
                 three={<AtAGlance
                     // userData={userData}
                     // user={user}

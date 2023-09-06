@@ -16,10 +16,10 @@ export const ThreeColumnLayout = ({one, two, three}: Props) => {
                   columns={10}
             >
                 <Grid.Col span={"content"}>
-                    {two}
+                     {one}
                 </Grid.Col>
                 <Grid.Col span={"content"}>
-                    {one}
+                   {two}
                 </Grid.Col>
                 <Grid.Col span={"content"}>
                     {three}
