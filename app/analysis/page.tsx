@@ -6,9 +6,11 @@ import { getCategoryBudgets, getExpenses } from "@/lib/firebase";
 import { useMantineColorScheme } from '@mantine/core';
 import Loading from "@/app/loading";
 import AreaChartView from "@/components/AreaChartView"
+import CategoryMultiSelect from "@/components/CategoryMultiSelect"
 import { ChartBarIcon, ChartPieIcon } from "@heroicons/react/solid";
 
 import {
+    Accordion, AccordionHeader, AccordionBody,
     BadgeDelta,
     BarChart,
     Card,
@@ -37,8 +39,12 @@ export default function Page() {
             totalBudget: 0,
             budgetsExceeded: 0,
         });
-    const [currentIndex, setIndex] = useState<number>(0);
+    const [selectedTime, setSelectedTime] = useState(0); // time selection
+    const [currentIndex, setIndex] = useState<number>(0); // bars - circle
     const [dailyData, setDailyData] = useState< {[key : string] : number | string}[]>([]);
+    const [selectedCategories, setSelectedCategories] = useState<string[]>(
+        ["Food", "Groceries", "Activities", "Housing", "Transportation", "Medical & Healthcare", "Personal Spending"]
+    )
 
     useEffect(() => {
         if (user) {
@@ -128,17 +134,34 @@ export default function Page() {
         `$ ${Intl.NumberFormat("us").format(number).toString()}`
 
     return (
-        <div className={`p-4 ${colorScheme == 'dark' ? "dark" : ""}`}>
-            <TabGroup className="mt-2">
+        <Flex className={`p-4 ${colorScheme == 'dark' ? "dark" : ""}`}>
+            <TabGroup className="mt-2 flex-grow">
                 <TabList>
                     <Tab>This Month</Tab>
                     <Tab>Spending Over Time</Tab>
                     <Tab>Income Over Time</Tab>
                 </TabList>
 
+                <Accordion defaultOpen={true} className="w-full mt-2">
+                    <AccordionHeader>Filters</AccordionHeader>
+                    <AccordionBody >
+                        <Flex className="place-content-center gap-2">
+                            <TabGroup index={selectedTime} onIndexChange={setSelectedTime}>
+                                <TabList color="gray" variant="solid">
+                                    <Tab>This Month</Tab>
+                                    <Tab>3 Months</Tab>
+                                    <Tab>6 Months</Tab>
+                                    <Tab>1 Year</Tab>
+                                </TabList>
+                            </TabGroup>
+                            <CategoryMultiSelect onCategoriesChange={(vals) => setSelectedCategories(vals)}/>
+                        </Flex>
+                    </AccordionBody>
+                </Accordion>
+
                 <TabPanels>
                     <TabPanel>
-                        <Grid numItemsMd={2} numItemsLg={2} className="gap-6 mt-6">
+                        {/* <Grid numItemsMd={2} numItemsLg={2} className="gap-6 mt-6">
                             <Card>
                                 <Flex alignItems="start">
                                     <div className="truncate">
@@ -147,7 +170,6 @@ export default function Page() {
                                             ${ `${Intl.NumberFormat("us").format(budgetInfo.totalSpent as number)}`}
                                         </Metric>
                                     </div>
-                                    {/* dummy badgeDelta data below */}
                                     <BadgeDelta deltaType="moderateIncrease">12.5%</BadgeDelta>
                                 </Flex>
                                 <Flex className="mt-4 space-x-2">
@@ -167,7 +189,7 @@ export default function Page() {
                                 </Flex>
                                 
                             </Card>
-                        </Grid>
+                        </Grid> */}
                         <Flex className='mt-6'>
                             <Card>
                                 <TabGroup onIndexChange={() => setIndex(currentIndex === 0 ? 1 : 0)}>
@@ -216,7 +238,11 @@ export default function Page() {
                     <TabPanel>
                         <div className="mt-6">
                             <Card>
-                                <AreaChartView title="Trends" data={Object.values(dailyData)}/>
+                                <AreaChartView 
+                                    title="Trends" 
+                                    tooltip="Spending over time"
+                                    data={Object.values(dailyData)}
+                                    selectedCategories={selectedCategories}/>
                             </Card>
                         </div>
                     </TabPanel>
@@ -231,6 +257,7 @@ export default function Page() {
                 
                 </TabPanels>
             </TabGroup>
-        </div>
+           
+        </Flex>
     );
 }
