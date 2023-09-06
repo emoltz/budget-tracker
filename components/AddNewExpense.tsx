@@ -21,8 +21,8 @@ export default function AddNewExpense() {
             is_yearly: false,
         },
         validate: {
-            amount: (value) => (value > 0 ? null 
-                             : (value === 0 ? "Amount cannot be zero" : "Amount cannot be negative") ),
+            amount: (value) => (value > 0 ? null
+                : (value === 0 ? "Amount cannot be zero" : "Amount cannot be negative")),
             name: (value) => (value === "" ? "Please enter a name for the expense" : null),
             category: (value) => (value === "" ? "Please choose a category" : null)
         }
@@ -32,15 +32,17 @@ export default function AddNewExpense() {
 
     const handleCategoryChange = (category: string) => {
         form.setFieldValue('category', category);
-        console.log(category);
     }
+    if (loading){
+        return <div>Loading...</div>
+    }
+
     return (
         <div
             className={"flex justify-center items-center"}
         >
             <form onSubmit={form.onSubmit((values) => {
                 if (!user) {
-                    console.error("User is not logged in!")
                     return;
                 }
 
@@ -53,11 +55,9 @@ export default function AddNewExpense() {
                     values.is_monthly,
                     values.is_yearly,
                 );
-                // console.log(expense)
 
                 sendExpenseToFirebaseNew(user, expense).then(() => {
                     form.reset();
-                    console.log("Expense sent on tsx file: ", expense);
                 });
             })}>
                 <Flex direction={"column"} gap={4}>
@@ -121,8 +121,6 @@ export default function AddNewExpense() {
                     </Group>
                 </Flex>
             </form>
-
-
         </div>
     )
 }

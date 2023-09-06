@@ -1,25 +1,25 @@
-"use client";
-
+"use client"
+import {DataTable} from "@/app/expenses/data-table";
+import React, {useEffect, useState} from "react";
+import {DateData, Expense} from "@/lib/Interfaces";
+import {useAuth} from "@/app/context";
+import {getExpenses} from "@/lib/firebase";
+import AddExpensePopover from "@/components/AddExpensePopover";
+import {Button, rem, useMantineTheme} from "@mantine/core";
+import ComponentFrameCenter from "@/components/layouts/ComponentFrameCenter";
 import {ColumnDef} from "@tanstack/react-table";
-import {Expense} from "@/lib/Interfaces";
-import {ArrowUpDown, MoreHorizontal} from "lucide-react"
-import {Button} from "@mantine/core";
+import {ArrowUpDown, MoreHorizontal} from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+    DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 
-/*
-Columns are where you define the core of what your table will look like. They define the data that will be displayed, how it will be formatted, sorted and filtered.
- */
-
-
-export const columns: ColumnDef<Expense>[] = [
+const columns: ColumnDef<Expense>[] = [
     {
         accessorKey: "name",
         header: () => {
@@ -66,10 +66,6 @@ export const columns: ColumnDef<Expense>[] = [
                 </Button>
             )
         },
-    },
-    {
-        accessorKey: "date",
-        header: "Date",
     },
     {
         accessorKey: "actions",
@@ -123,3 +119,52 @@ export const columns: ColumnDef<Expense>[] = [
     },
 
 ]
+
+export default function MiniExpenses() {
+    const dateData: DateData = {
+        month: 9,
+        year: 2023,
+        monthName: "September"
+    }
+    const [currentExpenses, setCurrentExpenses] = useState<Expense[]>([]);
+    const {user, loading} = useAuth();
+    const {colorScheme} = useMantineTheme();
+    const PRIMARY_COL_HEIGHT = rem(400);
+    useEffect(() => {
+        if (user) {
+            getExpenses(user, dateData.month, dateData.year).then(expenses => {
+                setCurrentExpenses(expenses)
+
+            })
+        }
+    }, [user])
+    if (loading) {
+        return (
+            <>
+                Loading...
+            </>
+        )
+    }
+    return (
+        <>
+            <ComponentFrameCenter
+                PRIMARY_COL_HEIGHT={PRIMARY_COL_HEIGHT}
+                // title={"All Expenses"}
+
+            >
+
+                <div className={"flex justify-between"}>
+                    <div className={"text-2xl"}>
+                        All Expenses
+                    </div>
+                    <div className="p-1">
+
+                        <AddExpensePopover/>
+                    </div>
+
+                </div>
+                <DataTable columns={columns} data={currentExpenses}/>
+            </ComponentFrameCenter>
+        </>
+    )
+}

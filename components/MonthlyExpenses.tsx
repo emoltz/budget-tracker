@@ -9,6 +9,7 @@ import {ChangeEvent, MutableRefObject, useEffect, useRef, useState} from "react"
 import {getExpenses, updateExpense} from "@/lib/firebase";
 import {useAuth} from "@/app/context";
 import {debounce} from "lodash"
+import {useMantineTheme} from "@mantine/core";
 
 interface MonthlyExpensesProps {
     width?: string;
@@ -16,7 +17,7 @@ interface MonthlyExpensesProps {
 }
 
 export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = {width: "w-full", height: "h-full"}) {
-
+    const {colorScheme} = useMantineTheme();
     const initialExpenseRow = {
         name: "",
         category: "",
@@ -123,7 +124,10 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
             <div className={"flex justify-between items-center mb-5 mt-5"}>
                 <div className={"flex-grow "}>
                     <div className={"text-2xl font-medium"}>
-                        Monthly Expenses
+                        <div className={`${colorScheme == 'dark' ? "text-white" : ""}`}>
+                            Monthly Expenses
+
+                        </div>
                     </div>
                 </div>
 
@@ -252,6 +256,7 @@ interface EditableTableCellProps {
 }
 
 const EditableTableCell = ({initialValue, onEdit, isCurrency, className, type}: EditableTableCellProps) => {
+    const {colorScheme} = useMantineTheme();
     const [isEditing, setIsEditing] = useState(false);
     const [value, setValue] = useState<string | number>(initialValue);
     const inputRef: MutableRefObject<HTMLInputElement | null> = useRef(null);
@@ -326,10 +331,14 @@ const EditableTableCell = ({initialValue, onEdit, isCurrency, className, type}: 
                             setIsEditing(true)
                         }}
                     >
+
+                        <span className={`${colorScheme == 'dark' ? "text-white" : ""}`}>
+
                         {isCurrency ? `$${Number(value).toLocaleString('en-US', {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2
                         })}` : value}
+                        </span>
                     </span>
                 )
             }
