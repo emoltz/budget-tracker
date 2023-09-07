@@ -13,6 +13,7 @@ import {useCategoryBudgets_currentMonth} from "@/lib/firebase";
 import {CategoryBudget} from "@/lib/Interfaces";
 import LoadingAtAGlance from "@/components/layouts/LoadingAtAGlance";
 import MiniExpenses from "@/components/miniComponents/MiniExpenses";
+import MonthlyExpenses from "@/components/MonthlyExpenses";
 
 const PRIMARY_COL_HEIGHT = rem(400);
 
@@ -34,7 +35,7 @@ export default function Home() {
         <>
             <ThreeColumnLayout
                 one={<MiniExpenses/>}
-                two={<>[Some component]</>}
+                two={<MonthlyExpensesFrame/>}
                 three={<AtAGlance
                     // userData={userData}
                     // user={user}
@@ -42,6 +43,17 @@ export default function Home() {
                 />}
             />
         </>
+    )
+}
+
+const MonthlyExpensesFrame = () => {
+    return (
+        <ComponentFrameCenter
+            PRIMARY_COL_HEIGHT={PRIMARY_COL_HEIGHT}
+            title={"Monthly Expenses"}
+        >
+            <MonthlyExpenses/>
+        </ComponentFrameCenter>
     )
 }
 

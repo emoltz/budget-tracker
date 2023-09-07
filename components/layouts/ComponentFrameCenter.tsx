@@ -13,13 +13,15 @@ export default function ComponentFrameCenter({PRIMARY_COL_HEIGHT, title, width, 
     const [screenWidth, setScreenWidth] = useState<number | null>(null);
     useEffect(() => {
         // Check if the current screen width indicates a mobile device
-        if (window.innerWidth <= 768) {
+        const targetWidth = 400;
+        if (window.innerWidth <= targetWidth) {
             setScreenWidth(window.innerWidth);
+
         }
 
-        // Optional: Add a resize event listener to update the width if the window is resized
+        // Add a resize event listener to update the width if the window is resized
         const handleResize = () => {
-            if (window.innerWidth <= 768) {
+            if (window.innerWidth <= targetWidth) {
                 setScreenWidth(window.innerWidth);
             } else {
                 setScreenWidth(null);
@@ -45,7 +47,7 @@ export default function ComponentFrameCenter({PRIMARY_COL_HEIGHT, title, width, 
                 overflowX: "auto"
             }}
         >
-            <div className={"text-center items-center max-w-2xl"}>
+            <div className={"text-center items-center "}>
                 <div className={"text-2xl p-1"}>
                     <div className={"p-2"}>
                         {title ? title : ""}

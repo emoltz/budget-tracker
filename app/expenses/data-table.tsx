@@ -9,6 +9,8 @@ import {
     SortingState,
     useReactTable
 } from "@tanstack/react-table"
+import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle,} from "@/components/ui/sheet"
+
 
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table"
 import {Expense} from "@/lib/Interfaces";
@@ -79,17 +81,9 @@ export function DataTable<TData, TValue>({
                     <TableBody>
                         {table.getRowModel().rows?.length ? (
                             table.getRowModel().rows.map((row) => (
-                                <TableRow
+                                <CellRow
                                     key={row.id}
-                                    data-state={row.getIsSelected() && "selected"}
-                                >
-                                    {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}
-                                                   className={`${colorScheme == 'dark' ? "text-white" : ""}`}>
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
+                                    row={row} colorScheme={colorScheme}/>
                             ))
                         ) : (
                             <TableRow>
@@ -121,5 +115,87 @@ export function DataTable<TData, TValue>({
             </div>
         </>
 
+    )
+}
+
+interface CellProps {
+    row: any // this should be the `row` variable extracted from `table` in the map function above
+    colorScheme?: "dark" | "light"
+}
+
+const CellRow = ({row, colorScheme}: CellProps) => {
+    const cScheme = colorScheme ? useMantineTheme().colorScheme : colorScheme;
+
+    const [isSheetOpen, setIsSheetOpen] = useState(false);
+    // row info
+    const rowTitle = row.original.name;
+    const rowDescription = row.original.description;
+    const rowAmount = row.original.amount;
+    const rowCategory = row.original.category;
+    const rowDate = row.original.date;
+    const rowId = row.original.id;
+
+    return (
+        <>
+            <TableRow
+                key={row.id}
+                className={"cursor-pointer"}
+                onClick={() => {
+                    console.log("clicked row");
+                    // 2. Toggle the sheet's open/close state
+                    setIsSheetOpen(prevState => !prevState);
+                }}
+                data-state={row.getIsSelected() && "selected"}
+            >
+                {row.getVisibleCells().map((cell: any) => (
+                    <TableCell key={cell.id}
+                               className={`${cScheme == 'dark' ? "text-white" : ""}`}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                ))}
+            </TableRow>
+            <Sheet open={isSheetOpen}
+                   onOpenChange={() => setIsSheetOpen(false)}> {/* 3. Control the sheet's visibility */}
+                <SheetContent>
+                    <SheetHeader>
+                        <SheetTitle>
+                            {/*    get name of item*/}
+                            {rowTitle}
+                        </SheetTitle>
+                        <SheetDescription>
+                            <div className="">
+                                {rowDescription}
+                                {rowCategory}
+                                <div className="">
+                                    ${(rowAmount)}
+                                </div>
+                                <div className="">
+                                    {rowDate}
+                                </div>
+
+                            </div>
+                        </SheetDescription>
+                    </SheetHeader>
+                    <div className="">
+                        This is where more stuff can go
+                    </div>
+                    <div className={"mt-5 flex gap-1"}>
+                        <Button
+                            variant={"outline"}
+                            compact
+                        >
+                            Duplicate
+                        </Button>
+                        <Button
+                            variant={"outline"}
+                            color={"red"}
+                            compact
+                        >
+                            Delete
+                        </Button>
+                    </div>
+                </SheetContent>
+            </Sheet>
+        </>
     )
 }
