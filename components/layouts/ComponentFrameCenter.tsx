@@ -12,12 +12,18 @@ interface Props {
 export default function ComponentFrameCenter({PRIMARY_COL_HEIGHT, title, width, children}: Props) {
     const [screenWidth, setScreenWidth] = useState<number | null>(null);
     useEffect(() => {
-        // Update the state with the current screen width
-        setScreenWidth(window.innerWidth);
+        // Check if the current screen width indicates a mobile device
+        if (window.innerWidth <= 768) {
+            setScreenWidth(window.innerWidth);
+        }
 
         // Optional: Add a resize event listener to update the width if the window is resized
         const handleResize = () => {
-            setScreenWidth(window.innerWidth);
+            if (window.innerWidth <= 768) {
+                setScreenWidth(window.innerWidth);
+            } else {
+                setScreenWidth(null);
+            }
         };
         window.addEventListener('resize', handleResize);
 
