@@ -32,12 +32,6 @@ import {Timestamp} from "@firebase/firestore";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-/*
-    TODO:
-        [] handle monthly expenses
-        [] handle yearly expenses
-        [] firebase-admin for server-side authentication
- */
 
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -159,7 +153,7 @@ export async function saveUserToDatabaseNew(user: User) {
     await setDoc(summaryRef, initialSummary);
 }
 
-export async function sendExpenseToFirebaseNew(user: User, expense: ExpenseClass) {
+export async function sendExpenseToFirebaseNew(user: User | null, expense: ExpenseClass) {
     // this function sends an expense to firebase
     // this function is not reactive. It is used to send a single expense to firebase
     if (user?.uid) {
@@ -193,16 +187,16 @@ export async function sendExpenseToFirebaseNew(user: User, expense: ExpenseClass
     }
 }
 
-export async function addMonthlyExpense(user: User | null, expense: Expense){
+export async function addMonthlyExpense(user: User | null, expense: Expense) {
     // check if expense is monthly
-    if (!expense.is_monthly){
+    if (!expense.is_monthly) {
         console.warn(`Expense ${expense.id} is not monthly`)
         return;
     }
 
-    if (user){
+    if (user) {
         const db = getFirestore();
-        try{
+        try {
             // get reference to current month
             const currentMonth = createMonthYearString(expense.month, expense.year);
             const userRef = doc(db, usersDirectory, user.uid);
@@ -213,8 +207,7 @@ export async function addMonthlyExpense(user: User | null, expense: Expense){
             await setDoc(expenseRef, expense);
             console.log(`Expense document written with ID: ${expense.id}`);
 
-        }
-        catch (e){
+        } catch (e) {
             console.error("Error adding document: ", e);
         }
     }
@@ -248,7 +241,6 @@ export async function updateExpense(user: User | null, expense: Expense) {
         throw new Error("User not found: updateExpense function failed.");
     }
 }
-
 
 
 export async function getCurrentSummary(user: User | null): Promise<MonthSummary> {
@@ -329,6 +321,7 @@ export async function getCategoryBudgets(user: User | null): Promise<CategoryBud
             const spent = summary.categoryTotals[category + "Total"]
             categoryBudgets.push(consolidateBudgetAndCategory(category, icon, budgetAmount, spent));
         }
+
 
         // console.log(categoryBudgets)
         return categoryBudgets;
@@ -627,6 +620,29 @@ export async function getExpenses(user: User | null, month?: number, year?: numb
         return expenses;
     } else {
         throw new Error("User not found");
+    }
+}
+
+export async function deleteExpense(user: User | null, expense: Expense) {
+    if (user) {
+        const db = getFirestore();
+        const monthYearString = createMonthYearString(expense.month, expense.year);
+        const userRef = doc(db, usersDirectory, user.uid);
+        const expensesRef = collection(userRef, monthYearString);
+        const expenseRef = doc(expensesRef, expense.id);
+
+        // Fetch the document from Firestore to check if it exists
+        const expenseDoc = await getDoc(expenseRef);
+
+        if (expenseDoc.exists()) {
+            // Delete the existing document
+            await updateDoc(expenseRef, {
+                is_deleted: true
+            });
+            console.log(`Expense document deleted with ID: ${expense.id}`);
+        } else {
+            console.log("Expense document does not exist");
+        }
     }
 }
 

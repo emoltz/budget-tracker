@@ -1,33 +1,54 @@
-import {Select} from "@mantine/core";
 import React from "react";
+import {Color} from "@/lib/Interfaces"
+// @ts-ignore
+import {CirclePicker} from 'react-color'
+
+
+export const availableColors: Color[] = [
+    {
+        name: "red",
+        displayName: "Red",
+        value: "#ba3333",
+    },
+    {
+        name: "orange",
+        displayName: "Orange",
+        value: "#c49630",
+    },
+    {
+        name: "yellow",
+        displayName: "Yellow",
+        value: "#c4b130",
+    },
+    {
+        name: "green",
+        displayName: "Green",
+        value: "#4fbf4f",
+    },
+    {
+        name: "blue",
+        displayName: "Blue",
+        value: "#4f8cbf",
+    }
+
+]
+
 
 export const ColorPicker = () => {
-    const data = [
-        // colors
-        {value: 'cyan', label: 'Cyan'},
-        {value: 'blue', label: 'Blue'},
-        {value: 'gray', label: 'Gray'},
-        {value: 'red', label: 'Red'},
-        {value: 'yellow', label: 'Yellow'},
-        {value: 'teal', label: 'Teal'},
-        {value: 'indigo', label: 'Indigo'},
-        {value: 'green', label: 'Green'},
-        {value: 'pink', label: 'Pink'},
-        {value: 'purple', label: 'Purple'},
-        //TODO put actual thumbnails with colors also (see Mantine documentation)
-    ]
+    const colorRow = availableColors.map(color => color.value);
 
     return (
-        <Select data={data}
-                placeholder={"Select a Color"}
-                maxDropdownHeight={100}
-                transitionProps={{duration: 150, transition: 'pop-top-left', timingFunction: 'ease'}}
-                dropdownComponent={"div"}
-                searchable
-                clearable
+       <CirclePicker
+           width={"100%"}
+            colors={colorRow.map(color => color)}
+           circleSize={20}
+           onChange={(color: any) => {
+               console.log(color)
+           }}
 
-                nothingFound={"We can't do that color :("}
-        />
-    )
 
-}
+       />
+
+
+    );
+};

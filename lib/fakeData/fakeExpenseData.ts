@@ -14,5 +14,6 @@ export const fakeData:  Expense[] = [
         year: 2023,
         is_monthly: false,
         is_yearly: false,
+        is_deleted: false,
     }
 ];

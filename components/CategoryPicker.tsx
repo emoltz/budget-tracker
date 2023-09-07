@@ -5,10 +5,14 @@ import React, {useEffect, useState} from "react";
 
 interface Props {
     onCategoryChange: (category: string) => void,
-    [restProps : string] : any;
+    dropdownPosition?: "top" | "bottom",
+
+    [restProps: string]: any;
 }
-export function CategoryPicker({ onCategoryChange, ...restProps}: Props){
+
+export function CategoryPicker({onCategoryChange, dropdownPosition, ...restProps}: Props) {
     const {user, loading} = useAuth();
+
     //// const categories: Category[] = useCategories(user);
     // const data = userCategories.map((category) => category.category_name);
     // TODO add ability to create category from here!
@@ -23,7 +27,13 @@ export function CategoryPicker({ onCategoryChange, ...restProps}: Props){
             .then((res) => setData(res))
             .catch(console.error);
     }, [user])
-
+    if (loading) {
+        return (
+            <>
+                Loading...
+            </>
+        )
+    }
     return (
         <Select data={data}
                 placeholder={"Select a category"}
@@ -32,9 +42,11 @@ export function CategoryPicker({ onCategoryChange, ...restProps}: Props){
                 dropdownComponent={"div"}
                 searchable
                 clearable
+                zIndex={1000}
                 onChange={onCategoryChange}
                 value={restProps["value"] || ""}
                 error={restProps["error"]}
+                dropdownPosition={dropdownPosition || "bottom"}
         />
     )
 }

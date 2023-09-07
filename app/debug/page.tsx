@@ -1,13 +1,14 @@
 "use client"
 
-import MonthlyExpenses from "@/components/MonthlyExpenses";
+import AddExpensePopover from "@/components/AddExpensePopover";
 
 export default function Debug() {
 
-    return(
+    return (
         <>
-            <MonthlyExpenses/>
-
+            <AddExpensePopover/>
+            {/*<CustomButtons/>*/}
         </>
     )
 }
+

@@ -68,6 +68,7 @@ export interface Expense {
     year: number;
     is_yearly: boolean;
     is_monthly: boolean;
+    is_deleted: boolean;
 }
 
 export interface MonthSummary {
@@ -127,6 +128,7 @@ export class ExpenseClass implements Expense {
     date = serverTimestamp();
     year = 0;
     is_monthly = false;
+    is_deleted = false;
 
 
     constructor(amount: number, categoryName: string, name: string, vendor?: string, description?: string, is_monthly?: boolean, is_yearly?: boolean) {
@@ -168,6 +170,7 @@ export class ExpenseClass implements Expense {
             year: this.year,
             monthID: this.monthID,
             id: this.id,
+            is_deleted: this.is_deleted
         }
     }
 
@@ -223,13 +226,6 @@ export class MonthSummaryClass implements MonthSummary {
         this.categoryTotals = summary.categoryTotals;
     }
 
-    // constructor(month: number, year: number, monthTotal: number, categoryTotals:{}) {
-    //     this.month = month;
-    //     this.year = year;
-    //     this.monthTotal = monthTotal;
-    //     this.categoryTotals = categoryTotals;
-    // }
-
     toObject() {
         return {
             month: this.month,
@@ -257,3 +253,24 @@ export interface DateData{
     year: number,
     monthName: string
 }
+
+export interface Color {
+    name: string,
+    displayName: string,
+    value: string,
+}
+
+// CUSTOM BUTTONS
+interface CustomButtonAction{
+    cost: number,
+    category: string,
+
+}
+
+export interface CustomButton {
+    iconName: string;
+    label: string;
+    color: string;
+    action: CustomButtonAction;
+}
+
