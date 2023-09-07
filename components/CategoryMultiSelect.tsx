@@ -5,11 +5,11 @@ import { MultiSelect } from '@mantine/core';
 
 interface Props {
     onCategoriesChange: (category: string[]) => void,
-    [restProps : string] : any;
+    // currentCategories: string[]
 }
 
-export default function CategoryMultiSelect({ onCategoriesChange, ...restProps}: Props){
-// export default function CategoryMultiSelect(){
+// export default function CategoryMultiSelect({ onCategoriesChange, currentCategories }: Props){
+export default function CategoryMultiSelect({ onCategoriesChange }: Props){
     const {user, loading} = useAuth();
     const [selectItems, setSelectItems] = useState<string[]>([]);
 
@@ -17,22 +17,24 @@ export default function CategoryMultiSelect({ onCategoriesChange, ...restProps}:
         getUserCategories(user)
             .then((data) => {
                 setSelectItems(data)
+                
                 // setSelectItems(() => data.map((category) => {
                 //     { value: }
                 // }))
             }).catch(console.error);
     }, [user])
- 
+    
     return (
         <MultiSelect data={selectItems}
             placeholder={"Select categories"}
+            // defaultValue={currentCategories}
             maxDropdownHeight={160}
             transitionProps={{duration: 150, transition: 'pop-top-left', timingFunction: 'ease'}}
             dropdownComponent={"div"}
             searchable
             clearable
-            onChange={onCategoriesChange}
             miw={300}
+            onChange={onCategoriesChange}
             // value={restProps["value"] || ""}
             // error={restProps["error"]}
         />

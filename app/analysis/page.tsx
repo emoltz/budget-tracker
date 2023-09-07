@@ -104,12 +104,9 @@ export default function Page() {
                 .then(expenses => {
                     expenses.forEach((exp) => {
                         const key = new Date(exp.date as string).getDate();
-                        console.log(exp.name, key)
                         if (dailies[key]) {
                             dailies[key][exp.category] += exp.amount
                         }
-                        else
-                        console.log(dailies)
                         
                     })
                     setDailyData(Object.values(dailies))
@@ -182,7 +179,9 @@ export default function Page() {
                                 </TabList>
                             </TabGroup>
                             <CategoryMultiSelect 
-                                onCategoriesChange={setSelectedCategories}
+                                // currentCategories={selectedCategories}
+                                onCategoriesChange={(vals) =>
+                                    vals.length > 0 ? setSelectedCategories(vals) : setSelectedCategories(allCategories)}
                                 />
                         </Flex>
                     </AccordionBody>
@@ -210,7 +209,7 @@ export default function Page() {
                     <TabPanel>
                         <div className="mt-6">
                             <AreaChartView 
-                                title="Trends" 
+                                title={{area: "Spending over Time", pie: "Spending by Category"}}
                                 tooltip="Spending over time"
                                 dataDaily={Object.values(dailyData)}
                                 dataBudgets={categoryBudgets}

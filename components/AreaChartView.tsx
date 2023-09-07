@@ -19,7 +19,7 @@ import { ChartBarIcon, ChartPieIcon } from "@heroicons/react/solid";
 
 
 interface Props {
-    title: string,
+    title: {area : string, pie : string},
     tooltip: string,
     dataDaily: object[],
     dataBudgets: {[key : string] : string | number;}[],
@@ -36,7 +36,7 @@ export default function AreaChartView({title, dataDaily, dataBudgets, tooltip, s
             <Card>
                 <TabGroup onIndexChange={() => setIndex(currentIndex === 0 ? 1 : 0)}>
                     <Flex justifyContent="start">
-                        <Title>{currentIndex === 0 ? "Spending Over Time" : "Spending by Category"}</Title>
+                        <Title>{currentIndex === 0 ? title.area : title.pie}</Title>
                         <Icon
                             icon={IconInfoCircleFilled}
                             variant="simple"
