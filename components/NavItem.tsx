@@ -14,12 +14,14 @@ interface Props {
 
 export default function NavItem({name, Icon, href, isActive, collapsed}: Props) {
     const {colorScheme} = useMantineColorScheme();
-    const selectedLight = 'bg-slate-300';
-    const selectedDark = 'bg-slate-700';
+    const selectedLight = 'bg-sky-300';
+    const selectedDark = 'bg-sky-700';
     return (
         <Link
             href={href}
-            className={`flex flex-row py-2 px-3 gap-x-3 items-center rounded-md ${isActive && (colorScheme == 'dark'? selectedDark : selectedLight)}`}
+            className={`flex flex-row py-2 px-3 gap-x-3 items-center rounded-md 
+                ${isActive && (colorScheme == 'dark'? selectedDark : selectedLight)} 
+                ${colorScheme == 'dark' ? "hover:bg-slate-700" :"hover:bg-slate-300"}`}
         >
             <Icon
                 stroke={1.5}

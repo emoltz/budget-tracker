@@ -4,9 +4,11 @@ import {CacheProvider} from "@emotion/react";
 import {ColorScheme, ColorSchemeProvider, MantineProvider, useEmotionCache} from "@mantine/core";
 import {useServerInsertedHTML} from "next/navigation";
 import "./globals.css";
+import Header from "@/components/Header";
 import NavBar from "@/components/NavBar";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import Head from "next/head";
+import {Toaster} from 'react-hot-toast';
 
 export default function RootLayout({
                                        children,
@@ -30,7 +32,13 @@ export default function RootLayout({
     const toggleColorScheme = (value?: ColorScheme) =>
         setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
 
+    const [collapsed, setCollapsed] = useState(false);
+    // set collapsed to initially true if on mobile (or any small screen)
+    useEffect(() => {
+        setCollapsed(window.innerWidth < 640)
+    }, [])
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const footerLinks = [
         {
             link: "link1",
@@ -43,43 +51,52 @@ export default function RootLayout({
         }
     ]
     return (
-        <CacheProvider value={cache}>
-            <ColorSchemeProvider
-                colorScheme={colorScheme}
-                toggleColorScheme={toggleColorScheme}
-            >
-                <MantineProvider
-                    theme={{colorScheme}}
-                    withGlobalStyles
-                    withNormalizeCSS
+        <>
+            <CacheProvider value={cache}>
+                <ColorSchemeProvider
+                    colorScheme={colorScheme}
+                    toggleColorScheme={toggleColorScheme}
                 >
-                    <html lang="en">
-                    <Head>
-                        <meta charSet="utf-8"/>
+                    <MantineProvider
+                        theme={{colorScheme}}
+                        withGlobalStyles
+                        withNormalizeCSS
+                    >
+                        <html lang="en">
+                        <Head>
+                            <meta charSet="utf-8"/>
+                        </Head>
 
-                    </Head>
-                    <AuthProvider>
-                        <body>
-                        {/*<ChakraProvider>*/}
-                          <div className={`flex relative h-screen overflow-hidden ${colorScheme == 'dark' ? "bg-slate-900" : ""}`} >
+                        <AuthProvider>
+                            <body className={`h-[calc(100vh-0.1rem)] ${colorScheme == 'dark' ? "bg-slate-900" : ""} `}>
+                            {/*<ChakraProvider>*/}
+                            <Header
+                                collapsed={collapsed}
+                                onCollapse={() => setCollapsed(!collapsed)}
+                            />
+                            <div className={"flex relative overflow-hidden h-[calc(100%-3.5rem)]"}>
+                                <NavBar collapsed={collapsed}/>
+                                <main
+                                    className={`flex-1 overflow-y-auto ${colorScheme === 'dark' ? "bg-slate-900" : "bg-white"}`}
+                                >
+                                    {children}
+                                </main>
+                                {/*<Footer links={footerLinks}/>*/}
 
-                            <NavBar/>
-                                    
-                            <main
-                                className={`flex-1 overflow-y-scroll min-h-screen ${colorScheme === 'dark' ? "bg-gray-900" : "bg-white"}`}
-                            >
-                                {children}
-                            </main>
-                            {/*<Footer links={footerLinks}/>*/}
+                            </div>
 
-                        </div>
+                            {/*</ChakraProvider>*/}
+                            <Toaster
+                                position={"bottom-right"}
+                            />
+                            </body>
+                        </AuthProvider>
+                        </html>
+                    </MantineProvider>
+                </ColorSchemeProvider>
 
-                        {/*</ChakraProvider>*/}
-                        </body>
-                    </AuthProvider>
-                    </html>
-                </MantineProvider>
-            </ColorSchemeProvider>
-        </CacheProvider>
+            </CacheProvider>
+        </>
+
     )
 }
