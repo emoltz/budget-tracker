@@ -298,6 +298,7 @@ function consolidateBudgetAndCategory(category: string, icon: string, budgetAmou
 }
 
 export async function getCategoryBudgets(user: User | null): Promise<CategoryBudget[]> {
+    // TODO: rename this `getBudgets` and just have it grab icon from categories
     if (user) {
         // first, get the user's categories
         const categories = await getCategoriesNew(user);
@@ -338,6 +339,7 @@ export const useCategoryBudgets_currentMonth = (user: User | null): CategoryBudg
      * categorybudgets for a specific user from the Firestore database.
      * This differes from getCategories insofar as it is reactive: i.e. it does not get the data once but listens for changes in the data.
      * This function is expected to be called from a React component.
+     * TODO make this function for a more generic use case
      */
     const [categoryBudgets, setCategoryBudgets] = useState<CategoryBudget[] | null>(null);
 
@@ -624,6 +626,55 @@ export async function getExpenses(user: User | null, month?: number, year?: numb
         throw new Error("User not found");
     }
 }
+
+
+export function useExpenses(user: User | null, month?: number, year?: number, monthly?: boolean): Expense[] {
+    /**
+     * this function is the hook version of the `getExpenses` function above.
+     * Instead of doing it once, it will listen for changes and update accordingly.
+     */
+
+    const [expenses, setExpenses] = useState<Expense[]>([]);
+
+    useEffect(() => {
+        if (user) {
+            const db = getFirestore();
+            const userRef = doc(db, usersDirectory, user.uid);
+            const expensesRef = collection(userRef, getCurrentMonthString());
+            const expensesQuery = query(expensesRef, orderBy("date", "desc"));
+
+            const unsubscribe = onSnapshot(expensesQuery, (snapshot) => {
+                const newExpenses: Expense[] = [];
+                snapshot.forEach((doc) => {
+                    if (doc.id !== "summary") {
+                        const expenseData = doc.data() as Expense;
+
+                        if (expenseData.date instanceof Timestamp) {
+                            const date: Date = expenseData.date.toDate();
+                            expenseData.date = date.toLocaleDateString();
+                        }
+
+                        if (monthly === undefined || !monthly) {
+                            if (!expenseData.is_monthly) {
+                                newExpenses.push(expenseData);
+                            }
+                        } else if (monthly) {
+                            if (expenseData.is_monthly) {
+                                newExpenses.push(expenseData);
+                            }
+                        }
+                    }
+                });
+                setExpenses(newExpenses);
+            });
+
+            return () => unsubscribe();
+        }
+    }, [user, month, year, monthly]);
+
+    return expenses;
+}
+
 
 export async function deleteExpense(user: User | null, expense: Expense) {
     if (user) {
