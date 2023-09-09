@@ -26,6 +26,8 @@ import {icons, IconType} from "@/lib/icons";
 import toast from "react-hot-toast";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,} from "@/components/ui/tooltip";
 import IconPicker from "@/components/IconPicker";
+import {addButton, useButtons} from "@/lib/firebase";
+import {useAuth} from "@/app/context";
 
 // TODO: add drag and drop functionality
 const colorValueOffset: number = 4;
@@ -102,8 +104,8 @@ const useStyles = createStyles((theme) => ({
 }));
 
 export const CustomButtons = () => {
-
-    const [buttons, setButtons] = useState<CustomButton[]>(sampleButtons);
+    const {user} = useAuth();
+    // const [buttons, setButtons] = useState<CustomButton[]>(sampleButtons);
     const [opened, {open, close}] = useDisclosure(false);
 
     const [selectedIcon, setSelectedIcon] = useState<IconType>(icons[0])
@@ -118,6 +120,9 @@ export const CustomButtons = () => {
         }
         return null;
     };
+    const buttons: CustomButton[] = useButtons(user);
+    // get buttons from database
+
 
     const form = useForm({
         initialValues: {
@@ -129,7 +134,9 @@ export const CustomButtons = () => {
             category: ""
         },
         validate: {
-            cost: twoDecimalValidator
+            cost: twoDecimalValidator,
+            category: (value) => (!value ? 'Please select a category' : null)
+
         }
 
     });
@@ -147,22 +154,29 @@ export const CustomButtons = () => {
     return (
         <>
 
-            <div
-                className={"grid grid-cols-2 gap-2"}
-            >
-                {buttons.map((button, index) => (
-                    <CustomButton
-                        key={index}
-                        customButton={button}
-                        onClick={() => {
-                            console.log(button.label, "$" + button.action.cost);
-                            toast.success("Automation successful: " + button.label + " $" + button.action.cost)
-                        }}
-                    />
+            <div className={""}>
+                {buttons.length === 0 ? (
+                    <div className={"font-light"}>
+                        <Text>
+                            Buttons are a quick way to log expenses.
 
-
-                ))}
-
+                        </Text>
+                        <Text>
+                            You don't have any yet. Click the plus button to add one.
+                        </Text>
+                    </div>
+                ) : (
+                    buttons.map((button, index) => (
+                        <CustomButton
+                            key={index}
+                            customButton={button}
+                            onClick={() => {
+                                console.log(button.label, "$" + button.action.cost);
+                                toast.success("Automation successful: " + button.label + " $" + button.action.cost)
+                            }}
+                        />
+                    ))
+                )}
             </div>
             <Spacer y={4}/>
             <div className={"flex justify-end gap-1"}>
@@ -215,12 +229,28 @@ export const CustomButtons = () => {
             >
                 {/*    Add button form */}
                 <div className={"sm:m-5 md:m-15 "}>
-
-                    {/*TODO: need to hook this up to backend */}
                     <form
                         onSubmit={form.onSubmit((values) => {
                             console.log("Form submitted:")
-                            console.log(values);
+                            const newButton: CustomButton = {
+                                iconName: values.iconName ? values.iconName : "bell",
+                                label: values.label ? values.label : "New button",
+                                color: values.color ? values.color : "green",
+                                action: {
+                                    cost: values.cost,
+                                    category: values.category
+                                }
+                            }
+                            // setButtons([...buttons, newButton]);
+                            addButton(user, newButton)
+                                .then(() => {
+                                    toast.success("Button added successfully");
+                                    close();
+                                })
+                                .catch((error) => {
+                                    toast.error("Error adding button: " + error.message);
+                                });
+
                         })}
                         style={{
                             overflow: 'visible',
@@ -231,13 +261,12 @@ export const CustomButtons = () => {
                         <div className={"flex gap-3 justify-center"}>
 
 
-
                             <TextInput
                                 className={"w-full"}
                                 placeholder={"New button name"}
                                 {...form.getInputProps('label')}
                             />
-                             {/* ICON */}
+                            {/* ICON */}
                             <div className={"p-0.5"}>
                                 {/*TODO: consolidate popover stuff into IconPicker component? */}
                                 <Popover
@@ -278,6 +307,8 @@ export const CustomButtons = () => {
                             value={form.values.category}
                             dropdownPosition={"bottom"}
                         />
+                        {form.errors.category && <div className="text-red-500">{form.errors.category}</div>}
+
                         <div className={"flex gap-2"}>
 
                             <NumberInput
@@ -312,6 +343,7 @@ export const CustomButtons = () => {
                                 variant={"outline"}
                                 compact
                                 type={"submit"}
+                                disabled={!!form.errors.category} // Disable if there's an error in category
                             >
                                 Submit
                             </Button>
