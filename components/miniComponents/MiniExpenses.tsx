@@ -5,19 +5,10 @@ import {DateData, Expense} from "@/lib/Interfaces";
 import {useAuth} from "@/app/context";
 import {getExpenses} from "@/lib/firebase";
 import AddExpensePopover from "@/components/AddExpensePopover";
-import {Button, rem, useMantineTheme} from "@mantine/core";
+import {Button, rem} from "@mantine/core";
 import ComponentFrameCenter from "@/components/layouts/ComponentFrameCenter";
 import {ColumnDef} from "@tanstack/react-table";
-import {ArrowUpDown, MoreHorizontal} from "lucide-react";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu";
-import Link from "next/link";
+import {ArrowUpDown} from "lucide-react";
 
 const columns: ColumnDef<Expense>[] = [
     {
@@ -67,56 +58,56 @@ const columns: ColumnDef<Expense>[] = [
             )
         },
     },
-    {
-        accessorKey: "actions",
-        header: "Actions",
-        id: "actions",
-        cell: ({row}) => {
-            const expense: Expense = row.original
-
-            return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4"/>
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(expense.id)}
-                        >
-                            Copy Expense ID
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator/>
-                        <DropdownMenuItem>
-                            <Link href={`/expenses/${expense.id}`}>
-                                View Expense Details
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                            onClick={() => console.log("View Category")}
-                        >
-                            View Category
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                            <button
-                                className={"text-red-600 font-bold cursor-pointer"}
-                                onClick={() => {
-                                    console.log("Delete")
-                                }}
-
-                            >
-
-                                Delete
-                            </button>
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            )
-        },
-    },
+    // {
+    //     accessorKey: "actions",
+    //     header: "Actions",
+    //     id: "actions",
+    //     cell: ({row}) => {
+    //         const expense: Expense = row.original
+    //
+    //         return (
+    //             <DropdownMenu>
+    //                 <DropdownMenuTrigger asChild>
+    //                     <Button variant="ghost" className="h-8 w-8 p-0">
+    //                         <span className="sr-only">Open menu</span>
+    //                         <MoreHorizontal className="h-4 w-4"/>
+    //                     </Button>
+    //                 </DropdownMenuTrigger>
+    //                 <DropdownMenuContent align="end">
+    //                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
+    //                     <DropdownMenuItem
+    //                         onClick={() => navigator.clipboard.writeText(expense.id)}
+    //                     >
+    //                         Copy Expense ID
+    //                     </DropdownMenuItem>
+    //                     <DropdownMenuSeparator/>
+    //                     <DropdownMenuItem>
+    //                         <Link href={`/expenses/${expense.id}`}>
+    //                             View Expense Details
+    //                         </Link>
+    //                     </DropdownMenuItem>
+    //                     <DropdownMenuItem
+    //                         onClick={() => console.log("View Category")}
+    //                     >
+    //                         View Category
+    //                     </DropdownMenuItem>
+    //                     <DropdownMenuItem>
+    //                         <button
+    //                             className={"text-red-600 font-bold cursor-pointer"}
+    //                             onClick={() => {
+    //                                 console.log("Delete")
+    //                             }}
+    //
+    //                         >
+    //
+    //                             Delete
+    //                         </button>
+    //                     </DropdownMenuItem>
+    //                 </DropdownMenuContent>
+    //             </DropdownMenu>
+    //         )
+    //     },
+    // },
 
 ]
 
@@ -128,7 +119,7 @@ export default function MiniExpenses() {
     }
     const [currentExpenses, setCurrentExpenses] = useState<Expense[]>([]);
     const {user, loading} = useAuth();
-    const {colorScheme} = useMantineTheme();
+    // const {colorScheme} = useMantineTheme();
     const PRIMARY_COL_HEIGHT = rem(400);
     useEffect(() => {
         if (user) {
