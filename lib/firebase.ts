@@ -2,6 +2,7 @@ import {initializeApp} from "firebase/app";
 import {getAnalytics} from "firebase/analytics";
 import {Auth, getAuth, User} from 'firebase/auth';
 import {
+    addDoc,
     arrayUnion,
     collection,
     doc,
@@ -23,6 +24,7 @@ import {
     Category,
     CategoryBudget,
     CategoryClass,
+    CustomButton,
     Expense,
     ExpenseClass,
     MonthSummary
@@ -712,4 +714,45 @@ function getCurrentMonthString(): string {
 function createMonthYearString(month: number, year: number): string {
     return month.toString() + '_' + year.toString();
 
+}
+
+// BUTTONS
+
+export function useButtons(user: User | null) {
+    const [buttons, setButtons] = useState<CustomButton[]>([]);
+    useEffect( () => {
+        if (user){
+            const db = getFirestore();
+            const userRef = doc(db, usersDirectory, user.uid);
+            const buttonsRef = collection(userRef, "Buttons");
+            const unsubscribe = onSnapshot(buttonsRef, (snapshot) => {
+                const newButtons: CustomButton[] = [];
+                snapshot.forEach((doc) => {
+                    newButtons.push(doc.data() as CustomButton);
+                });
+                setButtons(newButtons);
+            });
+            return () => unsubscribe();
+        }
+    });
+    return buttons;
+}
+
+export async function addButton(user: User | null, newButton: CustomButton) {
+    if (user) {
+        const db = getFirestore();
+        const userRef = doc(db, usersDirectory, user.uid);
+        const userSnap = await getDoc(userRef);
+        if (!userSnap.exists()) {
+            console.error('User document does not exist:', user.uid);
+            throw new Error('User document not found');
+        }
+        // Get a reference to the Buttons collection inside the user's document
+        const buttonsCollectionRef = collection(userRef, 'Buttons');
+        // Add the new button to the collection
+        await addDoc(buttonsCollectionRef, newButton);
+
+    } else {
+        console.warn("User not found. `addButton` function failed.");
+    }
 }
