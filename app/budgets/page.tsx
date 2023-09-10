@@ -7,79 +7,32 @@ import { useAuth } from "@/app/context";
 import { Spacer } from "@nextui-org/react";
 import { useCategoryBudgets_currentMonth } from "@/lib/firebase";
 import BudgetByCategory from "@/components/BudgetByCategory";
+import IconPicker from "@/components/IconPicker";
+import { icons } from "@/lib/icons";
+import React, { useState } from "react";
 
 export default function Budgets() {
   //   const user = useAuth();
   const { user, loading } = useAuth();
   const [opened, { open, close }] = useDisclosure(false);
   const categoryObject = useCategoryBudgets_currentMonth(user);
+  const icon = icons.find((icon) => icon.name === "dashboard");
+  const [selectedIcon, setSelectedIcon] = useState(icon);
   if (loading) {
     return <div>Loading...</div>;
   }
 
-  // const categories = [
-  //     "Food/Drink",
-  //     "Groceries",
-  //     "Activities",
-  //     "Personal Items",
-  //     "Transportation",
-  //     "Home",
-  //     "Health",
-  // ];
-
-  //   // Dummy data
-  //   const Categories: Category[] | any = [
-  //     {
-  //       id: "1",
-  //       month: "January",
-  //       budget: 1000,
-  //       category_name: "Food",
-  //       year: 2023,
-  //       spent: 500,
-  //     },
-  //     {
-  //       id: "2",
-  //       month: "February",
-  //       budget: 1500,
-  //       category_name: "Rent",
-  //       year: 2023,
-  //       spent: 1200,
-  //     },
-  //     {
-  //       id: "3",
-  //       month: "March",
-  //       budget: 800,
-  //       category_name: "Entertainment",
-  //       year: 2023,
-  //       spent: 600,
-  //     },
-  //     {
-  //       id: "4",
-  //       month: "April",
-  //       budget: 2000,
-  //       category_name: "Transportation",
-  //       year: 2023,
-  //       spent: 1800,
-  //     },
-  //     {
-  //       id: "5",
-  //       month: "May",
-  //       budget: 1200,
-  //       category_name: "Utilities",
-  //       year: 2023,
-  //       spent: 1000,
-  //     },
-  //   ];
-
-  console.log(categoryObject);
-  // Struggling to map the category object below in <ul> since its a "promise" type
+  const handleIconSelect = (iconId: string) => {
+    const selectedIcon = icons.find((icon) => icon.name === iconId);
+    setSelectedIcon(selectedIcon);
+  };
 
   return (
     <>
       <h1>Budgets</h1>
       <ul className={"p-3"}>
         {categoryObject.map((category: CategoryBudget) => (
-          <li key={category.category}>
+          <li className={"my-3"} key={category.category}>
             <BudgetByCategory category_name={category.category} />
           </li>
         ))}
@@ -94,7 +47,7 @@ export default function Budgets() {
         New Category
       </Button>
 
-      <Button>Save all Changes</Button>
+      <Button variant={"outline"}>Save all Changes</Button>
 
       <Modal
         size={"xl"}
@@ -119,6 +72,7 @@ export default function Budgets() {
           <Input type="number" placeholder="500" />
         </Text>
         <Spacer y={1} />
+        <IconPicker onSelect={handleIconSelect} categoryName={"Activities"} />
         <Button variant={"light"} color={"cyan"} onClick={close}>
           Save new Category/Budget
         </Button>
