@@ -3,10 +3,10 @@ import {DataTable} from "./data-table"
 import {columns} from "./columns";
 import {IconArrowBigLeft, IconArrowBigRight} from "@tabler/icons-react";
 import {Button, Tabs, useMantineTheme} from "@mantine/core";
-import {getExpenses} from "@/lib/firebase";
+import {useExpenses} from "@/lib/firebase";
 import {useAuth} from "@/app/context";
 import {DateData, Expense} from "@/lib/Interfaces";
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import LoginMantine from "@/components/LoginMantine";
 import LoadingTable from "@/app/expenses/LoadingTable";
 import MonthlyExpenses from "@/components/MonthlyExpenses";
@@ -19,16 +19,8 @@ export default function Page() {
         year: 2023,
         monthName: "September"
     }
-    const [currentExpenses, setCurrentExpenses] = useState<Expense[]>([]);
     const {user, loading} = useAuth();
-    useEffect(() => {
-        if (user) {
-            getExpenses(user, dateData.month, dateData.year).then(expenses => {
-                setCurrentExpenses(expenses)
-
-            })
-        }
-    }, [user])
+    const expenses: Expense[] = useExpenses(user, dateData.month, dateData.year);
     const {colorScheme} = useMantineTheme();
     if (loading) return <LoadingTable/>
     if (!user) return <LoginMantine/>
@@ -76,14 +68,14 @@ export default function Page() {
                         </div>
                         <div className="p-1">
 
-                        <AddExpensePopover/>
+                            <AddExpensePopover/>
                         </div>
 
                     </div>
 
 
                     <div className={""}>
-                        <DataTable columns={columns} data={currentExpenses}/>
+                        <DataTable columns={columns} data={expenses}/>
                     </div>
                 </Tabs.Panel>
                 <Tabs.Panel value={"monthly"} pt={"xs"}>

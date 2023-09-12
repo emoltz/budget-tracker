@@ -1,13 +1,14 @@
 "use client"
-
-import AddExpensePopover from "@/components/AddExpensePopover";
+import {Button} from "@/components/ui/button";
 
 export default function Debug() {
 
     return (
         <>
-            <AddExpensePopover/>
-            {/*<CustomButtons/>*/}
+            <Button>
+                Hello
+            </Button>
+
         </>
     )
 }

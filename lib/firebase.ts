@@ -2,6 +2,7 @@ import {initializeApp} from "firebase/app";
 import {getAnalytics} from "firebase/analytics";
 import {Auth, getAuth, User} from 'firebase/auth';
 import {
+    addDoc,
     arrayUnion,
     collection,
     doc,
@@ -11,10 +12,11 @@ import {
     getFirestore,
     increment,
     onSnapshot,
+    orderBy,
     query,
     setDoc,
     updateDoc,
-    where
+    where,
 } from 'firebase/firestore';
 import {
     Budget,
@@ -22,6 +24,7 @@ import {
     Category,
     CategoryBudget,
     CategoryClass,
+    CustomButton,
     Expense,
     ExpenseClass,
     MonthSummary
@@ -297,6 +300,7 @@ function consolidateBudgetAndCategory(category: string, icon: string, budgetAmou
 }
 
 export async function getCategoryBudgets(user: User | null): Promise<CategoryBudget[]> {
+    // TODO: rename this `getBudgets` and just have it grab icon from categories
     if (user) {
         // first, get the user's categories
         const categories = await getCategoriesNew(user);
@@ -337,6 +341,7 @@ export const useCategoryBudgets_currentMonth = (user: User | null): CategoryBudg
      * categorybudgets for a specific user from the Firestore database.
      * This differes from getCategories insofar as it is reactive: i.e. it does not get the data once but listens for changes in the data.
      * This function is expected to be called from a React component.
+     * TODO make this function for a more generic use case
      */
     const [categoryBudgets, setCategoryBudgets] = useState<CategoryBudget[] | null>(null);
 
@@ -591,7 +596,8 @@ export async function getExpenses(user: User | null, month?: number, year?: numb
         const db = getFirestore();
         const userRef = doc(db, usersDirectory, user.uid);
         const expensesRef = collection(userRef, monthString);
-        const expensesSnapshot = await getDocs(expensesRef);
+        const expensesQuery = query(expensesRef, orderBy("date", "desc"))
+        const expensesSnapshot = await getDocs(expensesQuery);
         const expenses: Expense[] = [];
 
         expensesSnapshot.forEach((doc) => {
@@ -622,6 +628,55 @@ export async function getExpenses(user: User | null, month?: number, year?: numb
         throw new Error("User not found");
     }
 }
+
+
+export function useExpenses(user: User | null, month?: number, year?: number, monthly?: boolean): Expense[] {
+    /**
+     * this function is the hook version of the `getExpenses` function above.
+     * Instead of doing it once, it will listen for changes and update accordingly.
+     */
+
+    const [expenses, setExpenses] = useState<Expense[]>([]);
+
+    useEffect(() => {
+        if (user) {
+            const db = getFirestore();
+            const userRef = doc(db, usersDirectory, user.uid);
+            const expensesRef = collection(userRef, getCurrentMonthString());
+            const expensesQuery = query(expensesRef, orderBy("date", "desc"));
+
+            const unsubscribe = onSnapshot(expensesQuery, (snapshot) => {
+                const newExpenses: Expense[] = [];
+                snapshot.forEach((doc) => {
+                    if (doc.id !== "summary") {
+                        const expenseData = doc.data() as Expense;
+
+                        if (expenseData.date instanceof Timestamp) {
+                            const date: Date = expenseData.date.toDate();
+                            expenseData.date = date.toLocaleDateString();
+                        }
+
+                        if (monthly === undefined || !monthly) {
+                            if (!expenseData.is_monthly) {
+                                newExpenses.push(expenseData);
+                            }
+                        } else if (monthly) {
+                            if (expenseData.is_monthly) {
+                                newExpenses.push(expenseData);
+                            }
+                        }
+                    }
+                });
+                setExpenses(newExpenses);
+            });
+
+            return () => unsubscribe();
+        }
+    }, [user, month, year, monthly]);
+
+    return expenses;
+}
+
 
 export async function deleteExpense(user: User | null, expense: Expense) {
     if (user) {
@@ -659,4 +714,45 @@ function getCurrentMonthString(): string {
 function createMonthYearString(month: number, year: number): string {
     return month.toString() + '_' + year.toString();
 
+}
+
+// BUTTONS
+
+export function useButtons(user: User | null) {
+    const [buttons, setButtons] = useState<CustomButton[]>([]);
+    useEffect( () => {
+        if (user){
+            const db = getFirestore();
+            const userRef = doc(db, usersDirectory, user.uid);
+            const buttonsRef = collection(userRef, "Buttons");
+            const unsubscribe = onSnapshot(buttonsRef, (snapshot) => {
+                const newButtons: CustomButton[] = [];
+                snapshot.forEach((doc) => {
+                    newButtons.push(doc.data() as CustomButton);
+                });
+                setButtons(newButtons);
+            });
+            return () => unsubscribe();
+        }
+    });
+    return buttons;
+}
+
+export async function addButton(user: User | null, newButton: CustomButton) {
+    if (user) {
+        const db = getFirestore();
+        const userRef = doc(db, usersDirectory, user.uid);
+        const userSnap = await getDoc(userRef);
+        if (!userSnap.exists()) {
+            console.error('User document does not exist:', user.uid);
+            throw new Error('User document not found');
+        }
+        // Get a reference to the Buttons collection inside the user's document
+        const buttonsCollectionRef = collection(userRef, 'Buttons');
+        // Add the new button to the collection
+        await addDoc(buttonsCollectionRef, newButton);
+
+    } else {
+        console.warn("User not found. `addButton` function failed.");
+    }
 }
