@@ -11,10 +11,11 @@ import {
     getFirestore,
     increment,
     onSnapshot,
+    orderBy,
     query,
     setDoc,
     updateDoc,
-    where
+    where,
 } from 'firebase/firestore';
 import {
     Budget,
@@ -592,7 +593,8 @@ export async function getExpenses(user: User | null, month?: number, year?: numb
         const db = getFirestore();
         const userRef = doc(db, usersDirectory, user.uid);
         const expensesRef = collection(userRef, monthString);
-        const expensesSnapshot = await getDocs(expensesRef);
+        const expensesQuery = query(expensesRef, orderBy("date", "desc"))
+        const expensesSnapshot = await getDocs(expensesQuery);
         const expenses: Expense[] = [];
 
         expensesSnapshot.forEach((doc) => {
