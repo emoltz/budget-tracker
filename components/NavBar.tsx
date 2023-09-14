@@ -12,6 +12,7 @@ import {
     IconMoneybag,
     IconReceipt2,
     IconSettings,
+    IconPigMoney,
 } from '@tabler/icons-react';
 import Link from 'next/link';
 import {usePathname} from 'next/navigation'
@@ -26,6 +27,7 @@ const data = [
     {link: '/expenses', label: 'Expenses', icon: IconReceipt2},
     {link: '/budgets', label: 'Budgets', icon: IconMoneybag},
     {link: '/settings', label: 'Settings', icon: IconSettings},
+    {link: '/goals', label: 'Goals', icon: IconPigMoney}
 ];
 
 interface Props {
