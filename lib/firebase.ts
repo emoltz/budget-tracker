@@ -116,15 +116,11 @@ export async function saveUserToDatabaseNew(user: User) {
     };
     await setDoc(ref, data);
 
-    // create collection for the current month
-    const monthRef = collection(db, usersDirectory, uid, getCurrentMonthString());
-
-    // create summary document for current month
+    // create collection for the current month and summary document for current month
     // this will need to happen for each new month >> write into addExpense (if currMonth doc doesn't exist, create it)
-    const summaryRef = doc(monthRef, "summary");
+    await createCurrentMonthSummary(db, user);
 
     const budgetsCollectionRef = collection(db, usersDirectory, uid, "Budgets");
-
 
     // create budgets for each category
     const default_budgets: BudgetClass[] = [
@@ -144,16 +140,35 @@ export async function saveUserToDatabaseNew(user: User) {
         await setDoc(budgetDocRef, budgetObject); // Use the budget_id as the document ID
     }
 
+}
 
-    // create summary document for current month
-    const initialSummary: MonthSummary = {
-        month: new Date().getMonth() + 1, // getMonth returns month index starting from 0,
-        year: new Date().getFullYear(),
-        monthTotal: 0,
-        categoryTotals: {}
+async function createCurrentMonthSummary(db: Firestore, user: User | null) {
+    if (user?.uid) {
+        const monthRef = collection(db, usersDirectory, user.uid, getCurrentMonthString());
+        const summaryRef = doc(monthRef, "summary");
+
+        // create summary document for current month
+        const initialSummary: MonthSummary = {
+            month: new Date().getMonth() + 1, // getMonth returns month index starting from 0,
+            year: new Date().getFullYear(),
+            monthTotal: 0,
+            categoryTotals: {
+                "FoodTotal": 0,
+                "GroceriesTotal": 0,
+                "ActivitiesTotal": 0,
+                "HousingTotal": 0,
+                "Transportation": 0,
+                "Medical & HealthcareTotal": 0,
+                "Personal SpendingTotal": 0,
+            }
+        }
+
+        await setDoc(summaryRef, initialSummary);
     }
-
-    await setDoc(summaryRef, initialSummary);
+    else {
+        throw new Error("User not found (create month summary)");
+    }
+    
 }
 
 export async function sendExpenseToFirebaseNew(user: User | null, expense: ExpenseClass) {
@@ -262,12 +277,13 @@ export async function getCurrentSummary(user: User | null): Promise<MonthSummary
         const summaryDoc = await getDoc(doc(monthRef, "summary"));
 
         if (!summaryDoc.exists()) {
-            console.log("Month summary does not exist:", monthCollection);
+            console.log("Month summary does not exist; creating:", monthCollection);
+            await createCurrentMonthSummary(db, user);
             // throw new Error("Month summary does not exist");
         }
         return summaryDoc.data() as MonthSummary;
     } else {
-        throw new Error("User not found")
+        throw new Error("User not found (get current summary")
     }
 }
 
@@ -285,7 +301,7 @@ export async function getCategoriesNew(user: User | null): Promise<{ [key: strin
         return userData["categories"] as { [key: string]: string };
 
     } else {
-        throw new Error("User not found")
+        throw new Error("User not found (get categories)")
     }
 
 }
@@ -360,6 +376,10 @@ export const useCategoryBudgets_currentMonth = (user: User | null): CategoryBudg
 
                 const budgetsSnapshot = await getDocs(budgetsCollectionRef);
                 const summaryDoc = await getDoc(doc(monthRef, "summary"));
+                if (!summaryDoc.exists()) {
+                    console.log("Creating summary doc... ", monthCollection)
+                    await createCurrentMonthSummary(db, user);
+                }
                 const summary: MonthSummary = summaryDoc.data() as MonthSummary;
                 console.log("Summary: ", summary)
 
