@@ -3,102 +3,84 @@ import {useState} from "react";
 
 import {
     AreaChart,
+    Card,
+    DonutChart,
     Flex,
     Icon,
-    Title,
     Tab,
     TabList,
     TabGroup,
+    TabPanel,
+    TabPanels,
+    Title,
 } from "@tremor/react";
 import { IconInfoCircleFilled } from '@tabler/icons-react';
+import { ChartBarIcon, ChartPieIcon } from "@heroicons/react/solid";
 
 
 interface Props {
-    title: string,
-    data: object[],
+    title: {area : string, pie : string},
+    tooltip: string,
+    dataDaily: object[],
+    dataBudgets: {[key : string] : string | number;}[],
+    selectedCategories: string[]
 }
-export default function AreaChartView({title, data} : Props) {
-    const [selectedIndex, setSelectedIndex] = useState(0);
-    data = [{
-        Day: "",
-        Food: 0,
-        Activities: 0,
-        Transportation: 0,
-        Groceries: 0,
-        Housing: 0,
-        "Medical & Healthcare": 0,
-        "Personal Spending" : 0
-    }, ...data]
-    // console.log(data)
-    // dummy data
-    // data = [
-    //     {
-    //         Month: "Jan 21",
-    //         Food: 150,
-    //         Activities: 50,
-    //         Transportation: 34
-    //     },
-    //     {
-    //         Month: "Feb 21",
-    //         Food: 200,
-    //         Activities: 200,
-    //         Transportation:298
-    //     },
-    //     {
-    //         Month: "Mar 21",
-    //         Food: 200,
-    //         Activities: 0,
-    //         Transportation:24
-    //     },
-    //     {
-    //         Month: "Apr 21",
-    //         Food: 100,
-    //         Activities: 100,
-    //         Transportation: 100
-    //     },
-    // ];
+export default function AreaChartView({title, dataDaily, dataBudgets, tooltip, selectedCategories} : Props) {
+    const [currentIndex, setIndex] = useState<number>(0); // bars - circle
 
     const numberFormatter = (number: number) =>
         `$ ${Intl.NumberFormat("us").format(number).toString()}`
 
     return (
         <>
-            <div className="md:flex justify-between">
-                <div>
-                    <Flex className="space-x-0.5" justifyContent="start" alignItems="center">
-                        <Title> {title} </Title>
+            <Card>
+                <TabGroup onIndexChange={() => setIndex(currentIndex === 0 ? 1 : 0)}>
+                    <Flex justifyContent="start">
+                        <Title>{currentIndex === 0 ? title.area : title.pie}</Title>
                         <Icon
                             icon={IconInfoCircleFilled}
                             variant="simple"
-                            tooltip="Shows daily increase or decrease of particular domain"
+                            tooltip={tooltip}
                         />
+                        <div className="ml-auto">
+                            <TabList variant={"solid"} >
+                                <Tab icon={ChartBarIcon}></Tab>
+                                <Tab icon={ChartPieIcon}></Tab>
+                            </TabList>  
+                        </div>
                     </Flex>
-                </div>
-                <div>
-                    <TabGroup index={selectedIndex} onIndexChange={setSelectedIndex}>
-                        <TabList color="gray" variant="solid">
-                            <Tab>This Month</Tab>
-                            <Tab>3 Months</Tab>
-                            <Tab>6 Months</Tab>
-                            <Tab>1 Year</Tab>
-                        </TabList>
-                    </TabGroup>
-                </div>
-            </div>
-            <div className="mt-8 hidden sm:block">
-                <AreaChart
-                    className="mt-4 h-80 w-300"
-                    data={data}
-                    categories={["Food", "Groceries","Activities", "Transportation", "Housing", "Personal Spending", "Medical & Healthcare"]}
-                    // index={Object.keys(data[0])[0]}
-                    index="Day"
-                    colors={["indigo", "fuchsia", "lime", "amber", "cyan", "orange", "gray"]}
-                    yAxisWidth={60}
-                    valueFormatter={numberFormatter}
-                    // stack={true}
-                    // stacking doesn't look great with this many categories
-                />
-            </div>
+                
+                    <TabPanels>
+                        <TabPanel>
+                            <div className="mt-8 hidden sm:block">
+                                <AreaChart
+                                    className="mt-4 h-80 w-300"
+                                    data={dataDaily.slice(1)}
+                                    categories={selectedCategories}
+                                    // index={Object.keys(data[0])[0]}
+                                    index="Day"
+                                    colors={["indigo", "fuchsia", "lime", "amber", "cyan", "orange", "gray"]}
+                                    yAxisWidth={60}
+                                    valueFormatter={numberFormatter}
+                                    // stack={true}
+                                    // stacking doesn't look great with this many categories
+                                />
+                            </div>
+                        </TabPanel>
+                        <TabPanel>
+                            <DonutChart
+                                className="grow h-80"
+                                data={dataBudgets.filter((budget) => 
+                                    selectedCategories.includes(budget.category.toString()))}
+                                category="Amount Spent" // TODO: fix this for over-budget categories
+                                index="category"
+                                valueFormatter={numberFormatter}
+                                colors={["teal", "gray", "violet", "indigo", "rose", "cyan", "amber"]}
+                                />
+                        </TabPanel>
+                    </TabPanels>
+                </TabGroup>
+            </Card>
         </>
     )
 }
