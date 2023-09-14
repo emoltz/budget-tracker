@@ -361,7 +361,7 @@ export const useCategoryBudgets_currentMonth = (user: User | null): CategoryBudg
                 const budgetsSnapshot = await getDocs(budgetsCollectionRef);
                 const summaryDoc = await getDoc(doc(monthRef, "summary"));
                 const summary: MonthSummary = summaryDoc.data() as MonthSummary;
-                console.log("Summary: ", summary)
+                // console.log("Summary: ", summary)
 
                 const budgets: Budget[] = [];
                 budgetsSnapshot.forEach((doc) => {
@@ -395,6 +395,7 @@ export const useCategoryBudgets_currentMonth = (user: User | null): CategoryBudg
     }, [user]);
     if (categoryBudgets === null) {
         console.warn("Category budgets is null. See Firebase.tsx file")
+        console.log(categoryBudgets)
         return [];
     }
     return categoryBudgets;
