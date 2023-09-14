@@ -5,7 +5,7 @@ import React from "react";
 import {ExpenseClass} from "@/lib/Interfaces";
 import {CategoryPicker} from "@/components/CategoryPicker";
 import {useAuth} from "@/app/context";
-import {sendExpenseToFirebaseNew} from "@/lib/firebase";
+import {sendExpenseToFirebase} from "@/lib/firebase";
 
 export default function AddNewExpense() {
     const {user, loading} = useAuth();
@@ -56,7 +56,7 @@ export default function AddNewExpense() {
                     values.is_yearly,
                 );
 
-                sendExpenseToFirebaseNew(user, expense).then(() => {
+                sendExpenseToFirebase(user, expense).then(() => {
                     form.reset();
                 });
             })}>

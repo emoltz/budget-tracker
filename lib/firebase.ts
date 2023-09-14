@@ -61,38 +61,7 @@ if (typeof window !== 'undefined') {
 
 export {app, auth, analytics};
 
-// noinspection JSCommentMatchesSignature
-export async function saveUserToDatabase_deprecated(user: User) {
-    const db = getFirestore();
-    const {uid, email, displayName, photoURL} = user;
-    const ref = doc(db, usersDirectory, uid);
-    const data = {
-        uid: uid,
-        email: email,
-        display_name: displayName,
-        photo_url: photoURL,
-    };
-    await setDoc(ref, data);
-
-    // create categories collection inside user document
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const currentMonth = currentDate.getMonth() + 1; // getMonth returns month index starting from 0
-
-    const default_category_names = ["Food", "Groceries", "Activities", "Housing", "Transportation", "Medical & Healthcare", "Personal Spending"]
-
-    const default_categories: CategoryClass[] = default_category_names.map((name) => {
-        return new CategoryClass(currentMonth, 0, name, currentYear, 0);
-    });
-
-    const categoriesRef = collection(db, 'Users', uid, 'Categories');
-    for (const category of default_categories) {
-        const categoryRef = doc(categoriesRef, category.id);
-        await setDoc(categoryRef, category.toObject());
-    }
-}
-
-export async function saveUserToDatabaseNew(user: User) {
+export async function saveUserToDatabase(user: User) {
     const db = getFirestore();
     const {uid, email, displayName, photoURL} = user;
     const ref = doc(db, usersDirectory, uid);
@@ -139,10 +108,13 @@ export async function saveUserToDatabaseNew(user: User) {
         const budgetDocRef = doc(budgetsCollectionRef, budget_id); // Reference to the document with ID "budget_id"
         await setDoc(budgetDocRef, budgetObject); // Use the budget_id as the document ID
     }
-
 }
 
+
 async function createCurrentMonthSummary(db: Firestore, user: User | null) {
+    // This is a helper function to create a new month summary document.
+    //  Called when user is first created, or if current summary is not found
+    //  (i.e. it's a new month - getCurrentSummary, useCategoryBudgets) 
     if (user?.uid) {
         const monthRef = collection(db, usersDirectory, user.uid, getCurrentMonthString());
         const summaryRef = doc(monthRef, "summary");
@@ -168,10 +140,10 @@ async function createCurrentMonthSummary(db: Firestore, user: User | null) {
     else {
         throw new Error("User not found (create month summary)");
     }
-    
 }
 
-export async function sendExpenseToFirebaseNew(user: User | null, expense: ExpenseClass) {
+
+export async function sendExpenseToFirebase(user: User | null, expense: ExpenseClass) {
     // this function sends an expense to firebase
     // this function is not reactive. It is used to send a single expense to firebase
     if (user?.uid) {
@@ -205,6 +177,7 @@ export async function sendExpenseToFirebaseNew(user: User | null, expense: Expen
     }
 }
 
+
 export async function addMonthlyExpense(user: User | null, expense: Expense) {
     // check if expense is monthly
     if (!expense.is_monthly) {
@@ -230,6 +203,7 @@ export async function addMonthlyExpense(user: User | null, expense: Expense) {
         }
     }
 }
+
 
 export async function updateExpense(user: User | null, expense: Expense) {
     if (user) {
@@ -287,7 +261,7 @@ export async function getCurrentSummary(user: User | null): Promise<MonthSummary
     }
 }
 
-export async function getCategoriesNew(user: User | null): Promise<{ [key: string]: string }> {
+export async function getCategories(user: User | null): Promise<{ [key: string]: string }> {
     if (user) {
         // get category dictionary from User document
         const db = getFirestore();
@@ -319,7 +293,7 @@ export async function getCategoryBudgets(user: User | null): Promise<CategoryBud
     // TODO: rename this `getBudgets` and just have it grab icon from categories
     if (user) {
         // first, get the user's categories
-        const categories = await getCategoriesNew(user);
+        const categories = await getCategories(user);
         // then, get the user's budgets
         const db = getFirestore();
         const budgetsCollectionRef = collection(db, usersDirectory, user.uid, "Budgets");
@@ -388,7 +362,7 @@ export const useCategoryBudgets_currentMonth = (user: User | null): CategoryBudg
                     budgets.push(doc.data() as Budget);
                 });
 
-                const categories = await getCategoriesNew(user);
+                const categories = await getCategories(user);
 
                 const updatedCategoryBudgets: CategoryBudget[] = [];
                 for (const budget of budgets) {
@@ -469,39 +443,6 @@ export async function deleteCategory(user: User | null, category: string) {
 }
 
 
-export function useCategories_deprecated(user: User | null): Category[] {
-    const [categories, setCategories] = useState<Category[]>([]);
-
-    useEffect(() => {
-        if (user?.uid) {
-            const db = getFirestore();
-            const currentDate = new Date();
-            const currentYear = currentDate.getFullYear();
-            const currentMonth = currentDate.getMonth() + 1; // getMonth returns month index starting from 0
-
-            const unsubscribe = onSnapshot(
-                query(
-                    collection(db, 'Users', user.uid, 'Categories'),
-                    where("year", "==", currentYear),
-                    where("month", "==", currentMonth)
-                ),
-                (snapshot) => {
-                    const newData: Category[] = [];
-                    snapshot.forEach((doc) => {
-                        newData.push(doc.data() as Category);
-                    });
-                    setCategories(newData);
-                }
-            );
-
-            // Clean up listener on unmount
-            return () => unsubscribe();
-        }
-    }, [user]);
-
-    return categories;
-}
-
 export async function getUserCategories(user: User | null): Promise<string[]> {
     // get category names only (stored as part of User document)
     if (user?.uid) {
@@ -518,66 +459,6 @@ export async function getUserCategories(user: User | null): Promise<string[]> {
     return ["Error returning categories"];
 }
 
-async function saveExpenseToCategory_deprecated(user: User, expense: ExpenseClass) {
-    /*
-        The purpose of this function is to marry the expense to the category in firebase and keep a record of all expenses
-        It's a helper function to `sendExpenseToFirebase`
-        Note that it is not exported, so you can't use it anywhere else but this file.
-     */
-    if (user?.uid) {
-        const db: Firestore = getFirestore();
-        // const expenseObject = expense.toObject();
-        try {
-            const categoryIdentifier = expense.monthID;
-            const categoryRef = doc(collection(doc(collection(db, 'Users'), user.uid), 'Categories'), categoryIdentifier);
-            const categorySnapshot = await getDoc(categoryRef);
-            if (!categorySnapshot.exists()) {
-                console.log("Category does not exist:", categoryIdentifier);
-                // noinspection ExceptionCaughtLocallyJS
-                throw new Error("Category does not exist");
-            }
-            const categoryData = categorySnapshot.data();
-            // this will add the expense.amount to the category's spent amount
-            categoryData.spent += expense.amount;
-            //append to list of expenses
-            categoryData.expenses = arrayUnion(expense.id);
-
-            // update in database
-            await updateDoc(categoryRef, categoryData);
-
-            // add expense to expenses collection
-            // const expenseRef = doc(collection(doc(collection(db, 'Users'), user.uid), 'Expenses'), expense.id);
-            // await setDoc(expenseRef, expenseObject);
-
-
-        } catch (e) {
-            console.error("Error saving expense to category: ", e);
-        }
-    }
-}
-
-// noinspection JSUnusedGlobalSymbols
-export async function sendExpenseToFirebase_depricated(user: User, expense: ExpenseClass) {
-    // this function sends an expense to firebase
-    // this function is not reactive. It is used to send a single expense to firebase
-    if (user?.uid) {
-        const db: Firestore = getFirestore();
-        const expenseObject = expense.toObject();
-
-        try {
-            // Create a reference with the generated ID
-            const docRef = doc(collection(db, 'Users', user.uid, 'Expenses'), expense.id);
-
-            // Write the document with the generated ID
-            await setDoc(docRef, expenseObject);
-            await saveExpenseToCategory_deprecated(user, expense);
-
-            console.log("Document written with ID: ", docRef.id);
-        } catch (e) {
-            console.error("Error adding document: ", e);
-        }
-    }
-}
 
 export async function changeCategoryIcon(user: User, iconName: string, categoryName: string): Promise<void> {
     if (user?.uid) {
@@ -597,8 +478,8 @@ export async function changeCategoryIcon(user: User, iconName: string, categoryN
             console.log("Error changing category icon in firebase.tsx: ", error)
         }
     }
-
 }
+
 
 export async function getExpenses(user: User | null, month?: number, year?: number, monthly?: boolean): Promise<Expense[]> {
     /**
@@ -774,5 +655,133 @@ export async function addButton(user: User | null, newButton: CustomButton) {
 
     } else {
         console.warn("User not found. `addButton` function failed.");
+    }
+}
+
+// DEPRECATED FUNCTIONS
+
+// noinspection JSCommentMatchesSignature
+export async function saveUserToDatabase_deprecated(user: User) {
+    const db = getFirestore();
+    const {uid, email, displayName, photoURL} = user;
+    const ref = doc(db, usersDirectory, uid);
+    const data = {
+        uid: uid,
+        email: email,
+        display_name: displayName,
+        photo_url: photoURL,
+    };
+    await setDoc(ref, data);
+
+    // create categories collection inside user document
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1; // getMonth returns month index starting from 0
+
+    const default_category_names = ["Food", "Groceries", "Activities", "Housing", "Transportation", "Medical & Healthcare", "Personal Spending"]
+
+    const default_categories: CategoryClass[] = default_category_names.map((name) => {
+        return new CategoryClass(currentMonth, 0, name, currentYear, 0);
+    });
+
+    const categoriesRef = collection(db, 'Users', uid, 'Categories');
+    for (const category of default_categories) {
+        const categoryRef = doc(categoriesRef, category.id);
+        await setDoc(categoryRef, category.toObject());
+    }
+}
+
+
+export function useCategories_deprecated(user: User | null): Category[] {
+    const [categories, setCategories] = useState<Category[]>([]);
+
+    useEffect(() => {
+        if (user?.uid) {
+            const db = getFirestore();
+            const currentDate = new Date();
+            const currentYear = currentDate.getFullYear();
+            const currentMonth = currentDate.getMonth() + 1; // getMonth returns month index starting from 0
+
+            const unsubscribe = onSnapshot(
+                query(
+                    collection(db, 'Users', user.uid, 'Categories'),
+                    where("year", "==", currentYear),
+                    where("month", "==", currentMonth)
+                ),
+                (snapshot) => {
+                    const newData: Category[] = [];
+                    snapshot.forEach((doc) => {
+                        newData.push(doc.data() as Category);
+                    });
+                    setCategories(newData);
+                }
+            );
+
+            // Clean up listener on unmount
+            return () => unsubscribe();
+        }
+    }, [user]);
+
+    return categories;
+}
+
+async function saveExpenseToCategory_deprecated(user: User, expense: ExpenseClass) {
+    /*
+        The purpose of this function is to marry the expense to the category in firebase and keep a record of all expenses
+        It's a helper function to `sendExpenseToFirebase`
+        Note that it is not exported, so you can't use it anywhere else but this file.
+     */
+    if (user?.uid) {
+        const db: Firestore = getFirestore();
+        // const expenseObject = expense.toObject();
+        try {
+            const categoryIdentifier = expense.monthID;
+            const categoryRef = doc(collection(doc(collection(db, 'Users'), user.uid), 'Categories'), categoryIdentifier);
+            const categorySnapshot = await getDoc(categoryRef);
+            if (!categorySnapshot.exists()) {
+                console.log("Category does not exist:", categoryIdentifier);
+                // noinspection ExceptionCaughtLocallyJS
+                throw new Error("Category does not exist");
+            }
+            const categoryData = categorySnapshot.data();
+            // this will add the expense.amount to the category's spent amount
+            categoryData.spent += expense.amount;
+            //append to list of expenses
+            categoryData.expenses = arrayUnion(expense.id);
+
+            // update in database
+            await updateDoc(categoryRef, categoryData);
+
+            // add expense to expenses collection
+            // const expenseRef = doc(collection(doc(collection(db, 'Users'), user.uid), 'Expenses'), expense.id);
+            // await setDoc(expenseRef, expenseObject);
+
+
+        } catch (e) {
+            console.error("Error saving expense to category: ", e);
+        }
+    }
+}
+
+// noinspection JSUnusedGlobalSymbols
+export async function sendExpenseToFirebase_depricated(user: User, expense: ExpenseClass) {
+    // this function sends an expense to firebase
+    // this function is not reactive. It is used to send a single expense to firebase
+    if (user?.uid) {
+        const db: Firestore = getFirestore();
+        const expenseObject = expense.toObject();
+
+        try {
+            // Create a reference with the generated ID
+            const docRef = doc(collection(db, 'Users', user.uid, 'Expenses'), expense.id);
+
+            // Write the document with the generated ID
+            await setDoc(docRef, expenseObject);
+            await saveExpenseToCategory_deprecated(user, expense);
+
+            console.log("Document written with ID: ", docRef.id);
+        } catch (e) {
+            console.error("Error adding document: ", e);
+        }
     }
 }
