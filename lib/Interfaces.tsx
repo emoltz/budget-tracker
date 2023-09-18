@@ -248,6 +248,54 @@ export class MonthSummaryClass implements MonthSummary {
 
 }
 
+export interface Goal{
+    id: string;
+    goal_name: string;
+    goal_date: Date;
+    amt_goal: number;
+    amt_saved: number;
+    date_start: Date; // Timestamp | FieldValue | string;
+    
+}
+
+export class GoalClass implements Goal{
+    id = "";
+    goal_name = "";
+    goal_date = new Date();
+    amt_goal = 0;
+    amt_saved = 0;
+    date_start = new Date();
+    
+
+    constructor(goal_name: string, amount: number, goal_date: Date,) {
+        this.id = this.generateGoalId(goal_name)
+        this.goal_name = goal_name;
+        this.goal_date = goal_date;
+        this.amt_goal = amount;
+        this.amt_saved = 0;
+        this.date_start = new Date();
+    }
+
+    generateGoalId(goal_name: string): string {
+        // Get current timestamp
+        const timestamp = Date.now();
+
+        // Construct the ID
+        return `${goal_name}_${timestamp}`;
+    }
+
+    toObject() {
+        return {
+            id: this.id,
+            goal_name: this.goal_name,
+            goal_date: this.goal_date,
+            amt_goal: this.amt_goal,
+            amt_saved: this.amt_saved,
+            date_start: this.date_start
+        }
+    }
+}
+
 export interface DateData{
     month: number,
     year: number,
