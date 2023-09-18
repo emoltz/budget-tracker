@@ -3,7 +3,12 @@ import { TextInput, NumberInput } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 
-export default function AddGoalForm () {
+
+interface Props {
+    onFormClose: () => void,
+}
+
+export default function AddGoalForm ({ onFormClose }:Props) {
     const form = useForm({
         initialValues: {
           goalName: '',
@@ -40,6 +45,7 @@ export default function AddGoalForm () {
                         {...form.getInputProps('goalDate')}
                     />
                     <Button type="submit">Save</Button>
+                    <Button variant="secondary" onClick={ onFormClose }>Close</Button>
                 </form>
 
             </Card>

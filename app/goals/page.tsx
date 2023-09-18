@@ -4,6 +4,7 @@ import { IconPencil } from "@tabler/icons-react";
 import { Card, Title, DonutChart, Button } from "@tremor/react";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import AddGoalForm from "@/components/AddNewGoalForm";
+import {useEffect, useState} from "react";
 
 
 const goal = [
@@ -20,12 +21,15 @@ const goal = [
 const valueFormatter = (number: number) => `$ ${Intl.NumberFormat("us").format(number).toString()}`;
 
 export default function Page () {
+
+    const [showForm, setShowForm] = useState(false);
+
     return (
         <>
             <p>
             Goals Page
             </p>
-            <Grid numItems={1} numItemsMd={2} className="gap-2">
+            <Grid numItems={1} numItemsMd={2} numItemsLg={3} className="gap-2 p-2">
                 <Card className="max-w-lg py-2">
                     <Title>Bike</Title>
                     <Button icon={IconPencil}/>    
@@ -54,7 +58,9 @@ export default function Page () {
                     />
                 </Card>
 
-                <AddGoalForm></AddGoalForm>
+                { showForm ? <AddGoalForm onFormClose={() => setShowForm (false)}></AddGoalForm> : 
+                <Button onClick={() => setShowForm (true)}>Add New Goal</Button> }
+
 
             </Grid>
         </>
