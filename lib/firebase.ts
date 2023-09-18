@@ -27,6 +27,7 @@ import {
     CustomButton,
     Expense,
     ExpenseClass,
+    Goal, GoalClass,
     MonthSummary
 } from "./Interfaces";
 import {useEffect, useState} from "react";
@@ -108,6 +109,12 @@ export async function saveUserToDatabase(user: User) {
         const budgetDocRef = doc(budgetsCollectionRef, budget_id); // Reference to the document with ID "budget_id"
         await setDoc(budgetDocRef, budgetObject); // Use the budget_id as the document ID
     }
+
+    // create goals collection and goals summary
+    const goalsRef = collection(db, usersDirectory, uid, "Goals");
+    const goalSummary = doc(goalsRef, "summary")
+    await setDoc(goalSummary, { numGoals: 0 })
+
 }
 
 
@@ -603,6 +610,90 @@ export async function deleteExpense(user: User | null, expense: Expense) {
     }
 }
 
+export const useGoals = (user: User | null): Goal[] | null => {
+    /**
+     * This function is a React hook that returns goals
+     * for a specific user from the Firestore database.
+     */
+    const [goals, setGoals] = useState<Goal[] | null>(null);
+
+    useEffect(() => {
+        if (user) {
+            const db = getFirestore();
+            const goalsRef = collection(db, usersDirectory, user.uid, "Goals");
+
+            // const summaryDocRef = doc(goalsRef, "summary");
+
+            const fetchAndUpdate = async () => {
+                // console.log('Fetching and updating data...');
+
+                const goalsSnap = await getDocs(goalsRef);
+                // const summaryDoc = await getDoc(summaryDocRef);
+                // if (!summaryDoc.exists()) {
+                //     console.log("Creating summary doc for user goals... ")
+                //    
+                // }
+
+                const goals: Goal[] = [];
+                goalsSnap.forEach((doc) => {
+                    goals.push(doc.data() as Goal);
+                });
+
+                setGoals(goals);
+            };
+
+            const unsubscribeGoals = onSnapshot(goalsRef, fetchAndUpdate);
+            // const unsubscribeSummary = onSnapshot(summaryDocRef, fetchAndUpdate);
+
+            // Unsubscribe from changes when the effect is cleaned up
+            return () => {
+                unsubscribeGoals();
+                // unsubscribeSummary();
+            };
+        }
+    }, [user]);
+    // if (categoryBudgets === null) {
+    //     console.warn("Category budgets is null. See Firebase.tsx file")
+    //     console.log(categoryBudgets)
+    //     return [];
+    // }
+    return goals && goals.length > 1 ? goals : null;
+};
+
+export async function addNewGoal(user: User | null, goal_name: string, amt_goal: number, goal_date: Date) {
+    if (user) {
+        const db = getFirestore();
+        const goalsRef = collection(db, usersDirectory, user.uid, "Goals");
+        
+        try {
+            // add new goal
+            const new_goal = new GoalClass(goal_name, amt_goal, goal_date,)
+            await setDoc(doc(goalsRef, new_goal.id), new_goal.toObject());
+        } catch (error) {
+            console.log("Error adding goal: ", error)
+        }
+    } else {
+        throw new Error("User not found")
+    }
+}
+
+export async function editGoal(user: User | null, goal: Goal) {
+    if (user) {
+        const db = getFirestore();
+        const goalRef = doc(db, usersDirectory, user.uid, "Goals", goal.id);
+        
+        try {
+            // edit existing goal
+            await setDoc(goalRef, goal);
+        } catch (error) {
+            console.log("Error editing goal: ", goal.goal_name, error)
+        }
+    } else {
+        throw new Error("User not found")
+    }
+}
+
+// TODO: delete goal, goal summary?
 
 function getCurrentMonthString(): string {
     // helper function to return the name of the current month's collection
