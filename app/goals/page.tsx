@@ -4,7 +4,8 @@ import { useState } from "react";
 import { useGoals, addNewGoal, editGoal } from "@/lib/firebase";
 import { Goal } from "@/lib/Interfaces"
 
-import { Grid, Card, Icon, Title, DonutChart, Button, Color} from "@tremor/react";
+import { Grid, Card, Flex, Icon, Title, DonutChart, Button, Color} from "@tremor/react";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem} from "@/components/ui/dropdown-menu";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import { IconPencil, IconSettings } from "@tabler/icons-react";
 import AddGoalForm from "@/components/AddNewGoalForm";
@@ -40,18 +41,28 @@ export default function Page () {
                         },
                       ];
                     return (
-                        <Card className="max-w-lg py-2">
-                            <div className="flex flex-row align-items-stretch">
+                        <Card className="max-w-lg py-2 h-72">
+                            <Flex>
                                 <Title>{goal.goal_name}</Title>
-                                <Icon icon={IconSettings}
-                                    color = "gray"
-                                    tooltip="Edit this goal"
-                                    onClick={() => alert("Edit test")}
-                                />
-                            </div>
-                            <Button icon={IconPencil}/>    
-                            
-                            
+                                
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger>
+                                        <Icon icon={IconSettings}
+                                        color = "gray"
+                                    />
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent>
+                                        <DropdownMenuItem
+                                            onSelect={() => alert("edit")}>
+                                            Edit
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem>
+                                            Delete
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            </Flex>
+
                             <DonutChart
                                 className="mt-6"
                                 data={goalData}
@@ -60,6 +71,10 @@ export default function Page () {
                                 valueFormatter={valueFormatter}
                                 colors={[colors[idx % colors.length] as Color, "slate"]}
                             />
+                            <Flex justifyContent="end">
+                                <Button icon={IconPencil}/>   
+                            </Flex>
+                            
                         </Card>
     
                     )
@@ -70,15 +85,17 @@ export default function Page () {
                     onFormClose={() => setShowForm(false)}
                     onAddGoal={(name, amt, date) => addNewGoal(user, name, amt, date)}
                     />
-                : <Button 
-                    size="lg"
-                    onClick={() => setShowForm (true)}>
-                    Add New Goal
-                </Button> }
-
+                : <Card className="h-72">
+                    <Flex justifyContent="center" className="h-full">
+                        <Button 
+                            size="lg"
+                            onClick={() => setShowForm (true)}>
+                            Add New Goal
+                        </Button> 
+                    </Flex>
+                </Card>}
 
             </Grid>
         </>
-    
     );
 }
