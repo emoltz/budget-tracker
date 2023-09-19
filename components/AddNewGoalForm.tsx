@@ -1,4 +1,4 @@
-import { Card, Title, Button } from "@tremor/react";
+import { Card, Flex, Title, Button } from "@tremor/react";
 import { TextInput, NumberInput } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
@@ -29,30 +29,35 @@ export default function AddGoalForm ({ onFormClose, onAddGoal }: Props) {
                     form.reset();
                     onFormClose();
                 })}>
-                    <TextInput
-                        placeholder="Vacation"
-                        label="Goal Title"
-                        {...form.getInputProps('goalName')}
-                    />
-                    <NumberInput
-                        label="Goal Amount"
-                        defaultValue={1000}
-                        parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
-                        formatter={(value) =>
-                            !Number.isNaN(parseFloat(value))
-                            ? `$ ${value}`.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',')
-                            : '$ '
-                        }
-                        {...form.getInputProps('goalAmount')}
-                    />
-                    <DateInput
-                        label="Target Date"
-                        placeholder="Date input"
-                        mx="auto"
-                        {...form.getInputProps('goalDate')}
-                    />
-                    <Button type="submit">Save</Button>
-                    <Button variant="secondary" onClick={ onFormClose }>Close</Button>
+                    <Flex flexDirection="col" alignItems="stretch" className="gap-2" >
+                        <TextInput
+                            placeholder="Vacation"
+                            label="Goal Title"
+                            {...form.getInputProps('goalName')}
+                        />
+                        <NumberInput
+                            label="Goal Amount"
+                            defaultValue={1000}
+                            parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
+                            formatter={(value) =>
+                                !Number.isNaN(parseFloat(value))
+                                ? `$ ${value}`.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',')
+                                : '$ '
+                            }
+                            {...form.getInputProps('goalAmount')}
+                        />
+                        <DateInput
+                            label="Target Date"
+                            placeholder="Date input"
+                            mx="auto"
+                            style={{width: "100%"}}
+                            {...form.getInputProps('goalDate')}
+                        />
+                        <Flex justifyContent="end" className="gap-2">
+                            <Button variant="secondary" onClick={ onFormClose }>Close</Button>
+                            <Button type="submit">Save</Button>
+                        </Flex>
+                    </Flex>
                 </form>
 
             </Card>
