@@ -16,6 +16,7 @@ import {
     query,
     setDoc,
     updateDoc,
+    deleteDoc,
     where,
 } from 'firebase/firestore';
 import {
@@ -673,7 +674,7 @@ export async function addNewGoal(user: User | null, goal_name: string, amt_goal:
             console.log("Error adding goal: ", error)
         }
     } else {
-        throw new Error("User not found")
+        throw new Error("User not found (adding new goal)")
     }
 }
 
@@ -689,11 +690,27 @@ export async function editGoal(user: User | null, goal: Goal) {
             console.log("Error editing goal: ", goal.goal_name, error)
         }
     } else {
-        throw new Error("User not found")
+        throw new Error("User not found (editing goal)")
     }
 }
 
-// TODO: delete goal, goal summary?
+export async function deleteGoal(user: User | null, goalID: string) {
+    if (user) {
+        const db = getFirestore();
+        const goalRef = doc(db, usersDirectory, user.uid, "Goals", goalID);
+        
+        try {
+            // delete existing goal
+            await deleteDoc(goalRef);
+        } catch (error) {
+            console.log("Error editing goal: ", goalID, error)
+        }
+    } else {
+        throw new Error("User not found (deleting goal)")
+    }
+}
+
+// TODO: goal summary?
 
 function getCurrentMonthString(): string {
     // helper function to return the name of the current month's collection

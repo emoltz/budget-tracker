@@ -1,7 +1,7 @@
 "use client";
 import { useAuth } from "@/app/context";
 import { useState } from "react";
-import { useGoals, addNewGoal, editGoal } from "@/lib/firebase";
+import { useGoals, addNewGoal, editGoal, deleteGoal } from "@/lib/firebase";
 import { Goal } from "@/lib/Interfaces"
 
 import { Grid, Card, Flex, Icon, Title, DonutChart, Button, Color} from "@tremor/react";
@@ -56,9 +56,11 @@ export default function Page () {
                                             onSelect={() => alert("edit")}>
                                             Edit
                                         </DropdownMenuItem>
-                                        <DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            onSelect={() => deleteGoal(user, goal.id)}>
                                             Delete
                                         </DropdownMenuItem>
+                                        {/* TODO: "are you sure"?,  toast to alert? */}
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                             </Flex>
