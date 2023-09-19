@@ -5,10 +5,12 @@ import { useGoals, addNewGoal, editGoal, deleteGoal } from "@/lib/firebase";
 import { Goal } from "@/lib/Interfaces"
 
 import { Grid, Card, Flex, Icon, Title, DonutChart, Button, Color} from "@tremor/react";
+import { NumberInput } from "@mantine/core";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem} from "@/components/ui/dropdown-menu";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
-import { IconPencil, IconSettings } from "@tabler/icons-react";
+import { IconPencil, IconSettings, IconPlus } from "@tabler/icons-react";
 import AddGoalForm from "@/components/AddNewGoalForm";
+import { useForm } from "@mantine/form";
 
 const valueFormatter = (number: number) => `$ ${Intl.NumberFormat("us").format(number).toString()}`;
 
@@ -74,11 +76,14 @@ export default function Page () {
                                 colors={[colors[idx % colors.length] as Color, "slate"]}
                             />
                             <Flex justifyContent="end">
-                                <Button icon={IconPencil}/>   
+                                <AddToGoalPopover 
+                                    updateAmount={(new_amt) => {
+                                        goal.amt_saved += new_amt;
+                                        editGoal(user, goal);
+                                    }}
+                                />
                             </Flex>
-                            
                         </Card>
-    
                     )
                 })}
 
@@ -100,4 +105,42 @@ export default function Page () {
             </Grid>
         </>
     );
+}
+
+interface PopoverProps {
+    updateAmount: (amt: number) => void
+}
+
+function AddToGoalPopover({ updateAmount } : PopoverProps) {
+    const addForm = useForm({
+        initialValues: {
+          add_amount: 0,
+        },
+    
+        validate: {
+            //TODO: validate > 0
+        //   email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
+        },
+      });
+
+    return(
+        <Popover>
+            <PopoverTrigger>
+                <Icon icon={IconPencil} variant="light"/> 
+            </PopoverTrigger>
+            <PopoverContent>
+                <form onSubmit={addForm.onSubmit((values) => {
+                        updateAmount(values.add_amount)
+                        addForm.reset();
+                    })}>
+                    <Flex className="gap-2">
+                        <NumberInput 
+                            {...addForm.getInputProps("add_amount")}
+                            />
+                        <Button type="submit">Add</Button>
+                    </Flex>
+                </form>
+            </PopoverContent>
+        </Popover>
+    )
 }
