@@ -1,8 +1,9 @@
 "use client";
-import {IconMenu2, IconUserCircle} from '@tabler/icons-react'
+import { IconMenu2 } from '@tabler/icons-react'
 import Link from 'next/link';
 import ThemeSwitcher from "@/components/ThemeSwitcher";
-import {useMantineColorScheme} from "@mantine/core";
+import { useMantineColorScheme, Image } from "@mantine/core";
+import { useAuth } from "@/app/context";
 
 interface Props {
   collapsed: boolean;
@@ -10,6 +11,9 @@ interface Props {
 }
 
 export default function Header({collapsed, onCollapse}: Props) {
+  const {user, loading} = useAuth();
+  const profileURL = user?.photoURL ? user.photoURL : "/default_profile_pic.webp"
+
   const {colorScheme} = useMantineColorScheme();
 
   return(
@@ -24,21 +28,26 @@ export default function Header({collapsed, onCollapse}: Props) {
         </div>
         <Link href="/" 
             className={`text-2xl font-bold font-mono justify-self-start transition-all ${colorScheme == 'dark'? "text-amber-50" : ""}`}
-        >Argonaut
+            >Argonaut
         </Link>
            
         <Link href="https://github.com/emoltz/budget-tracker" 
             className="text-xs font-mono bg-slate-200 rounded-sm p-1"
-        >v0.2
+            >v0.2
         </Link>
         
         <div className="ml-auto">
-          <ThemeSwitcher />
+            <ThemeSwitcher />
         </div>
         <Link href="/profile" className="justify-self-end">
-          <IconUserCircle 
-            color={`${colorScheme == 'dark' ? 'white' : 'gray'}`}
-          />
+            <Image 
+                maw={35} 
+                mx="auto" 
+                radius="50%" 
+                src={profileURL} 
+                alt="Profile image" 
+                sx={{referrerPolicy : "no-referrer"}}
+                />
         </Link>  
     </header>
   )
