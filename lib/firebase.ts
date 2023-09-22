@@ -136,8 +136,7 @@ async function createCurrentMonthSummary(db: Firestore, user: User | null) {
         }
 
         await setDoc(summaryRef, initialSummary);
-    }
-    else {
+    } else {
         throw new Error("User not found (create month summary)");
     }
 }
@@ -622,8 +621,11 @@ function createMonthYearString(month: number, year: number): string {
 
 export function useButtons(user: User | null) {
     const [buttons, setButtons] = useState<CustomButton[]>([]);
-    useEffect( () => {
-        if (user){
+    // TODO: add loading state
+    const [loading, setLoading] = useState<boolean>(true);
+    // TODO: figure out loading
+    useEffect(() => {
+        if (user) {
             const db = getFirestore();
             const userRef = doc(db, usersDirectory, user.uid);
             const buttonsRef = collection(userRef, "Buttons");
@@ -634,10 +636,13 @@ export function useButtons(user: User | null) {
                 });
                 setButtons(newButtons);
             });
+
+
             return () => unsubscribe();
         }
+
     });
-    return buttons;
+    return {buttons, loading};
 }
 
 export async function addButton(user: User | null, newButton: CustomButton) {
