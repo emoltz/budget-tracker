@@ -619,30 +619,38 @@ function createMonthYearString(month: number, year: number): string {
 
 // BUTTONS
 
+
 export function useButtons(user: User | null) {
     const [buttons, setButtons] = useState<CustomButton[]>([]);
-    // TODO: add loading state
-    const [loading, setLoading] = useState<boolean>(true);
-    // TODO: figure out loading
+    const [loading, setLoading] = useState<boolean>(true); // Initialize loading state to true
+
     useEffect(() => {
         if (user) {
+            setLoading(true); // Set loading to true when data fetch starts
+
             const db = getFirestore();
             const userRef = doc(db, usersDirectory, user.uid);
             const buttonsRef = collection(userRef, "Buttons");
+
             const unsubscribe = onSnapshot(buttonsRef, (snapshot) => {
                 const newButtons: CustomButton[] = [];
                 snapshot.forEach((doc) => {
                     newButtons.push(doc.data() as CustomButton);
                 });
                 setButtons(newButtons);
+
+                setLoading(false); // Set loading to false when data fetch is complete
             });
 
-
-            return () => unsubscribe();
+            return () => {
+                unsubscribe();
+            };
+        } else {
+            setLoading(false); // Set loading to false if there is no user
         }
+    }, [user]); // Dependency array
 
-    });
-    return {buttons, loading};
+    return { buttons, loading };
 }
 
 export async function addButton(user: User | null, newButton: CustomButton) {
