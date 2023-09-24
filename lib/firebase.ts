@@ -650,7 +650,7 @@ export function useButtons(user: User | null) {
         }
     }, [user]); // Dependency array
 
-    return { buttons, loading };
+    return {buttons, loading};
 }
 
 export async function addButton(user: User | null, newButton: CustomButton) {

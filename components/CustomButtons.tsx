@@ -27,6 +27,7 @@ import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,} from "@/compo
 import IconPicker from "@/components/IconPicker";
 import {addButton, useButtons} from "@/lib/firebase";
 import {useAuth} from "@/app/context";
+import LoadingSpinner from "@/components/loadingSkeletons/LoadingSpinner";
 
 // TODO: add drag and drop functionality
 const colorValueOffset: number = 4;
@@ -132,9 +133,9 @@ export const CustomButtons = () => {
     //     });
     // };
 
-    if (loading){
+    if (loading) {
         return <>
-
+            <LoadingSpinner/>
 
         </>
     }
