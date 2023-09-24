@@ -5,7 +5,6 @@ import {
     Button,
     ColorPicker,
     ColorSwatch,
-    createStyles,
     DEFAULT_THEME,
     Input,
     Modal,
@@ -20,14 +19,15 @@ import {CategoryPicker} from "@/components/CategoryPicker";
 import {Spacer} from "@nextui-org/react";
 // import {ColorPicker} from "@/components/ColorPicker";
 import {useForm} from "@mantine/form";
-import {CustomButton} from "@/lib/Interfaces";
+import {CustomButton, ExpenseClass} from "@/lib/Interfaces";
 import {IconCheck, IconPencil, IconPlus} from "@tabler/icons-react";
 import {icons, IconType} from "@/lib/icons";
 import toast from "react-hot-toast";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,} from "@/components/ui/tooltip";
 import IconPicker from "@/components/IconPicker";
-import {addButton, useButtons} from "@/lib/firebase";
+import {addButton, sendExpenseToFirebase, useButtons} from "@/lib/firebase";
 import {useAuth} from "@/app/context";
+import LoadingSpinner from "@/components/loadingSkeletons/LoadingSpinner";
 
 // TODO: add drag and drop functionality
 const colorValueOffset: number = 4;
@@ -83,25 +83,6 @@ const sampleButtons: CustomButton[] = [
     },
 ]
 const ICON_SIZE = rem(60);
-const useStyles = createStyles((theme) => ({
-    card: {
-        position: 'relative',
-        overflow: 'visible',
-        padding: theme.spacing.xl,
-        paddingTop: `calc(${theme.spacing.xl} * 1.5 + ${ICON_SIZE} / 3)`,
-    },
-
-    icon: {
-        position: 'absolute',
-        top: `calc(-${ICON_SIZE} / 3)`,
-        left: `calc(50% - ${ICON_SIZE} / 2)`,
-    },
-
-    title: {
-        fontFamily: `Greycliff CF, ${theme.fontFamily}`,
-        lineHeight: 1,
-    },
-}));
 
 export const CustomButtons = () => {
     const {user} = useAuth();
@@ -120,9 +101,7 @@ export const CustomButtons = () => {
         }
         return null;
     };
-    const buttons: CustomButton[] = useButtons(user);
-    // get buttons from database
-
+    const {buttons, loading} = useButtons(user);
 
     const form = useForm({
         initialValues: {
@@ -151,9 +130,14 @@ export const CustomButtons = () => {
     //         return <div style={{backgroundColor: color}}></div>;
     //     });
     // };
+
+    if (loading) {
+        return <>
+            <LoadingSpinner/>
+        </>
+    }
     return (
         <>
-
             <div className={""}>
                 {buttons.length === 0 ? (
                     <div className={"font-light"}>
@@ -171,8 +155,10 @@ export const CustomButtons = () => {
                             key={index}
                             customButton={button}
                             onClick={() => {
-                                console.log(button.label, "$" + button.action.cost);
                                 toast.success("Automation successful: " + button.label + " $" + button.action.cost)
+                                // send to database
+                                const newExpense: ExpenseClass = new ExpenseClass(button.action.cost, button.action.category, button.label);
+                                sendExpenseToFirebase(user, newExpense).then( () => console.log("Button automation expense sent to firebase"))
                             }}
                         />
                     ))

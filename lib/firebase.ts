@@ -136,8 +136,7 @@ async function createCurrentMonthSummary(db: Firestore, user: User | null) {
         }
 
         await setDoc(summaryRef, initialSummary);
-    }
-    else {
+    } else {
         throw new Error("User not found (create month summary)");
     }
 }
@@ -620,24 +619,38 @@ function createMonthYearString(month: number, year: number): string {
 
 // BUTTONS
 
-export function useButtons(user: User | null) {
+
+export function useButtons(user: User | null): {buttons: CustomButton[], loading: boolean} {
     const [buttons, setButtons] = useState<CustomButton[]>([]);
-    useEffect( () => {
-        if (user){
+    const [loading, setLoading] = useState<boolean>(true); // Initialize loading state to true
+
+    useEffect(() => {
+        if (user) {
+            setLoading(true); // Set loading to true when data fetch starts
+
             const db = getFirestore();
             const userRef = doc(db, usersDirectory, user.uid);
             const buttonsRef = collection(userRef, "Buttons");
+
             const unsubscribe = onSnapshot(buttonsRef, (snapshot) => {
                 const newButtons: CustomButton[] = [];
                 snapshot.forEach((doc) => {
                     newButtons.push(doc.data() as CustomButton);
                 });
                 setButtons(newButtons);
+
+                setLoading(false); // Set loading to false when data fetch is complete
             });
-            return () => unsubscribe();
+
+            return () => {
+                unsubscribe();
+            };
+        } else {
+            setLoading(false); // Set loading to false if there is no user
         }
-    });
-    return buttons;
+    }, [user]); // Dependency array
+
+    return {buttons, loading};
 }
 
 export async function addButton(user: User | null, newButton: CustomButton) {
