@@ -620,7 +620,7 @@ function createMonthYearString(month: number, year: number): string {
 // BUTTONS
 
 
-export function useButtons(user: User | null) {
+export function useButtons(user: User | null): {buttons: CustomButton[], loading: boolean} {
     const [buttons, setButtons] = useState<CustomButton[]>([]);
     const [loading, setLoading] = useState<boolean>(true); // Initialize loading state to true
 

@@ -19,13 +19,13 @@ import {CategoryPicker} from "@/components/CategoryPicker";
 import {Spacer} from "@nextui-org/react";
 // import {ColorPicker} from "@/components/ColorPicker";
 import {useForm} from "@mantine/form";
-import {CustomButton} from "@/lib/Interfaces";
+import {CustomButton, ExpenseClass} from "@/lib/Interfaces";
 import {IconCheck, IconPencil, IconPlus} from "@tabler/icons-react";
 import {icons, IconType} from "@/lib/icons";
 import toast from "react-hot-toast";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,} from "@/components/ui/tooltip";
 import IconPicker from "@/components/IconPicker";
-import {addButton, useButtons} from "@/lib/firebase";
+import {addButton, sendExpenseToFirebase, useButtons} from "@/lib/firebase";
 import {useAuth} from "@/app/context";
 import LoadingSpinner from "@/components/loadingSkeletons/LoadingSpinner";
 
@@ -102,8 +102,6 @@ export const CustomButtons = () => {
         return null;
     };
     const {buttons, loading} = useButtons(user);
-    // get buttons from database
-
 
     const form = useForm({
         initialValues: {
@@ -157,8 +155,10 @@ export const CustomButtons = () => {
                             key={index}
                             customButton={button}
                             onClick={() => {
-                                console.log(button.label, "$" + button.action.cost);
                                 toast.success("Automation successful: " + button.label + " $" + button.action.cost)
+                                // send to database
+                                const newExpense: ExpenseClass = new ExpenseClass(button.action.cost, button.action.category, button.label);
+                                sendExpenseToFirebase(user, newExpense).then( () => console.log("Button automation expense sent to firebase"))
                             }}
                         />
                     ))
