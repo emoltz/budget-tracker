@@ -71,7 +71,6 @@ export default function RootLayout({
                             <body className={`h-[calc(100vh-0.1rem)] ${colorScheme == 'dark' ? "bg-slate-900" : ""} `}>
                             {/*<ChakraProvider>*/}
                             <Header
-                                collapsed={collapsed}
                                 onCollapse={() => setCollapsed(!collapsed)}
                             />
                             <div className={"flex relative overflow-hidden h-[calc(100%-3.5rem)]"}>
