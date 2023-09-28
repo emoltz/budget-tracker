@@ -130,11 +130,11 @@ function AddExpenseForm() {
                             }
 
                             toast.success("Added expense: " + priceRef.current?.value + " to " + category)
-                            //     TODO add expense to database
+
                             // first, make expense class
-                            const priceString = priceRef.current?.value.replace(/\$/, ''); // Remove the dollar sign
+                            const priceString = priceRef.current?.value.replace(/\$|,/g, ''); // Remove the dollar sign and comma
                             const price = priceString ? parseFloat(priceString) : 0;
-                            console.log("Price: ", price)
+                            // console.log("Price: ", price)
 
                             const expense = new ExpenseClass(price, category, nameRef.current!.value)
                             sendExpenseToFirebase(user, expense).then(() => {
