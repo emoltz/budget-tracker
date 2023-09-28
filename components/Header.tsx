@@ -46,7 +46,7 @@ export default function Header({collapsed, onCollapse}: Props) {
                 radius="50%" 
                 src={profileURL} 
                 alt="Profile image" 
-                sx={{referrerPolicy : "no-referrer"}}
+                imageProps={{referrerPolicy : "no-referrer"}}
                 />
         </Link>  
     </header>
