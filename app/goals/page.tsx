@@ -6,23 +6,27 @@ import { Goal } from "@/lib/Interfaces"
 
 import { Grid, Card, Flex, Icon, Title, DonutChart, Button, Color} from "@tremor/react";
 import { NumberInput } from "@mantine/core";
+import { useForm } from "@mantine/form";
+import {useMantineColorScheme} from "@mantine/core";
+
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem} from "@/components/ui/dropdown-menu";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
-import { IconPencil, IconSettings, IconPlus } from "@tabler/icons-react";
+import { IconPencil, IconSettings } from "@tabler/icons-react";
 import AddGoalForm from "@/components/AddNewGoalForm";
-import { useForm } from "@mantine/form";
 
 const valueFormatter = (number: number) => `$ ${Intl.NumberFormat("us").format(number).toString()}`;
 
 export default function Page () {
     const {user, loading} = useAuth();
+    const {colorScheme} = useMantineColorScheme();
+
     const goals: Goal[] | null = useGoals(user);
 
     const [showForm, setShowForm] = useState(false);
     const colors = ["amber", "indigo", "violet", "rose", "cyan"];
 
     return (
-        <>
+        <div className={colorScheme == "dark" ? "dark" : ""}>
             <p>
             Goals Page
             </p>
@@ -101,9 +105,8 @@ export default function Page () {
                         </Button> 
                     </Flex>
                 </Card>}
-
             </Grid>
-        </>
+        </div>
     );
 }
 

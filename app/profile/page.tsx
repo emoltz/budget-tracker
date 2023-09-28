@@ -1,6 +1,6 @@
 "use client";
 //import {Button} from "@/components/ui/button";
-import { TextInput, Button, Image, Paper, Grid, Flex, Center, FileButton,
+import { TextInput, Button, Image, Paper, Flex, Center, FileButton,
     Modal, Group } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useAuth } from "@/app/context";
@@ -11,13 +11,9 @@ import { updateProfile, updateEmail, deleteUser, User } from "firebase/auth";
 import { useDisclosure } from '@mantine/hooks';
 
 
-
-
 export default function page(){
-
     const {user, loading} = useAuth();
     const [opened, { close, open }] = useDisclosure(false);
-
 
     const emailForm = useForm({
         initialValues: {
@@ -59,25 +55,23 @@ export default function page(){
                 sx={{
                     placeContent: "center"
                 }}
-                >   
+            >   
                 <div className="py-4">
                     <p className="text-3xl">Profile</p>
                 </div>
 
                 <Image 
-                        maw={240} 
-                        mx="auto" 
-                        radius="50%" 
-                        src={profileURL} 
-                        alt="Profile image" 
-                        sx={{referrerPolicy : "no-referrer"}}
-                        />
-
-                
+                    maw={240} 
+                    mx="auto" 
+                    radius="50%" 
+                    src={profileURL} 
+                    alt="Profile image" 
+                    imageProps={{referrerPolicy : "no-referrer"}}
+                    />
+            
 
                 <Center mx="auto">
                     
-
                     <Flex direction={"column"} w={500} align={"center"} gap={"lg"}>
                         <div className='py-3'>
                             <FileButton onChange={() => alert('Profile pic updated')} accept="image/png, image/jpeg, image/svg">
@@ -85,19 +79,17 @@ export default function page(){
                             </FileButton>
                         </div>
 
-                        <form onSubmit={nameForm.onSubmit((values) => 
-                            { 
-                                if (user != null) {
-                                    updateProfile(user, {
-                                        displayName: values.name,
-                                    }).then(() => {
-                                        alert('New name is: ' + values.name);
-                                    }).catch((error) => {
-                                        alert('Error assigning new name, ' + error);
-                                });
-                                }
-                                
-                            })}>
+                        <form onSubmit={nameForm.onSubmit((values) => { 
+                            if (user != null) {
+                                updateProfile(user, {
+                                    displayName: values.name,
+                                }).then(() => {
+                                    alert('New name is: ' + values.name);
+                                }).catch((error) => {
+                                    alert('Error assigning new name, ' + error);
+                            });
+                            }
+                        })}>
 
                             <Flex direction={"row"} align={"flex-end"} gap={"lg"}>
                                 <div className="">
@@ -116,40 +108,38 @@ export default function page(){
                             </Flex>
                         </form>
 
-                        <form onSubmit={emailForm.onSubmit((values) => 
-                            { 
-                                if (user != null) {
-                                    updateEmail(user, values.email
-                                    ).then(() => {
-                                        alert('New email is: ' + values.email);
-                                    }).catch((error) => {
-                                        alert('Error assigning new email, ' + error);
+                        <form onSubmit={emailForm.onSubmit((values) => { 
+                            if (user != null) {
+                                updateEmail(user, values.email
+                                ).then(() => {
+                                    alert('New email is: ' + values.email);
+                                }).catch((error) => {
+                                    alert('Error assigning new email, ' + error);
                                 });
-                                }
-                                
-                            }
-                            )}>
+                            }         
+                        })}>
                             <Flex direction={"row"} align={"flex-end"} gap={"lg"}>
-                                    <div className="">
-                                        <TextInput
-                                            id="Email-text-input"
-                                            label="Email"
-                                            placeholder={user?.email===null ? "placeholder" : user?.email}
-                                            {...emailForm.getInputProps('email')}
-                                        />
+                                <div className="">
+                                    <TextInput
+                                        id="Email-text-input"
+                                        label="Email"
+                                        placeholder={user?.email===null ? "placeholder" : user?.email}
+                                        {...emailForm.getInputProps('email')}
+                                    />
+                                </div>
+                        
+                                    <div className="hover:bg-blue-200 ml-auto place-center">
+                                        <Button variant={"outline"} type="submit">Change Email</Button>
                                     </div>
-                            
-                                        <div className="hover:bg-blue-200 ml-auto place-center">
-                                            <Button variant={"outline"} type="submit">Change Email</Button>
-                                        </div>
                             </Flex>
                         </form>
 
                         <Button variant={"outline"} mt={4}>Change Password</Button>
                         
                         <DeleteAcctModal user={user} opened={opened} close={close}/>
-                        <Button onClick ={open}
-                            variant={"light"} color={"red"}>Delete Account</Button>
+                        <Button onClick={open}
+                            variant={"light"} color={"red"}>Delete Account
+                        </Button>
 
                     </Flex>
 
@@ -162,12 +152,12 @@ export default function page(){
 }
 
 interface ModalProps {
-    opened:boolean, 
-    close:()=>void,
-    user:User
+    opened: boolean, 
+    close: () => void,
+    user: User
 }
 
-function DeleteAcctModal({opened, close, user}: ModalProps) {
+function DeleteAcctModal({ opened, close, user }: ModalProps) {
     return (
       <>
         <Modal opened={opened} onClose={close} size="auto" title="Account Removal">
@@ -183,7 +173,7 @@ function DeleteAcctModal({opened, close, user}: ModalProps) {
                                 alert('Account has been deleted for: ' + user.displayName);
                             }).catch((error) => {
                                 alert('Error deleting account: ' + error);
-                        });
+                            });
                         }
                         close()
                     }}>
@@ -192,7 +182,7 @@ function DeleteAcctModal({opened, close, user}: ModalProps) {
             <Button 
                 variant="outline" 
                 onClick={close}>
-              I changed my mind
+                I changed my mind
             </Button>
           </Group>
         </Modal>
