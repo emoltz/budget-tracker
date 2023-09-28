@@ -1,9 +1,9 @@
 "use client"
-import {Badge, createStyles, Group, Paper, Popover, Progress, rem, Text, ThemeIcon} from '@mantine/core';
+import {Badge, createStyles, Group, Paper, Progress, rem, Text} from '@mantine/core';
 import React, {useState} from "react";
-import IconPicker from "@/components/IconPicker";
 import {icons} from "@/lib/icons";
 import Link from "next/link";
+import IconPickerPopover from "@/components/IconPickerPopover";
 
 
 const ICON_SIZE = rem(60);
@@ -36,7 +36,7 @@ interface BudgetCardProps {
     id: string;
 }
 
-export default function BudgetCard({budgetName, budgetAmount, spent, id, iconName}: BudgetCardProps
+export default function BudgetCard({budgetName, budgetAmount, spent, iconName}: BudgetCardProps
 ) {
     const {classes} = useStyles();
     const icon = icons.find(icon => icon.name === iconName);
@@ -53,25 +53,13 @@ export default function BudgetCard({budgetName, budgetAmount, spent, id, iconNam
 
     return (
         <Paper radius="md" withBorder className={classes.card} mt={`calc(${ICON_SIZE} / 3)`} data-test={"budget-card"}>
-            <Popover width={200}
-                     position={"right-start"}
-                     withArrow
-                     shadow={"lg"}>
+            {/*TODO: icon not changing dynamically!*/}
+            <IconPickerPopover
 
-                <Popover.Target>
-
-                    <ThemeIcon className={classes.icon}
-                               size={ICON_SIZE}
-                               radius={ICON_SIZE}
-                               data-test={"theme-icon"}
-                    >
-                        {selectedIcon?.component}
-                    </ThemeIcon>
-                </Popover.Target>
-                <Popover.Dropdown>
-                    <IconPicker onSelect={handleIconSelect} categoryName={budgetName}/>
-                </Popover.Dropdown>
-            </Popover>
+                selectedIconName={icon?.name}
+                onIconSelect={handleIconSelect}
+                categoryName={budgetName}
+            />
 
             <Text ta="center" fw={700} className={classes.title} data-test={"budget-name"}>
                 {budgetName}

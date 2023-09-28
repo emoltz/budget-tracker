@@ -17,7 +17,7 @@ export default function IconPicker({onSelect, categoryName}: IconPickerProps): R
     const onIconChange = async (categoryName: string, iconName: string) => {
         if (user) {
             await changeCategoryIcon(user, iconName, categoryName).then(() => {
-                // console.log("Icon changed")
+                console.log("Icon changed")
             });
         }
     }

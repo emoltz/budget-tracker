@@ -1,13 +1,21 @@
 "use client"
-import {Button} from "@/components/ui/button";
+import IconPicker from "@/components/IconPicker";
 
 export default function Debug() {
 
     return (
         <>
-            <Button>
-                Hello
-            </Button>
+           <IconPicker onSelect={() => {
+                console.log("Icon selected")
+
+           }}
+           />
+
+            <div className="">
+
+                ----
+            </div>
+
 
         </>
     )
