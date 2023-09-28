@@ -6,12 +6,12 @@ import { useMantineColorScheme, Image } from "@mantine/core";
 import { useAuth } from "@/app/context";
 
 interface Props {
-  collapsed: boolean;
+//   collapsed: boolean;
   onCollapse: () => void;
 }
 
-export default function Header({collapsed, onCollapse}: Props) {
-  const {user, loading} = useAuth();
+export default function Header({onCollapse}: Props) {
+  const user = useAuth().user;
   const profileURL = user?.photoURL ? user.photoURL : "/default_profile_pic.webp"
 
   const {colorScheme} = useMantineColorScheme();

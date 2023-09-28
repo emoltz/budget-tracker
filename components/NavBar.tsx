@@ -1,10 +1,9 @@
 // noinspection JSIgnoredPromiseFromCall
 
 "use client";
-import {useEffect, useState} from 'react';
+// import {useEffect, useState} from 'react';
 
 import {
-    IconArrowsExchange,
     IconChartAreaLine,
     IconDashboard,
     IconFingerprint,
@@ -14,12 +13,12 @@ import {
     IconSettings,
     IconPigMoney,
 } from '@tabler/icons-react';
-import Link from 'next/link';
 import {usePathname} from 'next/navigation'
 import {auth} from "@/lib/firebase";
-import ThemeSwitcher from "@/components/ThemeSwitcher";
 import NavItem from '@/components/NavItem';
 import {useMantineColorScheme} from "@mantine/core";
+// import Link from 'next/link';
+// import ThemeSwitcher from "@/components/ThemeSwitcher";
 
 const data = [
     {link: '/', label: 'Dashboard', icon: IconDashboard},

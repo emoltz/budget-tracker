@@ -86,7 +86,7 @@ export default function NavBar() {
     // COLLAPSE
     const [collapsed, setCollapsed] = useState(false);
     const {colorScheme} = useMantineColorScheme();
-    let animationDuration = 100;
+    const animationDuration = 100;
     const [animationCompleted, setAnimationCompleted] = useState(true);
 
     useEffect(() => {
@@ -105,8 +105,7 @@ export default function NavBar() {
             className={cx(classes.link, {[classes.linkActive]: item.label === active})}
             href={item.link}
             key={item.label}
-            onClick={(event) => {
-
+            onClick={() => {
                 setActive(item.label);
             }}
         >
