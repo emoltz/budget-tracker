@@ -33,6 +33,7 @@ import {
 } from "./Interfaces";
 import {useEffect, useState} from "react";
 import {Timestamp} from "@firebase/firestore";
+import exp from "constants";
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
@@ -124,10 +125,10 @@ async function createCurrentMonthSummary(db: Firestore, user: User | null) {
     //  Called when user is first created, or if current summary is not found
     //  (i.e. it's a new month - getCurrentSummary, useCategoryBudgets) 
     if (user?.uid) {
-        const monthRef = collection(db, usersDirectory, user.uid, getCurrentMonthString());
-        const summaryRef = doc(monthRef, "summary");
+        const monthCollectionRef = collection(db, usersDirectory, user.uid, "Months");
+        const monthDoc = doc(monthCollectionRef, getCurrentMonthString());
 
-        // create summary document for current month
+        // create document for current month, containing initial summary info
         const initialSummary: MonthSummary = {
             month: new Date().getMonth() + 1, // getMonth returns month index starting from 0,
             year: new Date().getFullYear(),
@@ -143,9 +144,9 @@ async function createCurrentMonthSummary(db: Firestore, user: User | null) {
             }
         }
 
-        await setDoc(summaryRef, initialSummary);
+        await setDoc(monthDoc, initialSummary);
     } else {
-        throw new Error("User not found (create month summary)");
+        throw new Error("User not found (create current month doc)");
     }
 }
 
@@ -159,25 +160,22 @@ export async function sendExpenseToFirebase(user: User | null, expense: ExpenseC
 
         try {
             // get reference to current month
-            const monthCollection = getCurrentMonthString();
-            const monthRef = collection(doc(collection(db, usersDirectory), user.uid), monthCollection);
+            const monthString = getCurrentMonthString();
+            const monthRef = doc(db, usersDirectory, user.uid, "Months", monthString);
 
-            // create and write a document with the generated ID
-            const docRef = doc(monthRef, expense.id);
-            await setDoc(docRef, expenseObject);
+            // create and write an expense document with the generated ID
+            const expenseRef = doc(monthRef, "Expenses", expense.id);
+            await setDoc(expenseRef, expenseObject);
 
-            // update this month's summary doc
-            // should create the doc if it doesn't exist
-            const summaryRef = doc(monthRef, "summary");
-
+            // update this month's summary
             // add expense.amount to the month's total spent and the category total
             // individual category totals are nested within categoryTotals
-            await updateDoc(summaryRef, {
+            await updateDoc(monthRef, {
                 monthTotal: increment(expense.amount),
                 ["categoryTotals." + expense.category + "Total"]: increment(expense.amount)
             });
 
-            console.log("Document written with ID: ", docRef.id);
+            console.log("Document written with ID: ", expenseRef.id);
         } catch (e) {
             console.error("Error adding document: ", e);
         }
@@ -198,7 +196,7 @@ export async function addMonthlyExpense(user: User | null, expense: Expense) {
             // get reference to current month
             const currentMonth = createMonthYearString(expense.month, expense.year);
             const userRef = doc(db, usersDirectory, user.uid);
-            const expensesRef = collection(userRef, currentMonth);
+            const expensesRef = collection(userRef, "Months", currentMonth, "Expenses");
             const expenseRef = doc(expensesRef, expense.id);
 
             // add doc
@@ -217,7 +215,7 @@ export async function updateExpense(user: User | null, expense: Expense) {
         const db = getFirestore();
         const currentMonth = createMonthYearString(expense.month, expense.year);
         const userRef = doc(db, usersDirectory, user.uid);
-        const expensesRef = collection(userRef, currentMonth);
+        const expensesRef = collection(userRef, "Months", currentMonth, "Expenses");
         const expenseRef = doc(expensesRef, expense.id);
 
         // Fetch the document from Firestore to check if it exists
@@ -242,7 +240,7 @@ export async function updateExpense(user: User | null, expense: Expense) {
 }
 
 
-export async function getCurrentSummary(user: User | null): Promise<MonthSummary> {
+export async function getCurrentSummary(user: User | null, month?: string): Promise<MonthSummary> {
     /**
      This function retrieves the current month's summary
      data for a specific user from the Firestore database.
@@ -251,18 +249,18 @@ export async function getCurrentSummary(user: User | null): Promise<MonthSummary
      */
     if (user?.uid) {
         const db = getFirestore();
-        const monthCollection = getCurrentMonthString();
+        
+        const monthString = month ? month : getCurrentMonthString();
 
-        const monthRef = collection(doc(collection(db, usersDirectory), user.uid), monthCollection);
+        const monthDoc = await getDoc(doc(db, usersDirectory, user.uid, "Months", monthString));
 
-        const summaryDoc = await getDoc(doc(monthRef, "summary"));
-
-        if (!summaryDoc.exists()) {
-            console.log("Month summary does not exist; creating:", monthCollection);
+        // const summaryDoc = await getDoc(doc(monthRef, "summary"));
+        if (!monthDoc.exists()) {
+            console.log("Month summary does not exist; creating:", monthString);
             await createCurrentMonthSummary(db, user);
             // throw new Error("Month summary does not exist");
         }
-        return summaryDoc.data() as MonthSummary;
+        return monthDoc.data() as MonthSummary;
     } else {
         throw new Error("User not found (get current summary")
     }
@@ -319,7 +317,7 @@ export async function getCategoryBudgets(user: User | null): Promise<CategoryBud
             const category = budget.category_name;
             const icon = categories[category];
             const budgetAmount = budget.amount;
-            const spent = summary.categoryTotals[category + "Total"]
+            const spent = summary.categoryTotals[category + "Total"];
             categoryBudgets.push(consolidateBudgetAndCategory(category, icon, budgetAmount, spent));
         }
 
@@ -347,21 +345,21 @@ export const useCategoryBudgets_currentMonth = (user: User | null): CategoryBudg
             const db = getFirestore();
             const budgetsCollectionRef = collection(db, usersDirectory, user.uid, "Budgets");
 
-            const monthCollection = getCurrentMonthString();
-            const monthRef = collection(doc(collection(db, usersDirectory), user.uid), monthCollection);
-            const summaryDocRef = doc(monthRef, "summary");
+            const monthString = getCurrentMonthString();
+            const monthRef = doc(db, usersDirectory, user.uid, "Months", monthString);
+            // const summaryDocRef = doc(monthRef, "summary");
 
 
             const fetchAndUpdate = async () => {
                 // console.log('Fetching and updating data...');
 
                 const budgetsSnapshot = await getDocs(budgetsCollectionRef);
-                const summaryDoc = await getDoc(doc(monthRef, "summary"));
-                if (!summaryDoc.exists()) {
-                    console.log("Creating summary doc... ", monthCollection)
+                const monthDoc = await getDoc(monthRef);
+                if (!monthDoc.exists()) {
+                    console.log("Creating summary doc... ", monthString)
                     await createCurrentMonthSummary(db, user);
                 }
-                const summary: MonthSummary = summaryDoc.data() as MonthSummary;
+                const summary: MonthSummary = monthDoc.data() as MonthSummary;
                 // console.log("Summary: ", summary)
 
                 const budgets: Budget[] = [];
@@ -384,7 +382,7 @@ export const useCategoryBudgets_currentMonth = (user: User | null): CategoryBudg
             };
 
             const unsubscribeBudgets = onSnapshot(budgetsCollectionRef, fetchAndUpdate);
-            const unsubscribeSummary = onSnapshot(summaryDocRef, fetchAndUpdate);
+            const unsubscribeSummary = onSnapshot(monthRef, fetchAndUpdate);
 
 
             // Unsubscribe from changes when the effect is cleaned up
@@ -504,7 +502,7 @@ export async function getExpenses(user: User | null, month?: number, year?: numb
 
         const db = getFirestore();
         const userRef = doc(db, usersDirectory, user.uid);
-        const expensesRef = collection(userRef, monthString);
+        const expensesRef = collection(userRef, "Months", monthString, "Expenses");
         const expensesQuery = query(expensesRef, orderBy("date", "desc"))
         const expensesSnapshot = await getDocs(expensesQuery);
         const expenses: Expense[] = [];
@@ -520,12 +518,14 @@ export async function getExpenses(user: User | null, month?: number, year?: numb
                 }
 
                 // Logic to include or exclude entries based on `monthly` and `is_monthly`
+                
                 if (monthly === undefined || !monthly) {
                     if (!expenseData.is_monthly) {
                         expenses.push(expenseData);
                     }
                 } else if (monthly) {
                     if (expenseData.is_monthly) {
+                       
                         expenses.push(expenseData);
                     }
                 }
@@ -551,7 +551,7 @@ export function useExpenses(user: User | null, month?: number, year?: number, mo
         if (user) {
             const db = getFirestore();
             const userRef = doc(db, usersDirectory, user.uid);
-            const expensesRef = collection(userRef, getCurrentMonthString());
+            const expensesRef = collection(userRef, "Months", getCurrentMonthString(), "Expenses");
             const expensesQuery = query(expensesRef, orderBy("date", "desc"));
 
             const unsubscribe = onSnapshot(expensesQuery, (snapshot) => {
@@ -559,7 +559,7 @@ export function useExpenses(user: User | null, month?: number, year?: number, mo
                 snapshot.forEach((doc) => {
                     if (doc.id !== "summary") {
                         const expenseData = doc.data() as Expense;
-
+                        // console.log("monthly: ", expenseData.name, expenseData.is_monthly)
                         if (expenseData.date instanceof Timestamp) {
                             const date: Date = expenseData.date.toDate();
                             expenseData.date = date.toLocaleDateString();
@@ -592,7 +592,7 @@ export async function deleteExpense(user: User | null, expense: Expense) {
         const db = getFirestore();
         const monthYearString = createMonthYearString(expense.month, expense.year);
         const userRef = doc(db, usersDirectory, user.uid);
-        const expensesRef = collection(userRef, monthYearString);
+        const expensesRef = collection(userRef, "Months", monthYearString, "Expenses");
         const expenseRef = doc(expensesRef, expense.id);
 
         // Fetch the document from Firestore to check if it exists
