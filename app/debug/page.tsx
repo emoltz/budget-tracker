@@ -1,13 +1,11 @@
 "use client"
-import {Button} from "@/components/ui/button";
+import IconPickerPopover from "@/components/IconPickerPopover";
 
 export default function Debug() {
-
     return (
         <>
-            <Button>
-                Hello
-            </Button>
+            <IconPickerPopover/>
+
 
         </>
     )
