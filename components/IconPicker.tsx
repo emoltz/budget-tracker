@@ -33,6 +33,7 @@ export default function IconPicker({onSelect, categoryName}: IconPickerProps): R
                     <ActionIcon
                         variant={""}
                         key={icon.name}
+                        className={"hover:bg-gray-200"}
                         onClick={() => {
                             onSelect(icon.name)
                             if (categoryName) {
