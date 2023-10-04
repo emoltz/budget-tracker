@@ -64,6 +64,64 @@ if (typeof window !== 'undefined') {
 
 export {app, auth, analytics};
 
+export async function migrateExpenses(user: User) {
+    // For each month, look for expenses under the old db structure
+    // In the new db structure, create a new month doc and Expenses collection, and copy the expenses to it
+    // Also update the month summary by collating expenses
+    if (user?.uid) {
+        const db = getFirestore();
+        const userRef = doc(db, usersDirectory, user.uid);
+
+        const monthNames = ["7_2023", "8_2023", "9_2023", "10_2023"];
+                              
+        // for the past few months
+        for (const month of monthNames) {
+            const monthDocRef = doc(userRef, "Months", month); // reference to new month's document
+            const monthDoc = await getDoc(monthDocRef);
+  
+            const initialSummary= {
+                month: month, 
+                year: 2023,
+                monthTotal: 0,
+                categoryTotals: {
+                    "FoodTotal": 0,
+                    "GroceriesTotal": 0,
+                    "ActivitiesTotal": 0,
+                    "HousingTotal": 0,
+                    "TransportationTotal": 0,
+                    "Medical & HealthcareTotal": 0,
+                    "Personal SpendingTotal": 0,
+                }
+            }
+
+            // use existing new month doc if it exists
+            const runningSummary = monthDoc?.data() ?? initialSummary;
+            const monthSnap = await getDocs(collection(userRef, month)); // get old expenses
+
+            monthSnap.forEach((document) => {
+                const expData = document.data();
+
+                if (expData.id) { // non-summaries
+                    // console.log(document.id);
+
+                    // create new expense
+                    setDoc(doc(monthDocRef, "Expenses", expData.id), expData);
+
+                    // keep track of summary info
+                    runningSummary["categoryTotals"][expData.category + "Total"] += expData.amount;
+                    runningSummary["monthTotal"] += expData.amount;
+                }
+            })
+            
+            // set new summary doc (in the month doc)
+            await setDoc(monthDocRef, runningSummary);
+        }
+
+        console.log("Migration complete")
+    }        
+    
+}
+
 export async function saveUserToDatabase(user: User) {
     const db = getFirestore();
     const {uid, email, displayName, photoURL} = user;
@@ -138,7 +196,7 @@ async function createCurrentMonthSummary(db: Firestore, user: User | null) {
                 "GroceriesTotal": 0,
                 "ActivitiesTotal": 0,
                 "HousingTotal": 0,
-                "Transportation": 0,
+                "TransportationTotal": 0,
                 "Medical & HealthcareTotal": 0,
                 "Personal SpendingTotal": 0,
             }
