@@ -1,5 +1,6 @@
 "use client"
 import IconPickerPopover from "@/components/IconPickerPopover";
+import {Button} from "@/components/ui/button";
 
 import { useAuth } from "@/app/context";
 import { migrateExpenses } from "@/lib/firebase";
