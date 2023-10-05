@@ -71,6 +71,9 @@ export default function Page () {
                                 </DropdownMenu>
                             </Flex>
 
+                            {/* <Title>{new Date(goal.goal_date.valueOf()).toDateString()}</Title> */}
+                            {/* <Title>{goal.goal_date.getDate()}</Title> */}
+
                             <DonutChart
                                 className="mt-6"
                                 data={goalData}
@@ -121,8 +124,8 @@ function AddToGoalPopover({ updateAmount } : PopoverProps) {
         },
     
         validate: {
-            //TODO: validate > 0
-        //   email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
+            add_amount: (value) => (value > 0 ? null
+                : (value === 0 ? "Amount cannot be zero" : "Amount cannot be negative")),
         },
       });
 

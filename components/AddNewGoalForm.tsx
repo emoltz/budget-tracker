@@ -16,8 +16,10 @@ export default function AddGoalForm ({ onFormClose, onAddGoal }: Props) {
           goalAmount: 0,
           goalDate: new Date(),
         },
-
-        // TODO: validate goal amt > 0, date > today
+        validate: {
+        goalAmount: (value) => (value > 0 ? null
+            : (value === 0 ? "Amount cannot be zero" : "Amount cannot be negative")),
+        }
       });
 
     return (
@@ -54,8 +56,9 @@ export default function AddGoalForm ({ onFormClose, onAddGoal }: Props) {
                             {...form.getInputProps('goalDate')}
                         />
                         <Flex justifyContent="end" className="gap-2">
-                            <Button variant="secondary" onClick={ onFormClose }>Close</Button>
                             <Button type="submit">Save</Button>
+                            <Button variant="secondary" onClick={ onFormClose }>Close</Button>
+                            
                         </Flex>
                     </Flex>
                 </form>
