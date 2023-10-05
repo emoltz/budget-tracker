@@ -1,20 +1,15 @@
 "use client";
 import { useAuth } from "@/app/context";
 import { useState } from "react";
-import { useGoals, addNewGoal, editGoal, deleteGoal } from "@/lib/firebase";
+import { useGoals, addNewGoal } from "@/lib/firebase";
 import { Goal } from "@/lib/Interfaces"
+import GoalCard from "@/components/GoalCard";
 
-import { Grid, Card, Flex, Icon, Title, DonutChart, Button, Color} from "@tremor/react";
-import { NumberInput } from "@mantine/core";
-import { useForm } from "@mantine/form";
+import { Grid, Card, Flex, Button, Color} from "@tremor/react";
 import {useMantineColorScheme} from "@mantine/core";
 
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem} from "@/components/ui/dropdown-menu";
-import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
-import { IconPencil, IconSettings } from "@tabler/icons-react";
-import AddGoalForm from "@/components/AddNewGoalForm";
+import AddGoalForm from "@/components/AddEditGoalForm";
 
-const valueFormatter = (number: number) => `$ ${Intl.NumberFormat("us").format(number).toString()}`;
 
 export default function Page () {
     const {user, loading} = useAuth();
@@ -31,75 +26,26 @@ export default function Page () {
             Goals Page
             </p>
             <Grid numItems={1} numItemsMd={2} numItemsLg={3} className="gap-2 p-2">
-                {!goals
-                ? <Card>
-                    <p>No goals yet!</p>
-                </Card>
-                : goals.map((goal: Goal, idx: number) => {
-                    const goalData = [
-                        {
-                          tag: "Saved so far",
-                          amount: goal.amt_saved,
-                        },
-                        {
-                          tag: "Left to go",
-                          amount: goal.amt_goal - goal.amt_saved,
-                        },
-                      ];
+                {goals && goals.map((goal: Goal, idx: number) => {
                     return (
-                        <Card className="max-w-lg py-2 h-72">
-                            <Flex>
-                                <Title>{goal.goal_name}</Title>
-                                
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger>
-                                        <Icon icon={IconSettings}
-                                        color = "gray"
-                                    />
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent>
-                                        <DropdownMenuItem
-                                            onSelect={() => alert("edit")}>
-                                            Edit
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem
-                                            onSelect={() => deleteGoal(user, goal.id)}>
-                                            Delete
-                                        </DropdownMenuItem>
-                                        {/* TODO: "are you sure"?,  toast to alert? */}
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            </Flex>
-
-                            {/* <Title>{new Date(goal.goal_date.valueOf()).toDateString()}</Title> */}
-                            {/* <Title>{goal.goal_date.getDate()}</Title> */}
-
-                            <DonutChart
-                                className="mt-6"
-                                data={goalData}
-                                category="amount"
-                                index="tag"
-                                valueFormatter={valueFormatter}
-                                colors={[colors[idx % colors.length] as Color, "slate"]}
-                            />
-                            <Flex justifyContent="end">
-                                <AddToGoalPopover 
-                                    updateAmount={(new_amt) => {
-                                        goal.amt_saved += new_amt;
-                                        editGoal(user, goal);
-                                    }}
-                                />
-                            </Flex>
-                        </Card>
+                        <GoalCard
+                            user={user}
+                            goal={goal}
+                            idx={idx}
+                            savedColor={colors[idx % colors.length] as Color}/>
                     )
                 })}
 
+                {/* Add new goal button and form toggle */}
                 { showForm 
-                ? <AddGoalForm 
-                    onFormClose={() => setShowForm(false)}
-                    onAddGoal={(name, amt, date) => addNewGoal(user, name, amt, date)}
-                    />
-                : <Card className="h-72">
+                ? <Card className="max-w-lg py-2">
+                    <AddGoalForm 
+                        onFormClose={() => setShowForm(false)}
+                        onAddGoal={(name, amt, date) => addNewGoal(user, name, amt, date)}
+                        onEditGoal={() => {}}
+                        />
+                    </Card>
+                : <Card className="h-80">
                     <Flex justifyContent="center" className="h-full">
                         <Button 
                             size="lg"
@@ -113,40 +59,3 @@ export default function Page () {
     );
 }
 
-interface PopoverProps {
-    updateAmount: (amt: number) => void
-}
-
-function AddToGoalPopover({ updateAmount } : PopoverProps) {
-    const addForm = useForm({
-        initialValues: {
-          add_amount: 0,
-        },
-    
-        validate: {
-            add_amount: (value) => (value > 0 ? null
-                : (value === 0 ? "Amount cannot be zero" : "Amount cannot be negative")),
-        },
-      });
-
-    return(
-        <Popover>
-            <PopoverTrigger>
-                <Icon icon={IconPencil} variant="light"/> 
-            </PopoverTrigger>
-            <PopoverContent>
-                <form onSubmit={addForm.onSubmit((values) => {
-                        updateAmount(values.add_amount)
-                        addForm.reset();
-                    })}>
-                    <Flex className="gap-2">
-                        <NumberInput 
-                            {...addForm.getInputProps("add_amount")}
-                            />
-                        <Button type="submit">Add</Button>
-                    </Flex>
-                </form>
-            </PopoverContent>
-        </Popover>
-    )
-}
