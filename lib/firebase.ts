@@ -5,6 +5,7 @@ import {
     addDoc,
     arrayUnion,
     collection,
+    deleteDoc,
     doc,
     Firestore,
     getDoc,
@@ -16,7 +17,6 @@ import {
     query,
     setDoc,
     updateDoc,
-    deleteDoc,
     where,
 } from 'firebase/firestore';
 import {
@@ -28,7 +28,8 @@ import {
     CustomButton,
     Expense,
     ExpenseClass,
-    Goal, GoalClass,
+    Goal,
+    GoalClass,
     MonthSummary
 } from "./Interfaces";
 import {useEffect, useState} from "react";
@@ -451,12 +452,12 @@ export const useCategoryBudgets_currentMonth = (user: User | null): CategoryBudg
         }
     }, [user]);
     if (categoryBudgets === null) {
-        console.warn("Category budgets is null. See Firebase.tsx file")
-        console.log(categoryBudgets)
         return [];
     }
     return categoryBudgets;
 };
+
+
 
 
 export async function addCategory(user: User | null, category: string, icon: string) {

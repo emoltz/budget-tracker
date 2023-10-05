@@ -1,5 +1,5 @@
 "use client"
-import {Button} from "@/components/ui/button";
+import IconPickerPopover from "@/components/IconPickerPopover";
 
 import { useAuth } from "@/app/context";
 import { migrateExpenses } from "@/lib/firebase";
@@ -9,9 +9,8 @@ export default function Debug() {
 
     return (
         <>
-            <Button>
-                Hello
-            </Button>
+            <IconPickerPopover/>
+
 
             <Button variant={"outline"} color="red" onClick={() => {
                 if (user)
