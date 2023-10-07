@@ -6,6 +6,7 @@ export interface Budget {
     amount: number;
     is_monthly: boolean;
     is_yearly: boolean;
+    icon?: string;
 }
 
 export class BudgetClass {
@@ -205,7 +206,7 @@ export interface CategoryBudget {
     category : string,
     budgetAmount: number,
     spent: number,
-    icon: string,
+    icon?: string,
 }
 
 export class MonthSummaryClass implements MonthSummary {

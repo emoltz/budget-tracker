@@ -34,7 +34,6 @@ import {
 } from "./Interfaces";
 import {useEffect, useState} from "react";
 import {Timestamp} from "@firebase/firestore";
-import exp from "constants";
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
@@ -460,7 +459,7 @@ export const useCategoryBudgets_currentMonth = (user: User | null): CategoryBudg
 
 
 
-export async function addCategory(user: User | null, category: string, icon: string) {
+export async function addBudget(user: User | null, categoryBudget: CategoryBudget, isMonthly: boolean = true, isYearly: boolean = false) {
     // TODO test this function
     if (user) {
         const db = getFirestore();
@@ -470,14 +469,12 @@ export async function addCategory(user: User | null, category: string, icon: str
             console.error('User document does not exist:', user.uid);
             throw new Error('User document not found');
         }
-        const userData = userSnap.data();
-        // add category to user document
-        try {
-            const newCategories = {...userData["categories"], [category]: icon};
-            await updateDoc(userRef, {categories: newCategories});
-        } catch (error) {
-            console.log("Error adding category: ", error)
-        }
+        // add budget to user document
+        const newBudget = new BudgetClass(categoryBudget.category, categoryBudget.budgetAmount, isMonthly, isYearly);
+        const budgetsRef = collection(userRef, "Budgets");
+        const budgetRef = doc(budgetsRef, newBudget.id);
+        await setDoc(budgetRef, newBudget.toObject());
+
     } else {
         throw new Error("User not found")
     }
