@@ -4,6 +4,7 @@ export interface Budget {
     id: string;
     category_name: string;
     amount: number;
+    spent?: number; // adding this as a computed value
     is_monthly: boolean;
     is_yearly: boolean;
     icon?: string;
@@ -67,8 +68,8 @@ export interface Expense {
     date: Timestamp | FieldValue | string;
     month: number;
     year: number;
-    is_yearly: boolean;
     is_monthly: boolean;
+    is_yearly?: boolean; // get ready for removal
     is_deleted: boolean;
 }
 

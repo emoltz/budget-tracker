@@ -5,7 +5,6 @@ import {useAuth} from "@/app/context";
 import {rem,} from '@mantine/core';
 import {ThreeColumnLayout} from "@/components/layouts/ThreeColumnLayout";
 import LoginMantine from "@/components/LoginMantine";
-import AddNewExpense from "@/components/AddNewExpense";
 import Loading from "@/app/loading";
 import ComponentFrameCenter from "@/components/layouts/ComponentFrameCenter";
 import BudgetCard from "@/components/BudgetCard";
@@ -20,7 +19,7 @@ const PRIMARY_COL_HEIGHT = rem(400);
 export default function Home() {
     const {user, loading} = useAuth();
 
-    const categoryBudgets: CategoryBudget[] | null = useCategoryBudgets_currentMonth(user)
+    const budgets: CategoryBudget[] | null = useCategoryBudgets_currentMonth(user)
 
     if (loading) {
         return <Loading/>; // Or return a loading spinner
@@ -39,7 +38,7 @@ export default function Home() {
                 three={<AtAGlance
                     // userData={userData}
                     // user={user}
-                    categoryBudgets={categoryBudgets}
+                    budgets={budgets}
                 />}
             />
         </>
@@ -57,22 +56,11 @@ const MonthlyExpensesFrame = () => {
     )
 }
 
-const Actions = () => {
-    return (
-        <ComponentFrameCenter
-            PRIMARY_COL_HEIGHT={PRIMARY_COL_HEIGHT}
-            title={"Add New"}
-        >
-            <AddNewExpense/>
-        </ComponentFrameCenter>
-    )
-}
-
 interface AtAGlanceProps {
-    categoryBudgets: CategoryBudget[] | null;
+    budgets: CategoryBudget[] | null;
 }
 
-const AtAGlance = ({categoryBudgets}: AtAGlanceProps) => {
+const AtAGlance = ({budgets}: AtAGlanceProps) => {
 
     return (
         <>
@@ -84,7 +72,7 @@ const AtAGlance = ({categoryBudgets}: AtAGlanceProps) => {
                     className={"grid md:grid-cols-2 sm:grid-cols-1 gap-5"}
                 >
 
-                    {categoryBudgets ? categoryBudgets.map((category: CategoryBudget, idx: number) => {
+                    {budgets ? budgets.map((category: CategoryBudget, idx: number) => {
                             return (
                                 <BudgetCard
                                     key={idx}
