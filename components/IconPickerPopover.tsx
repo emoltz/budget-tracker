@@ -11,12 +11,9 @@ interface IconPickerPopoverProps {
     zIndex?: number;
 }
 
-export default function IconPickerPopover({selectedIconName, onIconSelect, categoryName, zIndex}: IconPickerPopoverProps) {
+export default function IconPickerPopover({selectedIconName, onIconSelect, categoryName, zIndex = 1}: IconPickerPopoverProps) {
     const selectedIconFound = icons.find(icon => icon.name === selectedIconName);
     const [selectedIcon, setSelectedIcon] = useState("home")
-    if (!zIndex){
-        zIndex = 1;
-    }
 
     return (
         <Popover>

@@ -1,9 +1,9 @@
 "use client"
 import {DataTable} from "@/app/expenses/data-table";
-import React, {useEffect, useState} from "react";
+import React from "react";
 import {DateData, Expense} from "@/lib/Interfaces";
 import {useAuth} from "@/app/context";
-import {getExpenses} from "@/lib/firebase";
+import {useExpenses} from "@/lib/firebase";
 import AddExpensePopover from "@/components/AddExpensePopover";
 import {Button, rem} from "@mantine/core";
 import ComponentFrameCenter from "@/components/layouts/ComponentFrameCenter";
@@ -117,18 +117,11 @@ export default function MiniExpenses() {
         year: 2023,
         monthName: "September"
     }
-    const [currentExpenses, setCurrentExpenses] = useState<Expense[]>([]);
+
     const {user, loading} = useAuth();
     // const {colorScheme} = useMantineTheme();
     const PRIMARY_COL_HEIGHT = rem(400);
-    useEffect(() => {
-        if (user) {
-            getExpenses(user, dateData.month, dateData.year).then(expenses => {
-                setCurrentExpenses(expenses)
-
-            })
-        }
-    }, [user])
+    const expenses = useExpenses(user);
     if (loading) {
         return (
             <>
@@ -154,7 +147,7 @@ export default function MiniExpenses() {
                     </div>
 
                 </div>
-                <DataTable columns={columns} data={currentExpenses}/>
+                <DataTable columns={columns} data={expenses}/>
             </ComponentFrameCenter>
         </>
     )
