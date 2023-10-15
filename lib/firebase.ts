@@ -459,7 +459,7 @@ export const useCategoryBudgets_currentMonth = (user: User | null): CategoryBudg
 
 
 
-export async function addBudget(user: User | null, categoryBudget: CategoryBudget, isMonthly: boolean = true, isYearly: boolean = false) {
+export async function addBudget(user: User | null, categoryBudget: CategoryBudget, isYearly: boolean = false) {
     // TODO test this function
     if (user) {
         const db = getFirestore();
@@ -470,6 +470,8 @@ export async function addBudget(user: User | null, categoryBudget: CategoryBudge
             throw new Error('User document not found');
         }
         // add budget to user document
+        // TODO clean up the mnodels to take away monthly
+        const isMonthly = true;
         const newBudget = new BudgetClass(categoryBudget.category, categoryBudget.budgetAmount, isMonthly, isYearly);
         const budgetsRef = collection(userRef, "Budgets");
         const budgetRef = doc(budgetsRef, newBudget.id);
