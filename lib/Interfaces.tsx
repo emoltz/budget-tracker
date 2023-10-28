@@ -29,6 +29,36 @@ export type Budgets = {
     budgets: Budget[];
 }
 
+export class BudgetClass implements Budget {
+    budgetID: string = "";
+
+    constructor(public name: string, public icon: string | null, public amount: number = 0, public is_monthly: boolean = false) {
+        this.budgetID = this.generateBudgetId();
+        this.name = name;
+        this.icon = icon;
+        this.amount = amount;
+        this.is_monthly = is_monthly;
+    }
+
+    generateBudgetId(): string {
+        // Get current timestamp
+        const timestamp = Date.now();
+        // Construct the ID
+        return `${this.name}_${timestamp}`;
+    }
+
+    toJson(): Budget {
+        return {
+            budgetID: this.budgetID,
+            name: this.name,
+            amount: this.amount,
+            is_monthly: this.is_monthly,
+            icon: this.icon
+        }
+    }
+
+}
+
 export type Expense = {
     // within Month
     id: string;
@@ -36,18 +66,73 @@ export type Expense = {
     vendor: string;
     description: string;
     budgetID: string;
+    amount: number;
     date: Timestamp | FieldValue | Date | typeof serverTimestamp;
     month: number;
     year: number;
     is_monthly: boolean;
     is_yearly: boolean; // this is for yearly expenses
+    is_deleted: boolean;
 }
 
 export type Expenses = {
     expenses: Expense[];
 }
 
+export class ExpenseClass implements Expense {
+    date: Timestamp | FieldValue | Date | typeof serverTimestamp = serverTimestamp();
+    id: string = "";
+    constructor(
 
+        public name: string,
+        public budgetID: string,
+        public amount: number,
+        public month: number,
+        public year: number,
+        public description: string = "",
+        public vendor: string = "",
+        public is_monthly: boolean = false,
+        public is_yearly: boolean = false,
+        public is_deleted: boolean = false,
+    ) {
+        this.id = this.generateExpenseId();
+        this.name = name;
+        this.vendor = vendor;
+        this.description = description;
+        this.budgetID = budgetID;
+        this.amount = amount;
+        this.month = month;
+        this.year = year;
+        this.is_monthly = is_monthly;
+        this.is_yearly = is_yearly;
+        this.is_deleted = is_deleted;
+    }
+
+    generateExpenseId(): string {
+        // Get current timestamp
+        const timestamp = Date.now();
+        // Construct the ID
+        return `${this.name}_${timestamp}`;
+    }
+
+    toJson(): Expense {
+        return {
+            id: this.id,
+            name: this.name,
+            vendor: this.vendor,
+            description: this.description,
+            budgetID: this.budgetID,
+            amount: this.amount,
+            date: this.date,
+            month: this.month,
+            year: this.year,
+            is_monthly: this.is_monthly,
+            is_yearly: this.is_yearly,
+            is_deleted: this.is_deleted
+        }
+    }
+
+}
 
 
 // GOALS
@@ -104,7 +189,7 @@ export type DateData = {
     monthName: string
 }
 
-export type Color  ={
+export type Color = {
     name: string,
     displayName: string,
     value: string,
