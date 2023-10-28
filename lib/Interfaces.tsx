@@ -6,50 +6,54 @@ export type User = {
     photoURL: string | null;
 }
 
-export type Month = {
-    month: number;
-    year: number;
-    totals: {
-        monthTotal: number;
-        budgetTotals: {
-            [budgetID: string]: number;
-        }
+export type MonthSummary = {
+    monthTotal: number;
+    categoryTotals: {
+        [categoryID: string]: number;
     }
 }
 
-export type Budget = {
-    budgetID: string;
+export type Month = {
+    monthNum: number;
+    yearNum: number;
+    totals: MonthSummary;
+
+}
+
+export type Category = {
+    categoryID: string;
     name: string;
     amount: number;
     is_monthly: boolean;
     icon: string | null;
 }
 
-export type Budgets = {
-    budgets: Budget[];
+export type Categories = {
+    categories: Category[];
 }
 
-export class BudgetClass implements Budget {
-    budgetID: string = "";
+export class CategoryClass implements Category {
+    categoryID: string = "";
 
     constructor(public name: string, public icon: string | null, public amount: number = 0, public is_monthly: boolean = false) {
-        this.budgetID = this.generateBudgetId();
+        this.categoryID = this.generateCategoryID();
         this.name = name;
+
         this.icon = icon;
         this.amount = amount;
         this.is_monthly = is_monthly;
     }
 
-    generateBudgetId(): string {
+    generateCategoryID(): string {
         // Get current timestamp
         const timestamp = Date.now();
         // Construct the ID
         return `${this.name}_${timestamp}`;
     }
 
-    toJson(): Budget {
+    toJson(): Category {
         return {
-            budgetID: this.budgetID,
+            categoryID: this.categoryID,
             name: this.name,
             amount: this.amount,
             is_monthly: this.is_monthly,
@@ -65,7 +69,7 @@ export type Expense = {
     name: string;
     vendor: string;
     description: string;
-    budgetID: string;
+    categoryID: string;
     amount: number;
     date: Timestamp | FieldValue | Date | typeof serverTimestamp;
     month: number;
@@ -82,10 +86,10 @@ export type Expenses = {
 export class ExpenseClass implements Expense {
     date: Timestamp | FieldValue | Date | typeof serverTimestamp = serverTimestamp();
     id: string = "";
-    constructor(
 
+    constructor(
         public name: string,
-        public budgetID: string,
+        public categoryID: string,
         public amount: number,
         public month: number,
         public year: number,
@@ -99,7 +103,7 @@ export class ExpenseClass implements Expense {
         this.name = name;
         this.vendor = vendor;
         this.description = description;
-        this.budgetID = budgetID;
+        this.categoryID = categoryID;
         this.amount = amount;
         this.month = month;
         this.year = year;
@@ -121,7 +125,7 @@ export class ExpenseClass implements Expense {
             name: this.name,
             vendor: this.vendor,
             description: this.description,
-            budgetID: this.budgetID,
+            categoryID: this.categoryID,
             amount: this.amount,
             date: this.date,
             month: this.month,
