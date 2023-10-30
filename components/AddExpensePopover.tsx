@@ -6,7 +6,7 @@ import {CategoryPicker} from "@/components/CategoryPicker";
 import toast from "react-hot-toast";
 import {CustomButtons} from "@/components/CustomButtons";
 import {ExpenseClass} from "@/lib/Interfaces";
-import {sendExpenseToFirebase} from "@/lib/firebase";
+import {addOrUpdateExpense} from "@/lib/firebase";
 import {useAuth} from "@/app/context";
 
 interface AddExpensePopoverProps {
@@ -137,7 +137,7 @@ function AddExpenseForm() {
                             // console.log("Price: ", price)
 
                             const expense = new ExpenseClass(price, category, nameRef.current!.value)
-                            sendExpenseToFirebase(user, expense).then(() => {
+                            addOrUpdateExpense(user, expense).then(() => {
                                 console.log("Expense added: ", expense)
                             })
 

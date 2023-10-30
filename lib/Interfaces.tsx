@@ -1,8 +1,9 @@
 import {FieldValue, serverTimestamp, Timestamp} from "@firebase/firestore";
 
-export type User = {
+export type DatabaseUser = {
     uid: string;
     email: string;
+    displayName: string;
     photoURL: string | null;
 }
 
@@ -26,6 +27,7 @@ export type Category = {
     amount: number;
     is_monthly: boolean;
     icon: string | null;
+    is_deleted: boolean;
 }
 
 export type Categories = {
@@ -34,11 +36,11 @@ export type Categories = {
 
 export class CategoryClass implements Category {
     categoryID: string = "";
+    is_deleted: boolean = false;
 
     constructor(public name: string, public icon: string | null, public amount: number = 0, public is_monthly: boolean = false) {
         this.categoryID = this.generateCategoryID();
         this.name = name;
-
         this.icon = icon;
         this.amount = amount;
         this.is_monthly = is_monthly;
@@ -57,7 +59,8 @@ export class CategoryClass implements Category {
             name: this.name,
             amount: this.amount,
             is_monthly: this.is_monthly,
-            icon: this.icon
+            icon: this.icon,
+            is_deleted: this.is_deleted,
         }
     }
 

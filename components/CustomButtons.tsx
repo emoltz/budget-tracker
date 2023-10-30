@@ -25,7 +25,7 @@ import {icons, IconType} from "@/lib/icons";
 import toast from "react-hot-toast";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,} from "@/components/ui/tooltip";
 import IconPicker from "@/components/IconPicker";
-import {addButton, sendExpenseToFirebase, useButtons} from "@/lib/firebase";
+import {addButton, addOrUpdateExpense, useButtons} from "@/lib/firebase";
 import {useAuth} from "@/app/context";
 import LoadingSpinner from "@/components/loadingSkeletons/LoadingSpinner";
 
@@ -158,7 +158,7 @@ export const CustomButtons = () => {
                                 toast.success("Automation successful: " + button.label + " $" + button.action.cost)
                                 // send to database
                                 const newExpense: ExpenseClass = new ExpenseClass(button.action.cost, button.action.category, button.label);
-                                sendExpenseToFirebase(user, newExpense).then( () => console.log("Button automation expense sent to firebase"))
+                                addOrUpdateExpense(user, newExpense).then( () => console.log("Button automation expense sent to firebase"))
                             }}
                         />
                     ))

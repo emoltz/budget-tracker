@@ -8,8 +8,7 @@ import LoginMantine from "@/components/LoginMantine";
 import Loading from "@/app/loading";
 import ComponentFrameCenter from "@/components/layouts/ComponentFrameCenter";
 import BudgetCard from "@/components/BudgetCard";
-import {useCategoryBudgets_currentMonth} from "@/lib/firebase";
-import {CategoryBudget} from "@/lib/Interfaces";
+
 import LoadingAtAGlance from "@/components/layouts/LoadingAtAGlance";
 import MiniExpenses from "@/components/miniComponents/MiniExpenses";
 import MonthlyExpenses from "@/components/MonthlyExpenses";
