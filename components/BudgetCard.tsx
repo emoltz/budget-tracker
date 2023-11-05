@@ -32,7 +32,7 @@ interface BudgetCardProps {
     budgetName: string;
     budgetAmount: number;
     spent: number;
-    iconName: string | undefined;
+    iconName: string | null;
     id: string;
 }
 

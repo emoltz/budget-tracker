@@ -6,10 +6,11 @@ import {Input} from "@/components/ui/input"
 import {CategoryPicker} from "@/components/CategoryPicker";
 import {IconPlus} from "@tabler/icons-react";
 import {ChangeEvent, MutableRefObject, useEffect, useRef, useState} from "react";
-import {getExpenses, updateExpense} from "@/lib/firebase";
+import {useExpenses, addOrUpdateExpense} from "@/lib/firebase";
 import {useAuth} from "@/app/context";
 import {debounce} from "lodash"
 import {useMantineTheme} from "@mantine/core";
+import { update } from "cypress/types/lodash";
 
 interface MonthlyExpensesProps {
     width?: string;
@@ -34,16 +35,21 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
         monthName: "August"
     }
 
-    const [currentExpenses, setCurrentExpenses] = useState<Expense[]>([]);
-    useEffect(() => {
-        if (user) {
-            getExpenses(user, sampleDateData.month, sampleDateData.year, true).then(expenses => {
-                setCurrentExpenses(expenses)
-                console.log("Expenses: ", expenses)
+    const currentExpenses = useExpenses(user);
 
-            })
-        }
-    }, [user])
+    // TODO: Too many hooks or re-renders below
+    // Updating from MonthlyExpenses is commented out for now
+    // const [currentExpenses, setCurrentExpenses] = useState<Expense[]>([]);
+    // setCurrentExpenses(useExpenses(user, sampleDateData.month, sampleDateData.year, true));
+
+    // useEffect(() => {
+        // if (user) {
+            // getExpenses(user, sampleDateData.month, sampleDateData.year, true).then(expenses => {
+            //     setCurrentExpenses(expenses)
+            //     console.log("Expenses: ", expenses)
+            // })
+        // }
+    // }, [user])
 
     // TODO replace with custom loading skeleton
     if (loading) return <div>Loading...</div>
@@ -83,13 +89,17 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
                     [field]: processedValue,
                 };
 
-                await updateExpense(user, updatedExpenses[expenseIndex]).then(() => {
+                // convert to class for addOrUpdateExpense function
+                const exp = updatedExpenses[expenseIndex];
+                const expAsClass = new ExpenseClass(exp.name, exp.categoryID, exp.amount, exp.month, exp.year, exp.description, exp.vendor, exp.is_monthly, exp.is_yearly, exp.is_deleted);
+                
+                await addOrUpdateExpense(user, expAsClass).then(() => {
                     console.log("Expense updated: ", updatedExpenses[expenseIndex])
                 });
             }
         }
 
-        setCurrentExpenses(updatedExpenses);
+        // setCurrentExpenses(updatedExpenses);
     };
 
 
@@ -99,20 +109,23 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
 
 
     const handleSubmit = async () => {
+        const today = new Date();
         const _newExpense = new ExpenseClass(
-            newExpenseRow.amount,
-            newExpenseRow.category,
             newExpenseRow.name,
-            "",
+            newExpenseRow.category,
+            newExpenseRow.amount,
+            today.getMonth() + 1,
+            today.getFullYear(),
             newExpenseRow.description,
-            true
+            "", // vendor
+            true // is_monthly,
         )
 
-        const newExpense = _newExpense.toObject();
-        await updateExpense(user, newExpense)
+        // const newExpense = _newExpense.toJson();
+        await addOrUpdateExpense(user, _newExpense)
 
 
-        setCurrentExpenses([...currentExpenses, newExpense]);
+        // setCurrentExpenses([...currentExpenses, newExpense]);
         toggleForm();
 
         // reset form fields

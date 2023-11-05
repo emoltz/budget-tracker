@@ -54,6 +54,16 @@ let auth: Auth;
 let analytics;
 const usersDirectory: string = "Users"
 
+const defaultCategoriesAndIcons: {[category: string]: string} = {
+    "Food": "dashboard",
+    "Groceries": "box",
+    "Activities": "beach",
+    "Housing": "home",
+    "Transportation": "train",
+    "Medical & Healthcare": "medical",
+    "Personal Spending": "money"
+}
+
 if (typeof window !== 'undefined') {
     app = initializeApp(firebaseConfig);
     auth = getAuth(app);
@@ -62,63 +72,6 @@ if (typeof window !== 'undefined') {
 
 export {app, auth, analytics};
 
-export async function migrateExpenses(user: User) {
-    // For each month, look for expenses under the old db structure
-    // In the new db structure, create a new month doc and Expenses collection, and copy the expenses to it
-    // Also update the month summary by collating expenses
-    if (user?.uid) {
-        const db = getFirestore();
-        const userRef = doc(db, usersDirectory, user.uid);
-
-        const monthNames = ["7_2023", "8_2023", "9_2023", "10_2023"];
-
-        // for the past few months
-        for (const month of monthNames) {
-            const monthDocRef = doc(userRef, "Months", month); // reference to new month's document
-            const monthDoc = await getDoc(monthDocRef);
-
-            const initialSummary = {
-                month: month,
-                year: 2023,
-                monthTotal: 0,
-                categoryTotals: {
-                    "FoodTotal": 0,
-                    "GroceriesTotal": 0,
-                    "ActivitiesTotal": 0,
-                    "HousingTotal": 0,
-                    "TransportationTotal": 0,
-                    "Medical & HealthcareTotal": 0,
-                    "Personal SpendingTotal": 0,
-                }
-            }
-
-            // use existing new month doc if it exists
-            const runningSummary = monthDoc?.data() ?? initialSummary;
-            const monthSnap = await getDocs(collection(userRef, month)); // get old expenses
-
-            monthSnap.forEach((document) => {
-                const expData = document.data();
-
-                if (expData.id) { // non-summaries
-                    // console.log(document.id);
-
-                    // create new expense
-                    setDoc(doc(monthDocRef, "Expenses", expData.id), expData);
-
-                    // keep track of summary info
-                    runningSummary["categoryTotals"][expData.category + "Total"] += expData.amount;
-                    runningSummary["monthTotal"] += expData.amount;
-                }
-            })
-
-            // set new summary doc (in the month doc)
-            await setDoc(monthDocRef, runningSummary);
-        }
-
-        console.log("Migration complete")
-    }
-
-}
 
 export async function saveUserToDatabase(user: User): Promise<void> {
     const db = getFirestore();
@@ -126,15 +79,7 @@ export async function saveUserToDatabase(user: User): Promise<void> {
     const ref = doc(db, usersDirectory, uid);
 
     // option to ask for user-desired categories during onboarding
-    const defaultCategoriesAndIcons: {[category: string]: string} = {
-        "Food": "dashboard",
-        "Groceries": "box",
-        "Activities": "beach",
-        "Housing": "home",
-        "Transportation": "train",
-        "Medical & Healthcare": "medical",
-        "Personal Spending": "money"
-    }
+    // Moved default categories as global
 
     const userData: DatabaseUser = {
         uid: uid,
@@ -149,11 +94,11 @@ export async function saveUserToDatabase(user: User): Promise<void> {
         const icon: string = defaultCategoriesAndIcons[category];
         defaultCategories.push(new CategoryClass(category, icon, 0));
     }
-    const defaultCategoriesJson: Category[] = defaultCategories.map((category) => category.toJson());
+    // const defaultCategoriesJson: Category[] = defaultCategories.map((category) => category.toJson());
 
 
     // create current month
-    await createCurrentMonth(db, user, defaultCategoriesJson);
+    await createCurrentMonth(db, user, defaultCategoriesAndIcons);
 
 
     // create collection for the current month and summary document for current month
@@ -179,7 +124,7 @@ export async function saveUserToDatabase(user: User): Promise<void> {
 }
 
 
-async function createCurrentMonth(db: Firestore, user: User | null, categories: Category[]) {
+async function createCurrentMonth(db: Firestore, user: User | null, categories: {[category: string]: string}) {
     // This is a helper function to create a new month summary document.
     //  Called when user is first created, or if current summary is not found
     //  (i.e. it's a new month - getCurrentSummary, useCategoryBudgets) 
@@ -192,8 +137,8 @@ async function createCurrentMonth(db: Firestore, user: User | null, categories: 
 
         const categoryTotals: { [key: string]: number } = {}
 
-        for (const category of categories) {
-            categoryTotals[category.categoryID] = 0;
+        for (const cat in categories) {
+            categoryTotals[cat] = 0;
         }
 
         const initialSummary: MonthSummary = {
@@ -207,10 +152,30 @@ async function createCurrentMonth(db: Firestore, user: User | null, categories: 
     }
 }
 
-export async function useCategories(user: User | null): Promise<Category[] | null> {
+export function useCategories(user: User | null): Category[] | null {
 
-    const firestore = useFirestore();
+    const [categories, setCategories] = useState<Category[] | null>(null);
 
+    useEffect(() => {
+        if (user) {
+            const db = getFirestore();
+            const userRef = doc(db, usersDirectory, user.uid);
+            const categoriesRef = collection(userRef, "Categories");
+
+            const categoryQuery = query(categoriesRef);
+            const unsubscribe = onSnapshot(categoryQuery, (snapshot) => {
+                const newCategories: Category[] = [];
+                snapshot.forEach((doc) => {
+                    newCategories.push(doc.data() as Category);
+                });
+                setCategories(newCategories);
+            });
+
+            return () => unsubscribe();
+        }
+    }, [user]);
+
+    return categories;
 }
 
 
@@ -223,23 +188,44 @@ export async function addOrUpdateExpense(user: User | null, expense: ExpenseClas
         const expenseObject = expense.toJson();
 
         try {
-            // get reference to current month
-            const monthString = getCurrentMonthString();
+            // get reference to expense's month
+            const monthString = createMonthYearString(expense.month, expense.year);
             const monthRef = doc(db, usersDirectory, user.uid, "Months", monthString);
 
-            // create and write an expense document with the generated ID
+            // Fetch the document from Firestore to check if it exists
             const expenseRef = doc(monthRef, "Expenses", expense.id);
-            await setDoc(expenseRef, expenseObject);
+            const expenseDoc = await getDoc(expenseRef);
 
-            // update this month's summary
-            // add expense.amount to the month's total spent and the category total
-            // individual category totals are nested within categoryTotals
-            await updateDoc(monthRef, {
-                monthTotal: increment(expense.amount),
-                ["categoryTotals." + expense.category + "Total"]: increment(expense.amount)
-            });
+            // UPDATE EXPENSE
+            if (expenseDoc.exists()) {
+                // Update the existing document
+                await updateDoc(expenseRef, {
+                    name: expense.name,
+                    amount: expense.amount,
+                    category: expense.categoryID,
+                });
+                
+                console.log(`Expense document updated with ID: ${expense.id}`);
+                // TODO: account for an expense changing amounts or categories
 
-            console.log("Document written with ID: ", expenseRef.id);
+            // ADD NEW EXPENSE
+            } else {
+                // create and write an expense document with the generated ID
+                await setDoc(expenseRef, expenseObject);
+                console.log("Expense document added with ID: ", expenseRef.id);
+
+                // update this month's total spent and category total
+                const monthDoc = await getDoc(monthRef);
+                if (!monthDoc.exists()) {
+                    console.log("Creating summary doc... ", monthString)
+                    await createCurrentMonth(db, user, defaultCategoriesAndIcons);
+                }
+                await updateDoc(monthRef, {
+                    monthTotal: increment(expense.amount),
+                    ["categoryTotals." + expense.categoryID + "Total"]: increment(expense.amount)
+                });
+            }
+            
         } catch (e) {
             console.error("Error adding document: ", e);
         }
@@ -364,8 +350,8 @@ export function useExpenses(user: User | null, month?: number, year?: number, mo
                         const expenseData = doc.data() as Expense;
                         // console.log("monthly: ", expenseData.name, expenseData.is_monthly)
                         if (expenseData.date instanceof Timestamp) {
-                            const date: Date = expenseData.date.toDate();
-                            expenseData.date = date.toLocaleDateString();
+                            // const date: Date = expenseData.date.toDate();
+                            expenseData.date = expenseData.date.toDate();
                         }
 
                         if (monthly === undefined || !monthly) {
@@ -387,6 +373,24 @@ export function useExpenses(user: User | null, month?: number, year?: number, mo
     }, [user, month, year, monthly]);
 
     return expenses;
+}
+
+// TODO: replace this with a function that gets categories based on the Categories collection
+// instead of the user document (which should no longer store category info)
+export async function getUserCategories(user: User | null): Promise<string[]> {
+    // get category names only (stored as part of User document)
+    if (user?.uid) {
+        const db = getFirestore();
+
+        const userRef = doc(db, usersDirectory, user.uid);
+        const userSnap = await getDoc(userRef);
+
+        if (userSnap.exists()) {
+            return Object.keys(userSnap.data()["categories"]);
+        }
+    }
+
+    return ["Error returning categories"];
 }
 
 // ------- GOALS -------
