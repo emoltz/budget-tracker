@@ -73,13 +73,10 @@ if (typeof window !== 'undefined') {
 export {app, auth, analytics};
 
 
-export async function saveUserToDatabase(user: User): Promise<void> {
+export async function saveUserToDatabase(user: User, userCategories: CategoryClass[] | null = null): Promise<void> {
     const db = getFirestore();
     const {uid, email, displayName, photoURL} = user;
     const ref = doc(db, usersDirectory, uid);
-
-    // option to ask for user-desired categories during onboarding
-    // Moved default categories as global
 
     const userData: DatabaseUser = {
         uid: uid,
@@ -88,39 +85,42 @@ export async function saveUserToDatabase(user: User): Promise<void> {
         photoURL: photoURL,
     };
     await setDoc(ref, userData);
-    // create default categories
-    const defaultCategories: CategoryClass[] = [];
-    for (const category in defaultCategoriesAndIcons) {
-        const icon: string = defaultCategoriesAndIcons[category];
-        defaultCategories.push(new CategoryClass(category, icon, 0));
-    }
-    // const defaultCategoriesJson: Category[] = defaultCategories.map((category) => category.toJson());
 
+    //// create user's categories (list of default categories and icons is now global)
+    // option to ask for user-desired categories during onboarding
 
-    // create current month
-    await createCurrentMonth(db, user, defaultCategoriesAndIcons);
-
-
-    // create collection for the current month and summary document for current month
-    // this will need to happen for each new month >> write into addExpense (if currMonth doc doesn't exist, create it)
-
+    // create top level Categories collection 
     const categoriesCollectionRef = collection(db, usersDirectory, uid, "Categories");
+    
+    const newCategories: CategoryClass[] = [];
+    if (userCategories) {
+        // if custom categories passed, use those
+        newCategories.push(...userCategories);
+    }
+    else {
+         // otherwise create CategoryClass list of categories from defaults
+        for (const category in defaultCategoriesAndIcons) {
+            const icon: string = defaultCategoriesAndIcons[category];
+            newCategories.push(new CategoryClass(category, icon, 0));
+        }
+    }
 
-    // create budgets for each category
-
-    // create and write a document with the generated ID
-    for (const categoryClass of defaultCategories) {
+    // create and write category documents with the generated IDs
+    for (const categoryClass of newCategories) {
         const categoryJson: Category = categoryClass.toJson();
         const categoryID = categoryClass.categoryID; // Ensure this ID is generated correctly
         const categoryDocRef = doc(categoriesCollectionRef, categoryID); // Reference to the document with ID "budget_id"
         await setDoc(categoryDocRef, categoryJson); // Use the category_id as the document ID
     }
-
-    // create goals collection and goals summary
+    
+    // create collection for the current month's expenses and summary document for current month
+    // this will need to happen for each new month >> write into addExpense (if currMonth doc doesn't exist, create it)
+    await createCurrentMonth(db, user, defaultCategoriesAndIcons);
+    
+    //// create goals collection and goals summary
     const goalsRef = collection(db, usersDirectory, uid, "Goals");
     const goalSummary = doc(goalsRef, "summary")
     await setDoc(goalSummary, {numGoals: 0})
-
 }
 
 
@@ -222,7 +222,7 @@ export async function addOrUpdateExpense(user: User | null, expense: ExpenseClas
                 }
                 await updateDoc(monthRef, {
                     monthTotal: increment(expense.amount),
-                    ["categoryTotals." + expense.categoryID + "Total"]: increment(expense.amount)
+                    ["categoryTotals." + expense.categoryID]: increment(expense.amount)
                 });
             }
             
