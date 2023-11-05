@@ -166,8 +166,8 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
 
                                         <EditableTableCell
                                             className={"w-[30px] text-center"}
-                                            initialValue={expense.category}
-                                            onEdit={(newValue) => handleCellEdit(newValue, index, "category")}
+                                            initialValue={expense.categoryID}
+                                            onEdit={(newValue) => handleCellEdit(newValue, index, "categoryID")}
                                             type={"category"}
                                         />
                                         <EditableTableCell

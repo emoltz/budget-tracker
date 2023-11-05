@@ -4,6 +4,9 @@ import React from 'react';
 import {useAuth} from "@/app/context";
 import {rem,} from '@mantine/core';
 import {ThreeColumnLayout} from "@/components/layouts/ThreeColumnLayout";
+import {useCategories} from "@/lib/firebase";
+import {Category} from "@/lib/Interfaces";
+
 import LoginMantine from "@/components/LoginMantine";
 import Loading from "@/app/loading";
 import ComponentFrameCenter from "@/components/layouts/ComponentFrameCenter";
@@ -18,7 +21,7 @@ const PRIMARY_COL_HEIGHT = rem(400);
 export default function Home() {
     const {user, loading} = useAuth();
 
-    const budgets: CategoryBudget[] | null = useCategoryBudgets_currentMonth(user)
+    const budgets: Category[] | null = useCategories(user);
 
     if (loading) {
         return <Loading/>; // Or return a loading spinner
@@ -56,7 +59,7 @@ const MonthlyExpensesFrame = () => {
 }
 
 interface AtAGlanceProps {
-    budgets: CategoryBudget[] | null;
+    budgets: Category[] | null;
 }
 
 const AtAGlance = ({budgets}: AtAGlanceProps) => {
@@ -71,14 +74,14 @@ const AtAGlance = ({budgets}: AtAGlanceProps) => {
                     className={"grid md:grid-cols-2 sm:grid-cols-1 gap-5"}
                 >
 
-                    {budgets ? budgets.map((category: CategoryBudget, idx: number) => {
+                    {budgets ? budgets.map((category: Category, idx: number) => {
                             return (
                                 <BudgetCard
                                     key={idx}
                                     id={idx.toString()}
-                                    budgetName={category.category}
-                                    budgetAmount={category.budgetAmount}
-                                    spent={category.spent}
+                                    budgetName={category.categoryID}
+                                    budgetAmount={category.amount}
+                                    spent={0} // TODO: duplicate spent in Category? old: {category.spent}
                                     iconName={category.icon}
                                 />
                             )

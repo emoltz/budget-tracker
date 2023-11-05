@@ -274,7 +274,7 @@ export async function getCurrentSummary(user: User | null, month?: string): Prom
 }
 
 
-export async function addCategory(user: User | null, category: Category, isYearly: boolean = false) {
+export async function addCategory(user: User | null, category: Category, isMonthly: boolean = false) {
     // TODO update
     if (user) {
         const db = getFirestore();
@@ -285,10 +285,10 @@ export async function addCategory(user: User | null, category: Category, isYearl
             throw new Error('User document not found');
         }
         // add budget to user document
-        const isMonthly = true;
-        const newCategory = new CategoryClass(category.category, category.budgetAmount, isMonthly, isYearly);
+        // const isMonthly = true;
+        const newCategory = new CategoryClass(category.categoryID, category.icon, category.amount, isMonthly);
         const budgetsRef = collection(userRef, "Budgets");
-        const budgetRef = doc(budgetsRef, newBudget.id);
+        const budgetRef = doc(budgetsRef, category.categoryID);
         await setDoc(budgetRef, newCategory.toJson());
 
     } else {
