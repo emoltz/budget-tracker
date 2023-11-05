@@ -383,11 +383,26 @@ export async function getUserCategories(user: User | null): Promise<string[]> {
         const db = getFirestore();
 
         const userRef = doc(db, usersDirectory, user.uid);
-        const userSnap = await getDoc(userRef);
 
-        if (userSnap.exists()) {
-            return Object.keys(userSnap.data()["categories"]);
+        const categoriesQuery = query(collection(userRef, "Categories"));
+        const categoriesSnap = await getDocs(categoriesQuery);
+          
+        const categories: string[] = [];
+
+        categoriesSnap.forEach((doc) => {
+            categories.push(doc.data().name);
+        })
+
+        // if no data from Categories collection, check if user has categories stored in user document
+        // TODO: remove this once all users have updated to new format
+        if (categories.length == 0) {
+            const userSnap = await getDoc(userRef);
+            if (userSnap.exists() && userSnap.data()?.categories) {
+                return Object.keys(userSnap.data()["categories"]);
+            }
         }
+        
+        return categories;
     }
 
     return ["Error returning categories"];

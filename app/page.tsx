@@ -79,7 +79,7 @@ const AtAGlance = ({budgets}: AtAGlanceProps) => {
                                 <BudgetCard
                                     key={idx}
                                     id={idx.toString()}
-                                    budgetName={category.categoryID}
+                                    budgetName={category.name}
                                     budgetAmount={category.amount}
                                     spent={0} // TODO: duplicate spent in Category? old: {category.spent}
                                     iconName={category.icon}
