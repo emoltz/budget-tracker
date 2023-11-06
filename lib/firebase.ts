@@ -694,7 +694,10 @@ export const useGoals = (user: User | null): Goal[] | null => {
 
                 const goals: Goal[] = [];
                 goalsSnap.forEach((doc) => {
-                    goals.push(doc.data() as Goal);
+                    const goalData = doc.data();
+                    goalData.goal_date = goalData.goal_date.toDate();
+
+                    goals.push(goalData as Goal);
                 });
 
                 setGoals(goals);
