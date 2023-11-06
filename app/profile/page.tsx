@@ -6,7 +6,7 @@ import { useForm } from '@mantine/form';
 import { useAuth } from "@/app/context";
 import LoginMantine from "@/components/LoginMantine";
 import Loading from "@/app/loading";
-import { updateProfile, updateEmail, deleteUser, User } from "firebase/auth";
+import { updateProfile, updateEmail, deleteUser, User, sendPasswordResetEmail, getAuth } from "firebase/auth";
 
 import { useDisclosure } from '@mantine/hooks';
 
@@ -134,8 +134,25 @@ export default function page(){
                             </Flex>
                         </form>
 
-                        <Button variant={"outline"} mt={4}>Change Password</Button>
-                        
+                  
+                        {user.providerData[0]['providerId'] == 'password' && 
+                            <Button 
+                                onClick={() => {if (user?.email) {sendPasswordResetEmail(getAuth(), user.email)
+                                    .then(() => {
+                                      // Password reset email sent!
+                                      alert("Please check your email for instructions to reset your password.");
+                                    })
+                                    .catch((error) => {
+                                      const errorCode = error.code;
+                                      const errorMessage = error.message;
+                                      console.log("Error code: " + errorCode);
+                                    }); }
+                                    else {
+                                        console.log('No email found for this user - unable to change password.');
+                                    } }} 
+                                variant={"outline"} mt={4}>Change Password</Button>}
+
+
                         <DeleteAcctModal user={user} opened={opened} close={close}/>
                         <Button onClick={open}
                             variant={"light"} color={"red"}>Delete Account
