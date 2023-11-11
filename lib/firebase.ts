@@ -127,14 +127,13 @@ export async function saveUserToDatabase(user: User, userCategories: CategoryCla
 async function createCurrentMonth(db: Firestore, user: User | null, categories: {[category: string]: string}) {
     // This is a helper function to create a new month summary document.
     //  Called when user is first created, or if current summary is not found
-    //  (i.e. it's a new month - getCurrentSummary, useCategoryBudgets) 
+    //  (i.e. it's a new month - getMonthSummary, useCategoryBudgets) 
     if (user?.uid) {
         const monthCollectionRef = collection(db, usersDirectory, user.uid, "Months");
-        const monthDoc = doc(monthCollectionRef, getCurrentMonthString());
+        const [thisMonth, thisYear] = getCurrentMonthYear();
+        const monthDoc = doc(monthCollectionRef, [thisMonth, thisYear].join("_"));
 
         // create document for current month, containing initial summary info
-
-
         const categoryTotals: { [key: string]: number } = {}
 
         for (const cat in categories) {
@@ -233,7 +232,7 @@ export async function addOrUpdateExpense(user: User | null, expense: ExpenseClas
 }
 
 
-export async function getCurrentSummary(user: User | null, month?: string): Promise<MonthSummary> {
+export async function getMonthSummary(user: User | null, month?: string): Promise<MonthSummary> {
     /**
      This function retrieves the current month's summary
      data for a specific user from the Firestore database.
@@ -243,7 +242,8 @@ export async function getCurrentSummary(user: User | null, month?: string): Prom
     if (user?.uid) {
         const db = getFirestore();
 
-        const monthString = month ? month : getCurrentMonthString();
+        const [thisMonth, thisYear] = getCurrentMonthYear();
+        const monthString = month ? month : [thisMonth, thisYear].join("_");
 
         const monthDoc = await getDoc(doc(db, usersDirectory, user.uid, "Months", monthString));
 
@@ -327,6 +327,29 @@ export async function changeCategoryIcon(user: User, iconName: string, categoryN
     }
 }
 
+export function useSummary(user: User | null, month?: number, year?: number): MonthSummary | undefined {
+    const [summary, setSummary] = useState<MonthSummary>();
+    useEffect(() => {
+        if (user) {
+            const db = getFirestore();
+            const userRef = doc(db, usersDirectory, user.uid);
+    
+            // get month summary from Month's document
+            const [thisMonth, thisYear] = getCurrentMonthYear();
+            const monthString = month && year ? createMonthYearString(month, year) : [thisMonth, thisYear].join("_");
+    
+            const unsubscribe = onSnapshot(doc(userRef, "Months", monthString), (doc) => {
+                setSummary(doc.data() as MonthSummary);
+            });
+
+            return () => {
+                unsubscribe();
+            }
+        } 
+    });
+
+    return summary;
+}
 
 export function useExpenses(user: User | null,monthly?: boolean, month?: number, year?: number ): Expense[] {
     /**
@@ -340,7 +363,12 @@ export function useExpenses(user: User | null,monthly?: boolean, month?: number,
         if (user) {
             const db = getFirestore();
             const userRef = doc(db, usersDirectory, user.uid);
-            const expensesRef = collection(userRef, "Months", getCurrentMonthString(), "Expenses");
+            
+            const [thisMonth, thisYear] = getCurrentMonthYear();
+            const monthString = month && year ? createMonthYearString(month, year) : [thisMonth, thisYear].join("_");
+
+            // get this month's expenses from Expenses collection
+            const expensesRef = collection(userRef, "Months", monthString, "Expenses");
             const expensesQuery = query(expensesRef, orderBy("date", "desc"));
 
             const unsubscribe = onSnapshot(expensesQuery, (snapshot) => {
@@ -368,15 +396,16 @@ export function useExpenses(user: User | null,monthly?: boolean, month?: number,
                 setExpenses(newExpenses);
             });
 
-            return () => unsubscribe();
+            return () => {
+                unsubscribe();
+            }
         }
     }, [user, month, year, monthly]);
 
     return expenses;
 }
 
-// TODO: replace this with a function that gets categories based on the Categories collection
-// instead of the user document (which should no longer store category info)
+// TODO: user document should no longer store category info
 export async function getUserCategories(user: User | null): Promise<string[]> {
     // get category names only (stored as part of User document)
     if (user?.uid) {
@@ -511,18 +540,17 @@ export async function deleteGoal(user: User | null, goalID: string) {
 
 // TODO: goal summary?
 
-function getCurrentMonthString(): string {
+function getCurrentMonthYear(): [string, string] {
     // helper function to return the name of the current month's collection
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear();
     const currentMonth = currentDate.getMonth() + 1; // getMonth returns month index starting from 0
 
-    return currentMonth.toString() + '_' + currentYear.toString();
+    return [currentMonth.toString(), currentYear.toString()];
 }
 
 function createMonthYearString(month: number, year: number): string {
     return month.toString() + '_' + year.toString();
-
 }
 
 // BUTTONS

@@ -4,8 +4,8 @@ import React from 'react';
 import {useAuth} from "@/app/context";
 import {rem,} from '@mantine/core';
 import {ThreeColumnLayout} from "@/components/layouts/ThreeColumnLayout";
-import {useCategories} from "@/lib/firebase";
-import {Category} from "@/lib/Interfaces";
+import {useCategories, useSummary} from "@/lib/firebase";
+import {Category, MonthSummary} from "@/lib/Interfaces";
 
 import LoginMantine from "@/components/LoginMantine";
 import Loading from "@/app/loading";
@@ -22,6 +22,7 @@ export default function Home() {
     const {user, loading} = useAuth();
 
     const budgets: Category[] | null = useCategories(user);
+    const summary: MonthSummary | undefined = useSummary(user);
 
     if (loading) {
         return <Loading/>; // Or return a loading spinner
@@ -41,6 +42,7 @@ export default function Home() {
                     // userData={userData}
                     // user={user}
                     budgets={budgets}
+                    summary={summary}
                 />}
             />
         </>
@@ -60,9 +62,10 @@ const MonthlyExpensesFrame = () => {
 
 interface AtAGlanceProps {
     budgets: Category[] | null;
+    summary: MonthSummary | undefined;
 }
 
-const AtAGlance = ({budgets}: AtAGlanceProps) => {
+const AtAGlance = ({budgets, summary}: AtAGlanceProps) => {
 
     return (
         <>
@@ -81,7 +84,7 @@ const AtAGlance = ({budgets}: AtAGlanceProps) => {
                                     id={idx.toString()}
                                     budgetName={category.name}
                                     budgetAmount={category.amount}
-                                    spent={0} // TODO: duplicate spent in Category? old: {category.spent}
+                                    spent={summary?.categoryTotals[category.name] || 0} // TODO: duplicate spent in Category? old: {category.spent}
                                     iconName={category.icon}
                                 />
                             )
