@@ -138,7 +138,7 @@ function AddExpenseForm() {
 
                             // TODO: way to have default date (today) as ExpenseClass default?
                             const today = new Date();
-                            const expense = new ExpenseClass(nameRef.current!.value, category, price, today.getMonth() + 1, today.getFullYear())
+                            const expense = new ExpenseClass(nameRef.current!.value, category, price, "", "", today.getMonth() + 1, today.getFullYear())
                             addOrUpdateExpense(user, expense).then(() => {
                                 console.log("Expense added: ", expense)
                             })

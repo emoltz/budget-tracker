@@ -96,11 +96,11 @@ export class ExpenseClass implements Expense {
         public amount: number,
         public description: string = "",
         public vendor: string = "",
+        public month: number = new Date().getMonth(),
+        public year: number = new Date().getFullYear(),
         public is_monthly: boolean = false,
         public is_yearly: boolean = false,
         public is_deleted: boolean = false,
-        public month: number = new Date().getMonth(),
-        public year: number = new Date().getFullYear(),
     ) {
         this.id = this.generateExpenseId();
         this.name = name;

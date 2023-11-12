@@ -90,7 +90,7 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
 
                 // convert to class for addOrUpdateExpense function
                 const exp = updatedExpenses[expenseIndex];
-                const expAsClass = new ExpenseClass(exp.name, exp.categoryID, exp.amount, exp.month, exp.year, exp.description, exp.vendor, exp.is_monthly, exp.is_yearly, exp.is_deleted);
+                const expAsClass = new ExpenseClass(exp.name, exp.categoryID, exp.amount, exp.description, exp.vendor,  exp.month, exp.year, exp.is_monthly, exp.is_yearly, exp.is_deleted);
                 
                 await addOrUpdateExpense(user, expAsClass).then(() => {
                     console.log("Expense updated: ", updatedExpenses[expenseIndex])
@@ -113,10 +113,10 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
             newExpenseRow.name,
             newExpenseRow.category,
             newExpenseRow.amount,
-            today.getMonth() + 1,
-            today.getFullYear(),
             newExpenseRow.description,
             "", // vendor
+            today.getMonth() + 1,
+            today.getFullYear(),
             true // is_monthly,
         )
 
