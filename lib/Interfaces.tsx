@@ -75,11 +75,11 @@ export type Expense = {
     categoryID: string;
     amount: number;
     date: Timestamp | FieldValue | Date | typeof serverTimestamp;
-    month: number;
-    year: number;
     is_monthly: boolean;
     is_yearly: boolean; // this is for yearly expenses
     is_deleted: boolean;
+    month: number;
+    year: number;
 }
 
 export type Expenses = {
@@ -94,13 +94,13 @@ export class ExpenseClass implements Expense {
         public name: string,
         public categoryID: string,
         public amount: number,
-        public month: number,
-        public year: number,
         public description: string = "",
         public vendor: string = "",
         public is_monthly: boolean = false,
         public is_yearly: boolean = false,
         public is_deleted: boolean = false,
+        public month: number = new Date().getMonth(),
+        public year: number = new Date().getFullYear(),
     ) {
         this.id = this.generateExpenseId();
         this.name = name;
