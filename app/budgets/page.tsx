@@ -1,27 +1,15 @@
 "use client";
-import { CategoryBudget } from "@/lib/Interfaces";
-import { FiPlus } from "react-icons/fi";
-import {
-  Button,
-  Input,
-  Modal,
-  Text,
-  TextInput,
-  NumberInput,
-} from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
-import { useAuth } from "@/app/context";
-import { Spacer } from "@nextui-org/react";
-import { addBudget, useCategoryBudgets_currentMonth } from "@/lib/firebase";
-import BudgetByCategory from "@/components/BudgetByCategory";
-import IconPicker from "@/components/IconPicker";
-import { icons } from "@/lib/icons";
-import React, { useState } from "react";
-import IconPickerPopover from "@/components/IconPickerPopover";
-import { useForm } from "@mantine/form";
+import {FiPlus} from "react-icons/fi";
+import {Button, Modal, NumberInput, TextInput,} from "@mantine/core";
+import {useDisclosure} from "@mantine/hooks";
+import {useAuth} from "@/app/context";
+import {icons} from "@/lib/icons";
+import React, {useState} from "react";
+import {useForm} from "@mantine/form";
 import ComponentFrameCenter from "@/components/layouts/ComponentFrameCenter";
 import LoadingAtAGlance from "@/components/layouts/LoadingAtAGlance";
 import BudgetCardAdd from "@/components/BudgetCardAdd";
+import {Category} from "@/lib/Interfaces";
 
 export default function Budgets() {
   //   const user = useAuth();
@@ -30,7 +18,7 @@ export default function Budgets() {
   // const categoryObject = useCategoryBudgets_currentMonth(user);
   const icon = icons.find((icon) => icon.name === "dashboard");
   const [selectedIcon, setSelectedIcon] = useState(icon);
-  const budgets: CategoryBudget[] | null =
+  const budgets: Category[] | null =
     useCategoryBudgets_currentMonth(user);
 
   const form = useForm({

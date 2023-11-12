@@ -1,15 +1,15 @@
 "use client";
-import React , { useState, useEffect } from 'react';
-import { useAuth } from "@/app/context";
-// import { CategoryBudget } from "@/lib/Interfaces";
-import { getCategoryBudgets, getExpenses } from "@/lib/firebase";
-import { useMantineColorScheme } from '@mantine/core';
+import React, {useEffect, useState} from 'react';
+import {useAuth} from "@/app/context";
+import {useMantineColorScheme} from '@mantine/core';
 import Loading from "@/app/loading";
 import AreaChartView from "@/components/AreaChartView"
 import CategoryMultiSelect from "@/components/CategoryMultiSelect"
 
 import {
-    Accordion, AccordionHeader, AccordionBody,
+    Accordion,
+    AccordionBody,
+    AccordionHeader,
     BadgeDelta,
     BarChart,
     Card,
@@ -39,8 +39,8 @@ export default function Page() {
     const [selectedTime, setSelectedTime] = useState(0); // time selection
     const [dailyData, setDailyData] = useState< {[key : string] : number | string}[]>([]);
 
-    const allCategories = ["Food", "Groceries", "Activities", "Housing", "Transportation", "Medical & Healthcare", "Personal Spending"];
-    const [selectedCategories, setSelectedCategories] = useState<string[]>(allCategories)
+    const defaultCategories = ["Food", "Groceries", "Activities", "Housing", "Transportation", "Medical & Healthcare", "Personal Spending"];
+    const [selectedCategories, setSelectedCategories] = useState<string[]>(defaultCategories)
     const [selectedTab, setSelectedTab] = useState<number>(0)
 
     useEffect(() => {
@@ -181,7 +181,7 @@ export default function Page() {
                             <CategoryMultiSelect 
                                 // currentCategories={selectedCategories}
                                 onCategoriesChange={(vals) =>
-                                    vals.length > 0 ? setSelectedCategories(vals) : setSelectedCategories(allCategories)}
+                                    vals.length > 0 ? setSelectedCategories(vals) : setSelectedCategories(defaultCategories)}
                                 />
                         </Flex>
                     </AccordionBody>
