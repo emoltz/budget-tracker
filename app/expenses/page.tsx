@@ -20,7 +20,7 @@ export default function Page() {
         monthName: "September"
     }
     const {user, loading} = useAuth();
-    const expenses: Expense[] = useExpenses(user, dateData.month, dateData.year);
+    const expenses: Expense[] = useExpenses(user, false, dateData.month, dateData.year);
     const {colorScheme} = useMantineTheme();
     if (loading) return <LoadingTable/>
     if (!user) return <LoginMantine/>

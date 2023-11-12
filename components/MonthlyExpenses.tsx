@@ -6,11 +6,10 @@ import {Input} from "@/components/ui/input"
 import {CategoryPicker} from "@/components/CategoryPicker";
 import {IconPlus} from "@tabler/icons-react";
 import {ChangeEvent, MutableRefObject, useEffect, useRef, useState} from "react";
-import {useExpenses, addOrUpdateExpense} from "@/lib/firebase";
+import {addOrUpdateExpense, useExpenses} from "@/lib/firebase";
 import {useAuth} from "@/app/context";
 import {debounce} from "lodash"
 import {useMantineTheme} from "@mantine/core";
-import { update } from "cypress/types/lodash";
 
 interface MonthlyExpensesProps {
     width?: string;
@@ -35,7 +34,7 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
         monthName: "August"
     }
 
-    const currentExpenses = useExpenses(user);
+    const currentExpenses: Expense[] = useExpenses(user, true);
 
     // TODO: Too many hooks or re-renders below
     // Updating from MonthlyExpenses is commented out for now
