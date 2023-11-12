@@ -405,6 +405,35 @@ export function useExpenses(user: User | null,monthly?: boolean, month?: number,
     return expenses;
 }
 
+// get function for analysis page
+// not a hook
+export async function getMonthMetadata(user: User | null, month?: number, year?: number): Promise<[Category[], MonthSummary]> {
+    if (user) {
+        const db = getFirestore();
+        const userRef = doc(db, usersDirectory, user.uid);
+
+        // get budget info from Categories collection
+        const categoriesRef = collection(userRef, "Categories");
+        const categories: Category[] = [];
+
+        const categoryDocs = await getDocs(categoriesRef); 
+        categoryDocs.forEach((doc) => {
+            categories.push(doc.data() as Category);
+        });
+    
+        // get month summary from Month's document
+        const [thisMonth, thisYear] = getCurrentMonthYear();
+        const monthString = month && year ? createMonthYearString(month, year) : [thisMonth, thisYear].join("_");
+
+        const monthRef = await getDoc(doc(userRef, "Months", monthString));
+        const monthSummary = monthRef.data() as MonthSummary;
+
+        return [categories, monthSummary];
+    } else {
+        throw new Error("Error getting month metadata")
+    }
+}
+
 // TODO: user document should no longer store category info
 export async function getUserCategories(user: User | null): Promise<string[]> {
     // get category names only (stored as part of User document)

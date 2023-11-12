@@ -5,6 +5,7 @@ import {useMantineColorScheme} from '@mantine/core';
 import Loading from "@/app/loading";
 import AreaChartView from "@/components/AreaChartView"
 import CategoryMultiSelect from "@/components/CategoryMultiSelect"
+import { getMonthMetadata } from '@/lib/firebase';
 
 import {
     Accordion,
@@ -24,6 +25,14 @@ import {
     TabPanels,
     Text,
 } from "@tremor/react";
+
+type monthData = {
+    category: string;
+    budgetAmount: number;
+    "Amount Spent": number;
+    "Amount Left": number;
+    "Amount Over": number;
+}
 
 export default function Page() {
     const {user, loading} = useAuth();
@@ -45,72 +54,76 @@ export default function Page() {
 
     useEffect(() => {
         if (user) {
-            getCategoryBudgets(user).then(data => {
+            getMonthMetadata(user).then(([categories, monthSummary]) => {
+            // getCategoryBudgets(user).then(data => {
                 const info = {
                     totalSpent : 0,
                     totalBudget: 0,
                     budgetsExceeded: 0,
                 }
-                const categories : {[key : string] : string | number}[] = []
+                const categoryData: monthData[] = [];
+                // const categoryData : {[key : string] : string | number}[] = []
     
-                data.forEach((cb) => {
+                categories.forEach((cb) => {
                     // generate meta-stats about budgets
-                    let amtSpent = cb["spent"] || 0;
-                    let amtLeft = cb["budgetAmount"] - amtSpent;
+                    let amtSpent = monthSummary["categoryTotals"][cb.name] || 0;
+                    let amtLeft = cb["amount"] - amtSpent;
                     let amtOver = 0
                     
                     info.totalSpent += amtSpent,
-                    info.totalBudget += cb["budgetAmount"]
+                    info.totalBudget += cb["amount"]
                     
                     if (amtLeft < 0) {
-                        amtOver = amtSpent - cb["budgetAmount"];
-                        amtSpent = cb["budgetAmount"]; // not ideal
+                        amtOver = amtSpent - cb["amount"];
+                        amtSpent = cb["amount"]; // not ideal
                         amtLeft = 0;                    
                         info.budgetsExceeded += 1
                     }
     
                     // add calculated fields to CategoryBudgets for bar chart display
-                    const chartData = {
-                        ...cb,
+                    const chartData: monthData = {
+                        category: cb.name,
+                        budgetAmount: cb["amount"],
                         "Amount Spent" : amtSpent,
                         "Amount Left" : amtLeft,
                         "Amount Over" : amtOver
                     }
-                    
-                    categories.push(chartData)
+                    // console.log(chartData)
+                    categoryData.push(chartData)
                 })
     
                 setBudgetInfo(info);
-                setCategoryBudgets(categories);
+                setCategoryBudgets(categoryData);
+                // console.log(categoryData)
             }).catch(error => console.log("getCategoryBudgets error" + error)) 
             
             const currentDate = new Date();
             
             // create list with values for each day this month up to current date
-            const dailies : {[key : string] : number}[] = 
-                Array.from({ length : currentDate.getDate() + 1 }, (value, index) => ({
-                        Day: index,
-                        Food: 0,
-                        Activities: 0,
-                        Transportation: 0,
-                        Groceries: 0,
-                        Housing: 0,
-                        "Medical & Healthcare": 0,
-                        "Personal Spending" : 0
-                    })
-                )
+            // const dailies : {[key : string] : number}[] = 
+            //     Array.from({ length : currentDate.getDate() + 1 }, (value, index) => ({
+            //             Day: index,
+            //             Food: 0,
+            //             Activities: 0,
+            //             Transportation: 0,
+            //             Groceries: 0,
+            //             Housing: 0,
+            //             "Medical & Healthcare": 0,
+            //             "Personal Spending" : 0
+            //         })
+            //     )
             
-            getExpenses(user, currentDate.getMonth() + 1, currentDate.getFullYear())
-                .then(expenses => {
-                    expenses.forEach((exp) => {
-                        const key = new Date(exp.date as string).getDate();
-                        if (dailies[key]) {
-                            dailies[key][exp.category] += exp.amount
-                        }
+            // getExpenses(user, currentDate.getMonth() + 1, currentDate.getFullYear())
+            //     .then(expenses => {
+            //         expenses.forEach((exp) => {
+            //             const key = new Date(exp.date as string).getDate();
+            //             if (dailies[key]) {
+            //                 dailies[key][exp.category] += exp.amount
+            //             }
                         
-                    })
-                    setDailyData(Object.values(dailies))
-                }).catch(error => console.log("getExpenses error" + error))
+            //         })
+            //         setDailyData(Object.values(dailies))
+            //     }).catch(error => console.log("getExpenses error" + error))
         }
                                   
     }, [user])
