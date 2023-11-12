@@ -359,6 +359,7 @@ export function useExpenses(user: User | null,monthly?: boolean, month?: number,
 
     const [expenses, setExpenses] = useState<Expense[]>([]);
 
+
     useEffect(() => {
         if (user) {
             const db = getFirestore();
@@ -394,7 +395,7 @@ export function useExpenses(user: User | null,monthly?: boolean, month?: number,
                     }
                 });
                 setExpenses(newExpenses);
-                console.log("new expenses: ", newExpenses)
+                // console.log("new expenses: ", newExpenses)
             });
 
             return () => {

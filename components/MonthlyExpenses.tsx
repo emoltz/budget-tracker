@@ -1,5 +1,5 @@
 "use client";
-import {DateData, Expense, ExpenseClass} from "@/lib/Interfaces";
+import {Expense, ExpenseClass} from "@/lib/Interfaces";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table"
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input"
@@ -28,11 +28,6 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
     const [showForm, setShowForm] = useState<boolean>(false);
     const [newExpenseRow, setNewExpenseRow] = useState(initialExpenseRow);
     const {user, loading} = useAuth();
-    const sampleDateData: DateData = {
-        month: 8,
-        year: 2023,
-        monthName: "August"
-    }
 
     const currentExpenses: Expense[] = useExpenses(user, true);
 

@@ -191,6 +191,7 @@ export class GoalClass implements Goal {
 }
 
 export type DateData = {
+    day?: number,
     month: number,
     year: number,
     monthName: string
