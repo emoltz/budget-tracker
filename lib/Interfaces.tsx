@@ -68,18 +68,18 @@ export class CategoryClass implements Category {
 
 export type Expense = {
     // within Month
+    date: Timestamp | FieldValue | Date | typeof serverTimestamp;
     id: string;
     name: string;
-    vendor: string;
-    description: string;
     categoryID: string;
     amount: number;
-    date: Timestamp | FieldValue | Date | typeof serverTimestamp;
+    description: string;
+    vendor: string;
+    month: number;
+    year: number;
     is_monthly: boolean;
     is_yearly: boolean; // this is for yearly expenses
     is_deleted: boolean;
-    month: number;
-    year: number;
 }
 
 export type Expenses = {
