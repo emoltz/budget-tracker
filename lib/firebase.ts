@@ -394,6 +394,7 @@ export function useExpenses(user: User | null,monthly?: boolean, month?: number,
                     }
                 });
                 setExpenses(newExpenses);
+                console.log("new expenses: ", newExpenses)
             });
 
             return () => {

@@ -15,12 +15,13 @@ import AddExpensePopover from "@/components/AddExpensePopover";
 export default function Page() {
 
     const dateData: DateData = {
-        month: 9,
+        month: 11,
         year: 2023,
-        monthName: "September"
+        monthName: "November"
     }
     const {user, loading} = useAuth();
     const expenses: Expense[] = useExpenses(user, false, dateData.month, dateData.year);
+
     const {colorScheme} = useMantineTheme();
     if (loading) return <LoadingTable/>
     if (!user) return <LoginMantine/>
