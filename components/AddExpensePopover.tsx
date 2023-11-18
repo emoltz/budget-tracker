@@ -6,7 +6,7 @@ import {CategoryPicker} from "@/components/CategoryPicker";
 import toast from "react-hot-toast";
 import {CustomButtons} from "@/components/CustomButtons";
 import {ExpenseClass} from "@/lib/Interfaces";
-import {sendExpenseToFirebase} from "@/lib/firebase";
+import {addOrUpdateExpense} from "@/lib/firebase";
 import {useAuth} from "@/app/context";
 
 interface AddExpensePopoverProps {
@@ -83,9 +83,9 @@ function AddExpenseForm() {
                         placeholder={"Name"}
                         className={halfWidth}
                         ref={nameRef}
-                        onChange={() => {
-                            console.log(nameRef.current?.value)
-                        }}
+                        // onChange={() => {
+                        //     console.log(nameRef.current?.value)
+                        // }}
                     />
                     <NumberInput
                         className={halfWidth}
@@ -136,8 +136,10 @@ function AddExpenseForm() {
                             const price = priceString ? parseFloat(priceString) : 0;
                             // console.log("Price: ", price)
 
-                            const expense = new ExpenseClass(price, category, nameRef.current!.value)
-                            sendExpenseToFirebase(user, expense).then(() => {
+                            // TODO: way to have default date (today) as ExpenseClass default?
+                            const today = new Date();
+                            const expense = new ExpenseClass(nameRef.current!.value, category, price, "", "", today.getMonth() + 1, today.getFullYear())
+                            addOrUpdateExpense(user, expense).then(() => {
                                 console.log("Expense added: ", expense)
                             })
 

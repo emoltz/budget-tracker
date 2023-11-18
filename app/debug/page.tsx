@@ -3,7 +3,6 @@ import IconPickerPopover from "@/components/IconPickerPopover";
 import {Button} from "@/components/ui/button";
 
 import { useAuth } from "@/app/context";
-import { migrateExpenses } from "@/lib/firebase";
 
 export default function Debug() {
     const {user, loading} = useAuth();
@@ -13,12 +12,6 @@ export default function Debug() {
             <IconPickerPopover/>
 
 
-            <Button variant={"outline"} color="red" onClick={() => {
-                if (user)
-                    migrateExpenses(user);
-                }}>
-                Migrate Expenses
-            </Button>
 
         </>
     )

@@ -5,7 +5,7 @@ import React from "react";
 import {ExpenseClass} from "@/lib/Interfaces";
 import {CategoryPicker} from "@/components/CategoryPicker";
 import {useAuth} from "@/app/context";
-import {sendExpenseToFirebase} from "@/lib/firebase";
+import {addOrUpdateExpense} from "@/lib/firebase";
 
 export default function AddNewExpense() {
     const {user, loading} = useAuth();
@@ -47,16 +47,18 @@ export default function AddNewExpense() {
                 }
 
                 const expense: ExpenseClass = new ExpenseClass(
-                    values.amount,
-                    values.category,
                     values.name,
-                    values.vendor,
+                    values.category,
+                    values.amount,
                     values.description,
+                    values.vendor,
+                    undefined,
+                    undefined,
                     values.is_monthly,
                     values.is_yearly,
                 );
 
-                sendExpenseToFirebase(user, expense).then(() => {
+                addOrUpdateExpense(user, expense).then(() => {
                     form.reset();
                 });
             })}>
