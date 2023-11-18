@@ -47,11 +47,13 @@ export default function AddNewExpense() {
                 }
 
                 const expense: ExpenseClass = new ExpenseClass(
-                    values.amount,
-                    values.category,
                     values.name,
-                    values.vendor,
+                    values.category,
+                    values.amount,
                     values.description,
+                    values.vendor,
+                    undefined,
+                    undefined,
                     values.is_monthly,
                     values.is_yearly,
                 );

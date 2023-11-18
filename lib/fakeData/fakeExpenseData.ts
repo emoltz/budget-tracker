@@ -2,15 +2,14 @@ import {Expense} from "@/lib/Interfaces";
 
 export const fakeData:  Expense[] = [
     {
+        date: new Date(),
         id: "1",
         name: 'Expense 1',
+        categoryID: 'Food',
         amount: 100,
-        vendor: 'Vendor 1',
         description: 'Description 1',
-        category: 'Food',
+        vendor: 'Vendor 1',
         month: 8,
-        monthID: "1_2021",
-        date: new Date().toLocaleDateString(),
         year: 2023,
         is_monthly: false,
         is_yearly: false,

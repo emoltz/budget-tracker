@@ -157,7 +157,7 @@ export const CustomButtons = () => {
                             onClick={() => {
                                 toast.success("Automation successful: " + button.label + " $" + button.action.cost)
                                 // send to database
-                                const newExpense: ExpenseClass = new ExpenseClass(button.action.cost, button.action.category, button.label);
+                                const newExpense: ExpenseClass = new ExpenseClass(button.label, button.action.category, button.action.cost);
                                 addOrUpdateExpense(user, newExpense).then( () => console.log("Button automation expense sent to firebase"))
                             }}
                         />

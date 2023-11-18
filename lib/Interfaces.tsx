@@ -68,13 +68,13 @@ export class CategoryClass implements Category {
 
 export type Expense = {
     // within Month
+    date: Timestamp | FieldValue | Date | typeof serverTimestamp;
     id: string;
     name: string;
-    vendor: string;
-    description: string;
     categoryID: string;
     amount: number;
-    date: Timestamp | FieldValue | Date | typeof serverTimestamp;
+    description: string;
+    vendor: string;
     month: number;
     year: number;
     is_monthly: boolean;
@@ -94,10 +94,10 @@ export class ExpenseClass implements Expense {
         public name: string,
         public categoryID: string,
         public amount: number,
-        public month: number,
-        public year: number,
         public description: string = "",
         public vendor: string = "",
+        public month: number = new Date().getMonth(),
+        public year: number = new Date().getFullYear(),
         public is_monthly: boolean = false,
         public is_yearly: boolean = false,
         public is_deleted: boolean = false,
@@ -191,6 +191,7 @@ export class GoalClass implements Goal {
 }
 
 export type DateData = {
+    day?: number,
     month: number,
     year: number,
     monthName: string

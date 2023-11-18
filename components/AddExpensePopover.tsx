@@ -83,9 +83,9 @@ function AddExpenseForm() {
                         placeholder={"Name"}
                         className={halfWidth}
                         ref={nameRef}
-                        onChange={() => {
-                            console.log(nameRef.current?.value)
-                        }}
+                        // onChange={() => {
+                        //     console.log(nameRef.current?.value)
+                        // }}
                     />
                     <NumberInput
                         className={halfWidth}
@@ -136,7 +136,9 @@ function AddExpenseForm() {
                             const price = priceString ? parseFloat(priceString) : 0;
                             // console.log("Price: ", price)
 
-                            const expense = new ExpenseClass(price, category, nameRef.current!.value)
+                            // TODO: way to have default date (today) as ExpenseClass default?
+                            const today = new Date();
+                            const expense = new ExpenseClass(nameRef.current!.value, category, price, "", "", today.getMonth() + 1, today.getFullYear())
                             addOrUpdateExpense(user, expense).then(() => {
                                 console.log("Expense added: ", expense)
                             })
