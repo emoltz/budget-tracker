@@ -40,7 +40,7 @@ export default function BudgetCard({budgetName, budgetAmount, spent, iconName}: 
 ) {
     const {classes} = useStyles();
     const icon = icons.find(icon => icon.name === iconName);
-    const [selectedIcon, setSelectedIcon] = useState(icon)
+    const [, setSelectedIcon] = useState(icon)
     const moneyLeft: number = budgetAmount - spent;
     const percentProgress = (spent / budgetAmount) * 100;
 

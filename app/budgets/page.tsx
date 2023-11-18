@@ -2,7 +2,7 @@
 import React, {useState} from "react";
 import {useAuth} from "@/app/context";
 import {Category, CategoryClass, MonthSummary} from "@/lib/Interfaces";
-import { useCategories, addCategory, useSummary } from "@/lib/firebase";
+import { useCategories, useSummary } from "@/lib/firebase";
 
 import {Button, Modal, NumberInput, TextInput,} from "@mantine/core";
 import {useDisclosure} from "@mantine/hooks";

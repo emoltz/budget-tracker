@@ -10,7 +10,7 @@ interface Props {
 
 // export default function CategoryMultiSelect({ onCategoriesChange, currentCategories }: Props){
 export default function CategoryMultiSelect({ onCategoriesChange }: Props){
-    const {user, loading} = useAuth();
+    const {user} = useAuth();
     const [selectItems, setSelectItems] = useState<string[]>([]);
 
     useEffect(() => {

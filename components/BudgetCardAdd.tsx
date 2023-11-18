@@ -1,17 +1,13 @@
 "use client";
 import {
-  Badge,
   createStyles,
-  Group,
   Paper,
-  Progress,
   rem,
   Text,
   NumberInput,
 } from "@mantine/core";
 import React, { useState } from "react";
 import { icons } from "@/lib/icons";
-import Link from "next/link";
 import IconPickerPopover from "@/components/IconPickerPopover";
 
 const ICON_SIZE = rem(60);
@@ -50,7 +46,7 @@ export default function BudgetCardAdd({
 }: BudgetCardProps) {
   const { classes } = useStyles();
   const icon = icons.find((icon) => icon.name === iconName);
-  const [selectedIcon, setSelectedIcon] = useState(icon);
+  const [, setSelectedIcon] = useState(icon);
 
   const handleIconSelect = (iconId: string) => {
     const selectedIcon = icons.find((icon) => icon.name === iconId);

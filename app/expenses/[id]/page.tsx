@@ -7,7 +7,7 @@ export default function Page({params}: { params: { id: string } }) {
     // TODO: find expense in Database and fill with info
     const expense = fakeData[0];
     const {colorScheme} = useMantineColorScheme();
-    const id = params.id;
+    // const id = params.id;
 
 
     return (
