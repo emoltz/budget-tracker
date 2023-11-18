@@ -351,7 +351,7 @@ export function useSummary(user: User | null, month?: number, year?: number): Mo
     return summary;
 }
 
-export function useExpenses(user: User | null,monthly?: boolean, month?: number, year?: number ): Expense[] {
+export function useExpenses(user: User | null,monthly?: boolean, month?: number, year?: number ): Expense[] | [] {
     /**
      * this function is the hook version of the `getExpenses` function above.
      * Instead of doing it once, it will listen for changes and update accordingly.

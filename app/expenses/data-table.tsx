@@ -60,7 +60,7 @@ export function DataTable<TValue>({columns, data,}: DataTableProps<Expense, TVal
                         ))}
                     </TableHeader>
                     <TableBody>
-                        {table.getRowModel().rows?.length ? (
+                        {table.getRowModel().rows?.length > 0 ? (
                             table.getRowModel().rows.map((row) => (
                                 <CellRow
                                     key={row.id}

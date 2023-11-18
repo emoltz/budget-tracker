@@ -74,7 +74,6 @@ export default function Page() {
                             }
                         >
                             <IconArrowBigRight/>
-                            {/*    TODO this should change the month back and forth*/}
                         </Button>
                     </div>
                 </div>
