@@ -1,12 +1,12 @@
 "use client";
-import {DateData, Expense, ExpenseClass} from "@/lib/Interfaces";
+import {Expense, ExpenseClass} from "@/lib/Interfaces";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table"
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input"
 import {CategoryPicker} from "@/components/CategoryPicker";
 import {IconPlus} from "@tabler/icons-react";
 import {ChangeEvent, MutableRefObject, useEffect, useRef, useState} from "react";
-import {getExpenses, updateExpense} from "@/lib/firebase";
+import {addOrUpdateExpense, useExpenses} from "@/lib/firebase";
 import {useAuth} from "@/app/context";
 import {debounce} from "lodash"
 import {useMantineTheme} from "@mantine/core";
@@ -28,22 +28,22 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
     const [showForm, setShowForm] = useState<boolean>(false);
     const [newExpenseRow, setNewExpenseRow] = useState(initialExpenseRow);
     const {user, loading} = useAuth();
-    const sampleDateData: DateData = {
-        month: 8,
-        year: 2023,
-        monthName: "August"
-    }
 
-    const [currentExpenses, setCurrentExpenses] = useState<Expense[]>([]);
-    useEffect(() => {
-        if (user) {
-            getExpenses(user, sampleDateData.month, sampleDateData.year, true).then(expenses => {
-                setCurrentExpenses(expenses)
-                console.log("Expenses: ", expenses)
+    const currentExpenses: Expense[] = useExpenses(user, true);
 
-            })
-        }
-    }, [user])
+    // TODO: Too many hooks or re-renders below
+    // Updating from MonthlyExpenses is commented out for now
+    // const [currentExpenses, setCurrentExpenses] = useState<Expense[]>([]);
+    // setCurrentExpenses(useExpenses(user, sampleDateData.month, sampleDateData.year, true));
+
+    // useEffect(() => {
+        // if (user) {
+            // getExpenses(user, sampleDateData.month, sampleDateData.year, true).then(expenses => {
+            //     setCurrentExpenses(expenses)
+            //     console.log("Expenses: ", expenses)
+            // })
+        // }
+    // }, [user])
 
     // TODO replace with custom loading skeleton
     if (loading) return <div>Loading...</div>
@@ -83,13 +83,17 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
                     [field]: processedValue,
                 };
 
-                await updateExpense(user, updatedExpenses[expenseIndex]).then(() => {
+                // convert to class for addOrUpdateExpense function
+                const exp = updatedExpenses[expenseIndex];
+                const expAsClass = new ExpenseClass(exp.name, exp.categoryID, exp.amount, exp.description, exp.vendor,  exp.month, exp.year, exp.is_monthly, exp.is_yearly, exp.is_deleted);
+                
+                await addOrUpdateExpense(user, expAsClass).then(() => {
                     console.log("Expense updated: ", updatedExpenses[expenseIndex])
                 });
             }
         }
 
-        setCurrentExpenses(updatedExpenses);
+        // setCurrentExpenses(updatedExpenses);
     };
 
 
@@ -99,20 +103,23 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
 
 
     const handleSubmit = async () => {
+        const today = new Date();
         const _newExpense = new ExpenseClass(
-            newExpenseRow.amount,
-            newExpenseRow.category,
             newExpenseRow.name,
-            "",
+            newExpenseRow.category,
+            newExpenseRow.amount,
             newExpenseRow.description,
-            true
+            "", // vendor
+            today.getMonth() + 1,
+            today.getFullYear(),
+            true // is_monthly,
         )
 
-        const newExpense = _newExpense.toObject();
-        await updateExpense(user, newExpense)
+        // const newExpense = _newExpense.toJson();
+        await addOrUpdateExpense(user, _newExpense)
 
 
-        setCurrentExpenses([...currentExpenses, newExpense]);
+        // setCurrentExpenses([...currentExpenses, newExpense]);
         toggleForm();
 
         // reset form fields
@@ -166,8 +173,8 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
 
                                         <EditableTableCell
                                             className={"w-[30px] text-center"}
-                                            initialValue={expense.category}
-                                            onEdit={(newValue) => handleCellEdit(newValue, index, "category")}
+                                            initialValue={expense.categoryID}
+                                            onEdit={(newValue) => handleCellEdit(newValue, index, "categoryID")}
                                             type={"category"}
                                         />
                                         <EditableTableCell

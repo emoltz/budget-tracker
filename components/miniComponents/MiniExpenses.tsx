@@ -45,7 +45,7 @@ const columns: ColumnDef<Expense>[] = [
         }
     },
     {
-        accessorKey: "category",
+        accessorKey: "categoryID",
         header: ({column}) => {
             return (
                 <Button
