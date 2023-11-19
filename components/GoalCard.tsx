@@ -81,12 +81,16 @@ export default function GoalCard ({user, goal, idx, savedColor} : GoalCardProps)
                     colors={[savedColor, "slate"]}
                 />
                 <Flex justifyContent="end">
-                    <AddToGoalPopover 
-                        updateAmount={(new_amt) => {
-                            goal.amt_saved += new_amt;
-                            editGoal(user, goal);
-                        }}
-                    />
+                    {goal.amt_saved === goal.amt_goal ? 
+                        <Button color='gray' disabled={true}>Goal Complete!</Button> : 
+                        <AddToGoalPopover
+                            remainingAmount={goal.amt_goal - goal.amt_saved} 
+                            updateAmount={(new_amt) => {
+                                goal.amt_saved += new_amt;
+                                editGoal(user, goal);
+                            }}
+                        />
+                    }
                 </Flex>
             </div>
             }
@@ -96,17 +100,18 @@ export default function GoalCard ({user, goal, idx, savedColor} : GoalCardProps)
 
 interface PopoverProps {
     updateAmount: (amt: number) => void
+    remainingAmount: number
 }
 
-function AddToGoalPopover({ updateAmount } : PopoverProps) {
+function AddToGoalPopover({ updateAmount, remainingAmount } : PopoverProps) {
     const addForm = useForm({
         initialValues: {
           add_amount: 0,
         },
     
         validate: {
-            add_amount: (value) => (value > 0 ? null
-                : (value === 0 ? "Amount cannot be zero" : "Amount cannot be negative")),
+            add_amount: (value) => (value > remainingAmount ? "You'll go over your target goal amount!"
+                : (value === 0 ? "Amount cannot be zero" : (value < 0 ? "Amount cannot be negative" : null))),
         },
       });
 
