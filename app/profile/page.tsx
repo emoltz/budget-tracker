@@ -150,7 +150,8 @@ export default function page(){
                                     else {
                                         console.log('No email found for this user - unable to change password.');
                                     } }} 
-                                variant={"outline"} mt={4}>Change Password</Button>}
+                                variant={"outline"} mt={4}>Change Password
+                            </Button>}
 
 
                         <DeleteAcctModal user={user} opened={opened} close={close}/>
