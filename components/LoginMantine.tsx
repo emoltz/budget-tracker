@@ -93,6 +93,8 @@ export default function LoginMantine(props: PaperProps) {
             } else {
                 await signInWithEmailAndPassword(auth!, email, password).then(() => {
                     console.log("logged in!");
+                }).catch((error) => {
+                    alert('Error logging in');
                 });
             }
         } catch (error) {
@@ -169,7 +171,7 @@ export default function LoginMantine(props: PaperProps) {
                         type="button"
                         color="dimmed"
                         onClick={() => toggle()}
-                        size="xs"
+                        size="s"
                     >
                         {type === 'register'
                             ? 'Already have an account? Login'
