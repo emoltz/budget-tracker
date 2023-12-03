@@ -407,6 +407,31 @@ export function useExpenses(user: User | null,monthly?: boolean, month?: number,
     return expenses;
 }
 
+export async function getExpense(user: User | null, id: string): Promise<Expense> {
+    if (user) {
+        // grab single expense from firebase
+        const db = getFirestore();
+        const userRef = doc(db, usersDirectory, user.uid);
+        const monthsRef = collection(userRef, "Months");
+        
+        const monthDocs = await getDocs(monthsRef);
+        for (const monthDoc of monthDocs.docs){
+            // const monthId = monthDoc.id;
+            const expenseRef = doc(monthDoc.ref, "Expenses", id);
+            const expenseDoc = await getDoc(expenseRef);
+            if (expenseDoc.exists()) {
+                return expenseDoc.data() as Expense;
+            }
+
+        }
+        throw new Error("Expense not found");    
+    
+    } else {
+        throw new Error("User not found")
+    }
+
+}
+
 // get function for analysis page
 // not a hook
 export async function getMonthMetadata(user: User | null, month?: number, year?: number): Promise<[Category[], MonthSummary]> {

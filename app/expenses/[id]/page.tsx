@@ -1,45 +1,129 @@
 "use client"
-import {fakeData} from "@/lib/fakeData/fakeExpenseData";
-// import {Button} from "@/components/ui/button";
-import {Button, useMantineColorScheme} from "@mantine/core";
+import { useAuth } from "@/app/context";
+import { Expense } from "@/lib/Interfaces";
+import { getExpense } from "@/lib/firebase";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input"
+import { Calendar } from "@/components/ui/calendar"
+import { format } from "date-fns"
+import { cn } from "@/lib/utils";
 
-export default function Page({params}: { params: { id: string } }) {
-    // TODO: find expense in Database and fill with info
-    const expense = fakeData[0];
-    const {colorScheme} = useMantineColorScheme();
-    // const id = params.id;
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover"
+import { useMantineColorScheme } from "@mantine/core";
+import { useState, useEffect } from "react";
+import { log } from "console";
+import { CategoryPicker } from "@/components/CategoryPicker";
 
+export default function Page({ params }: { params: { id: string } }) {
+    const { user, loading } = useAuth();
+    const dummyExpense: Expense = {
+        name: "Loading...",
+        amount: 0,
+        categoryID: "1",
+        date: new Date(),
+        id: "1",
+        description: "",
+        vendor: "",
+        month: 0,
+        year: 0,
+        is_monthly: false,
+        is_yearly: false,
+        is_deleted: false
+    }
 
+    const [expense, setExpense] = useState<Expense>(dummyExpense);
+    const [loadingExpense, setLoadingExpense] = useState<boolean>(true);
+    const [date, setDate] = useState<Date>();
+    const id = params.id;
+
+    useEffect(() => {
+        if (user) {
+            getExpense(user, id).then((expense) => {
+                setExpense(expense);
+                setLoadingExpense(false);
+            })
+
+        }
+    }, [params.id, user])
+    const { colorScheme } = useMantineColorScheme();
+
+    if (loading || loadingExpense) {
+        return <div>Loading...</div>
+    }
     return (
-        <div className={`${colorScheme === 'dark' ? 'text-white' : 'text-gray-700'}`}>
-            <div className={""}>
-                {expense.name}
+        <div className={"container p-3"}>
+            <div className="">
+                Name
+                <Input
+                    defaultValue={expense.name}
+                />
+            </div>
+            <div className="">
+                Category
+                <CategoryPicker
+                    onCategoryChange={function (category: string): void {
+                       // TODO
+                    }
+                    } />
+            </div>
+            <div className="">
+                Amount
+                <Input
+                defaultValue={expense.amount.toString()}
+                 />
 
             </div>
             <div className="">
-                ${expense.amount.toFixed(2)}
+                Description
+                <Input />
+
             </div>
             <div className="">
-                <span className={"font-bold"}>
-                    Category:
-                </span>
-                <span className={"pl-1"}>
-
-
-                </span>
+                Vendor
+                <Input />
 
             </div>
-            <div className={"underline pt-3"}>
-                Actions
+            <div className="">
+                <div className="">
+                    Date
+                </div>
+                <div className="">
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button
+                                variant={"outline"}
+                                className={cn(
+                                    "w-[280px] justify-start text-left font-normal",
+                                    !date && "text-muted-foreground"
+                                )}
+                            >
+                                {/* <CalendarIcon className="mr-2 h-4 w-4" /> */}
+                                {date ? format(date, "PPP") : <span>Pick a date</span>}
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0">
+                            <Calendar
+                                mode="single"
+                                selected={date}
+                                onSelect={setDate}
+                                initialFocus
+                            />
+                        </PopoverContent>
+                    </Popover>
+                </div>
+
+
             </div>
-            <div className={"flex gap-3"}>
-                <Button variant={"outline"}>
-                    Edit
-                </Button>
-                <Button variant={"outline"} color={"red"}>
-                    Delete
-                </Button>
-            </div>
+
+<Button>
+    Save
+</Button>
+
+
         </div>
     )
 }

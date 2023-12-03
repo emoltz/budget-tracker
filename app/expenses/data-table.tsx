@@ -11,19 +11,33 @@ import {
     SortingState,
     useReactTable
 } from "@tanstack/react-table"
+import { Input } from "@/components/ui/input"
+import { Separator } from "@/components/ui/separator"
 
-import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table"
-import {Expense} from "@/lib/Interfaces"
-import {Button, useMantineTheme} from "@mantine/core"
-import {useState} from "react"
+
+
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from "@/components/ui/table"
+import { Expense } from "@/lib/Interfaces"
+import { useMantineTheme } from "@mantine/core"
+import { SetStateAction, useState } from "react"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+
 import LoadingRow from "@/components/loadingSkeletons/LoadingRow"
+import { Button } from "@/components/ui/button"
 
 interface DataTableProps<Expense, TValue> {
     columns: ColumnDef<Expense, TValue>[]
     data: Expense[]
 }
 
-export function DataTable<TValue>({columns, data,}: DataTableProps<Expense, TValue>) {
+export function DataTable<TValue>({ columns, data, }: DataTableProps<Expense, TValue>) {
     const [sorting, setSorting] = useState<SortingState>([])
     const table = useReactTable({
         data,
@@ -37,7 +51,7 @@ export function DataTable<TValue>({columns, data,}: DataTableProps<Expense, TVal
         },
     })
 
-    const {colorScheme} = useMantineTheme()
+    const { colorScheme } = useMantineTheme()
 
     return (
         <>
@@ -62,32 +76,45 @@ export function DataTable<TValue>({columns, data,}: DataTableProps<Expense, TVal
                     <TableBody>
                         {table.getRowModel().rows?.length > 0 ? (
                             table.getRowModel().rows.map((row) => (
-                                <CellRow
-                                    key={row.id}
-                                    row={row}
-                                    colorScheme={colorScheme}
-                                />
+                                <>
+                                    <CellRow
+                                        key={row.id}
+                                        row={row}
+                                        colorScheme={colorScheme} cell={undefined}
+                                    />
+                                </>
                             ))
+
                         ) : (
                             <TableRow>
                                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    <LoadingRow/>
+                                    <LoadingRow />
                                 </TableCell>
                             </TableRow>
                         )}
+
+                        <TableRow>
+                            <TableCell colSpan={columns.length} className="h-24 text-center">
+                                {table.getRowModel().rows?.length === 0 && (
+                                    <div className="text-gray-500 text-lg">
+                                        No expenses found
+                                    </div>
+                                )}
+                            </TableCell>
+                        </TableRow>
                     </TableBody>
                 </Table>
             </div>
             <div className="flex items-center justify-end space-x-2 py-4">
                 <Button
-                    variant={"white"}
+                    // variant={"white"}
                     onClick={() => table.previousPage()}
                     disabled={!table.getCanPreviousPage()}
                 >
                     Previous
                 </Button>
                 <Button
-                    variant={"white"}
+                    // variant={"white"}
                     onClick={() => table.nextPage()}
                     disabled={!table.getCanNextPage()}
                 >
@@ -99,28 +126,76 @@ export function DataTable<TValue>({columns, data,}: DataTableProps<Expense, TVal
 }
 
 interface CellProps {
-    row: Row<Expense> // this should be the `row` variable extracted from `table` in the map function above
+    row: Row<Expense>
     colorScheme?: "dark" | "light"
 }
 
-const CellRow = ({row, colorScheme}: CellProps) => {
-    const cScheme = colorScheme ? useMantineTheme().colorScheme : colorScheme
+const CellRow = ({ row, colorScheme }: CellProps) => {
+
+    const _colorScheme = colorScheme ? useMantineTheme().colorScheme : colorScheme
 
     return (
-        <TableRow
-            key={row.id}
-            className={"cursor-pointer"}
-            onClick={() => {
-                console.log("clicked row")
-            }}
-            data-state={row.getIsSelected() && "selected"}
-        >
-            {row.getVisibleCells().map((cell: Cell<Expense, unknown>) => (
-                <TableCell key={cell.id}
-                           className={`${cScheme == 'dark' ? "text-white" : ""}`}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
-            ))}
-        </TableRow>
+        <>
+
+            <TableRow
+                key={row.id}
+                className={"cursor-pointer"}
+
+                data-state={row.getIsSelected() && "selected"}
+            >
+                {row.getVisibleCells().map((cell: Cell<Expense, unknown>) => (
+                    <>
+                        <TableCell key={cell.id}
+                            className={`${_colorScheme == 'dark' ? "text-white" : ""}`}>
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </TableCell>
+
+
+                    </>
+                ))}
+
+            </TableRow>
+        </>
+    )
+}
+
+
+interface CellProps {
+    cell: any
+
+}
+function EditInformationDialog({ cell }: CellProps) {
+    return (
+        <>
+            <div className={""}>
+                <div className="">
+                    Name
+                    <Input
+                        defaultValue={cell.row.original.name}
+                    />
+                    <Separator />
+                </div>
+                <div className="">
+                    Amount
+                    <Input />
+                    <Separator />
+                </div>
+                <div className="">
+                    Category
+                    <Input />
+                    <Separator />
+                </div>
+                <div className="">
+                    Date
+                    <Input />
+                    <Separator />
+                </div>
+                <div className="">
+                    Notes
+                    <Input />
+                    <Separator />
+                </div>
+            </div>
+        </>
     )
 }
