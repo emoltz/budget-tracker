@@ -1,5 +1,5 @@
 "use client";
-import {upperFirst, useToggle} from '@mantine/hooks';
+import {upperFirst, useToggle, useDisclosure} from '@mantine/hooks';
 import {useForm} from '@mantine/form';
 import {
     Anchor,
@@ -13,6 +13,7 @@ import {
     Stack,
     Text,
     TextInput,
+    Dialog,
 } from '@mantine/core';
 import {
     createUserWithEmailAndPassword,
@@ -21,12 +22,15 @@ import {
     signInWithPopup,
     updateProfile,
     User,
-    UserCredential
+    UserCredential,
+    sendPasswordResetEmail,
+    getAuth
 } from "firebase/auth";
 import {auth, saveUserToDatabase} from "@/lib/firebase";
 import GoogleButton from "react-google-button";
 import {doc, getDoc, getFirestore} from "firebase/firestore";
 import React from "react";
+
 
 export default function LoginMantine(props: PaperProps) {
     // GOOGLE
@@ -49,6 +53,7 @@ export default function LoginMantine(props: PaperProps) {
     }
     //COMPONENT
     const [type, toggle] = useToggle(['login', 'register']);
+    const [opened, { open, close }] = useDisclosure(false);
     const form = useForm({
         initialValues: {
             email: '',
@@ -88,6 +93,8 @@ export default function LoginMantine(props: PaperProps) {
             } else {
                 await signInWithEmailAndPassword(auth!, email, password).then(() => {
                     console.log("logged in!");
+                }).catch((error) => {
+                    alert('Error logging in');
                 });
             }
         } catch (error) {
@@ -164,17 +171,77 @@ export default function LoginMantine(props: PaperProps) {
                         type="button"
                         color="dimmed"
                         onClick={() => toggle()}
-                        size="xs"
+                        size="s"
                     >
                         {type === 'register'
                             ? 'Already have an account? Login'
                             : "Don't have an account? Register"}
                     </Anchor>
+
+                    {
+                        type === 'login' && 
+                            <Anchor
+                                component="button"
+                                type="button"
+                                color="dimmed"
+                                onClick={open} // Open Forgot Dialog 
+                                size="s"
+                                >
+                                Forgot Password?
+                            </Anchor> 
+                    }
+                    <ForgotPasswordForm opened={opened} close={close}></ForgotPasswordForm>
+                    
                     <Button variant={"outline"} type="submit" radius="xl">
                         {upperFirst(type)}
                     </Button>
+
                 </Group>
             </form>
         </Paper>
+    )
+}
+
+interface PasswordFormProps {
+    opened: boolean,
+    close: () => void
+
+}
+
+function ForgotPasswordForm({ opened, close } : PasswordFormProps) {
+
+    const form = useForm({
+        initialValues: {
+            email: ''
+        },
+        validate: {
+            email: (val: string) => (/^\S+@\S+$/.test(val) ? null : 'Invalid email'),
+        }
+    });
+
+    return (
+        <Dialog opened={opened} withCloseButton onClose={close} size="lg" radius="md">
+            <Text size="sm" mb="xs" fw={500}>Enter Your Email</Text>
+
+            <form onSubmit={() => {sendPasswordResetEmail(getAuth(), form.values.email)
+                            .then(() => {
+                                // Password reset email sent!
+                                alert("Please check your email for instructions to reset your password.");
+                            })
+                            .catch((error) => {
+                                const errorCode = error.code;
+                                const errorMessage = error.message;
+                                console.log("Error code: " + errorCode);
+                            });}}>
+                <Group align="flex-end">
+                    <TextInput 
+                        placeholder="hello@gluesticker.com" 
+                        style={{ flex: 1 }} 
+                        {...form.getInputProps('email')}
+                    />
+                    <Button variant={"outline"} type='submit'>Reset Password</Button>
+                </Group>
+            </form>
+        </Dialog>
     )
 }

@@ -22,6 +22,7 @@ export default function AddGoalForm ({ onFormClose, onAddGoal, onEditGoal, curre
         validate: {
             goalAmount: (value) => (value > 0 ? null
                 : (value === 0 ? "Amount cannot be zero" : "Amount cannot be negative")),
+            goalDate: (value) => (value < new Date() ? "Data goal must be in the future" : null),
         }
       });
 
