@@ -31,21 +31,6 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
 
     const currentExpenses: Expense[] = useExpenses(user, true);
 
-    // TODO: Too many hooks or re-renders below
-    // Updating from MonthlyExpenses is commented out for now
-    // const [currentExpenses, setCurrentExpenses] = useState<Expense[]>([]);
-    // setCurrentExpenses(useExpenses(user, sampleDateData.month, sampleDateData.year, true));
-
-    // useEffect(() => {
-        // if (user) {
-            // getExpenses(user, sampleDateData.month, sampleDateData.year, true).then(expenses => {
-            //     setCurrentExpenses(expenses)
-            //     console.log("Expenses: ", expenses)
-            // })
-        // }
-    // }, [user])
-
-    // TODO replace with custom loading skeleton
     if (loading) return <div>Loading...</div>
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>, field: string) => {
@@ -156,7 +141,7 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
                         <TableHead className={"text-left"}>Name</TableHead>
                         <TableHead className={"text-center"}>Category</TableHead>
                         <TableHead className={"text-center"}>Amount</TableHead>
-                        <TableHead className={" text-center"}>Action</TableHead>
+                        <TableHead className={"text-center"}>Action</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -232,10 +217,8 @@ export default function MonthlyExpenses({width, height}: MonthlyExpensesProps = 
                     {/* TOTALS */}
                     <TableRow>
                         <TableCell className={"text-right font-mono"} colSpan={2}>
-                            {/*Total:*/}
                         </TableCell>
                         <TableCell className={"text-center font-mono font-bold"}>
-                            {/*TODO put this in summary document...? */}
                             ${currentExpenses.reduce((total, expense) => total + expense.amount, 0).toLocaleString('en-US', {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2

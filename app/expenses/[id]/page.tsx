@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/popover"
 import { useMantineColorScheme } from "@mantine/core";
 import { useState, useEffect } from "react";
-import { log } from "console";
 import { CategoryPicker } from "@/components/CategoryPicker";
 
 export default function Page({ params }: { params: { id: string } }) {

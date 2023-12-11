@@ -1,17 +1,28 @@
 "use client"
-import {DataTable} from "./data-table"
-import {columns} from "./columns";
-import {IconArrowBigLeft, IconArrowBigRight} from "@tabler/icons-react";
-import {Button, Tabs, useMantineTheme} from "@mantine/core";
-import {useExpenses} from "@/lib/firebase";
-import {useAuth} from "@/app/context";
-import {DateData, Expense} from "@/lib/Interfaces";
+import { DataTable } from "./data-table"
+import { columns } from "./columns";
+import { IconArrowBigLeft, IconArrowBigRight } from "@tabler/icons-react";
+import { Button, Tabs, useMantineTheme } from "@mantine/core";
+import { useExpenses } from "@/lib/firebase";
+import { useAuth } from "@/app/context";
+import { DateData, Expense } from "@/lib/Interfaces";
 import React from 'react';
 import LoginMantine from "@/components/LoginMantine";
 import LoadingTable from "@/app/expenses/LoadingTable";
 import MonthlyExpenses from "@/components/MonthlyExpenses";
 import AddExpensePopover from "@/components/AddExpensePopover";
-import {getCurrentDate} from "@/lib/utils";
+import { getCurrentDate } from "@/lib/utils";
+import {
+    Table,
+    TableBody,
+    TableCaption,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table"
+import { Timestamp, FieldValue } from "firebase/firestore";
+
 
 export default function Page() {
 
@@ -21,12 +32,11 @@ export default function Page() {
         setCurrentDate(date);
     }
 
-    const {user, loading} = useAuth();
-    const expenses: Expense[] = useExpenses(user, false, currentDate.month, currentDate.year);
+    const { user, loading } = useAuth();
 
-    const {colorScheme} = useMantineTheme();
-    if (loading) return <LoadingTable/>
-    if (!user) return <LoginMantine/>
+    const { colorScheme } = useMantineTheme();
+    if (loading) return <LoadingTable />
+    if (!user) return <LoginMantine />
     return (
         <div className={"m-5"}>
             <div className={`text-4xl font-bold pb-2 mt-5 ${colorScheme == 'dark' ? "text-white" : ""}`}>
@@ -43,7 +53,7 @@ export default function Page() {
                                     const newMonth = currentDate.month === 1 ? 12 : currentDate.month - 1;
                                     const date = new Date(newYear, newMonth - 1); // month is 0-indexed in JavaScript Date
                                     const newData: DateData = {
-                                        monthName: date.toLocaleString('default', {month: 'long'}),
+                                        monthName: date.toLocaleString('default', { month: 'long' }),
                                         month: newMonth,
                                         year: newYear
                                     };
@@ -52,7 +62,7 @@ export default function Page() {
                                 }
                             }
                         >
-                            <IconArrowBigLeft/>
+                            <IconArrowBigLeft />
 
                         </Button>
 
@@ -65,7 +75,7 @@ export default function Page() {
                                 const newMonth = currentDate.month === 12 ? 1 : currentDate.month + 1;
                                 const date = new Date(newYear, newMonth - 1); // month is 0-indexed in JavaScript Date
                                 const newData: DateData = {
-                                    monthName: date.toLocaleString('default', {month: 'long'}),
+                                    monthName: date.toLocaleString('default', { month: 'long' }),
                                     month: newMonth,
                                     year: newYear
                                 };
@@ -73,15 +83,15 @@ export default function Page() {
                             }
                             }
                         >
-                            <IconArrowBigRight/>
+                            <IconArrowBigRight />
                         </Button>
                     </div>
                 </div>
             </div>
 
             <Tabs defaultValue={"expenses"}
-                  variant={"outline"}
-                  radius={"lg"}
+                variant={"outline"}
+                radius={"lg"}
             >
                 <Tabs.List>
                     <Tabs.Tab value={"expenses"}>All Expenses</Tabs.Tab>
@@ -96,22 +106,71 @@ export default function Page() {
                         </div>
                         <div className="p-1">
 
-                            <AddExpensePopover/>
+                            <AddExpensePopover />
                         </div>
 
                     </div>
 
 
                     <div className={""}>
-                        <DataTable columns={columns} data={expenses}/>
+                        <ExpensesTable
+                        />
                     </div>
                 </Tabs.Panel>
-                <Tabs.Panel value={"monthly"} pt={"xs"}>
+                {/* <Tabs.Panel value={"monthly"} pt={"xs"}>
                     <MonthlyExpenses/>
-                </Tabs.Panel>
+                </Tabs.Panel> */}
             </Tabs>
 
 
         </div>
+    )
+}
+
+function ExpensesTable() {
+    const { user, loading } = useAuth();
+    const dateData: DateData = getCurrentDate();
+    const expenses: Expense[] = useExpenses(user, false, dateData.month, dateData.year);
+
+    const formatDate = (date: Date | Timestamp | FieldValue | (() => FieldValue)) => {
+        if (date instanceof Date) {
+            return date.toLocaleDateString();
+        }
+        return ''
+    };
+
+    const formatCurrency = (amount: number) => {
+        return `$${amount.toFixed(2)}`
+    };
+
+    if (loading) {
+        return <LoadingTable />
+    }
+    return (
+        <>
+          <Table>
+            <TableHeader>
+                <TableRow>
+                    <TableHead className="w-[100px]">Name</TableHead>
+                    <TableHead>Category</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead className="text-right">Amount</TableHead>
+                    <TableHead className="text-center">Actions</TableHead>
+                </TableRow>
+            </TableHeader>
+            <TableBody>
+                {expenses.map((expense) => (
+                    <TableRow key={expense.id}>
+                        <TableCell className="font-medium">{expense.name}</TableCell>
+                        <TableCell>{expense.categoryID}</TableCell>
+                        <TableCell>{formatDate(expense.date)}</TableCell>
+                        <TableCell className="text-right">{formatCurrency(expense.amount)}</TableCell>
+                        <TableCell className="text-center">...</TableCell>
+                    </TableRow>
+                ))}
+            </TableBody>
+        </Table>
+
+        </>
     )
 }
