@@ -1,6 +1,4 @@
 "use client"
-import { DataTable } from "./data-table"
-import { columns } from "./columns";
 import { IconArrowBigLeft, IconArrowBigRight } from "@tabler/icons-react";
 import { Button, Tabs, useMantineTheme } from "@mantine/core";
 import { useExpenses } from "@/lib/firebase";
@@ -15,7 +13,6 @@ import { getCurrentDate } from "@/lib/utils";
 import {
     Table,
     TableBody,
-    TableCaption,
     TableCell,
     TableHead,
     TableHeader,
