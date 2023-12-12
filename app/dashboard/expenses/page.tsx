@@ -8,7 +8,7 @@ import {useAuth} from "@/app/context";
 import {DateData, Expense} from "@/lib/Interfaces";
 import React from 'react';
 import LoginMantine from "@/components/LoginMantine";
-import LoadingTable from "@/app/expenses/LoadingTable";
+import LoadingTable from "@/app/dashboard/expenses/LoadingTable";
 import MonthlyExpenses from "@/components/MonthlyExpenses";
 import AddExpensePopover from "@/components/AddExpensePopover";
 import {getCurrentDate} from "@/lib/utils";

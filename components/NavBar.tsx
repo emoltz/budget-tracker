@@ -21,12 +21,12 @@ import {useMantineColorScheme} from "@mantine/core";
 // import ThemeSwitcher from "@/components/ThemeSwitcher";
 
 const data = [
-    {link: '/', label: 'Dashboard', icon: IconDashboard},
-    {link: '/analysis', label: 'Analysis', icon: IconChartAreaLine},
-    {link: '/expenses', label: 'Expenses', icon: IconReceipt2},
-    {link: '/budgets', label: 'Budgets', icon: IconMoneybag},
-    {link: '/settings', label: 'Settings', icon: IconSettings},
-    {link: '/goals', label: 'Goals', icon: IconPigMoney}
+    {link: '/dashboard', label: 'Dashboard', icon: IconDashboard},
+    {link: '/dashboard/analysis', label: 'Analysis', icon: IconChartAreaLine},
+    {link: '/dashboard/expenses', label: 'Expenses', icon: IconReceipt2},
+    {link: '/dashboard/budgets', label: 'Budgets', icon: IconMoneybag},
+    {link: '/dashboard/settings', label: 'Settings', icon: IconSettings},
+    {link: '/dashboard/goals', label: 'Goals', icon: IconPigMoney}
 ];
 
 interface Props {

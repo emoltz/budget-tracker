@@ -1,5 +1,5 @@
 "use client"
-import {DataTable} from "@/app/expenses/data-table";
+import {DataTable} from "@/app/dashboard/expenses/data-table";
 import React from "react";
 import {DateData, Expense} from "@/lib/Interfaces";
 import {useAuth} from "@/app/context";
