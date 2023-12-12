@@ -1,7 +1,7 @@
 "use client";
 import {NavbarContext} from "../providers"; // why
 import {useMantineTheme} from "@mantine/core";
-import NavBar from "@/components/NavBar";
+import NavBar from "@/components/nav/NavBar";
 import {useContext} from "react";
 
 export default function Layout({ children }: 

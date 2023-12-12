@@ -2,13 +2,14 @@
 import "./globals.css";
 import {AuthProvider} from "./context"
 import {Providers} from "./providers"
-import {CacheProvider} from "@emotion/react";
-import {ColorScheme, useEmotionCache,} from "@mantine/core";
-
-import {useServerInsertedHTML} from "next/navigation";
-import Header from "@/components/Header";
-// import NavBar from "@/components/NavBar";
 import {useEffect, useState} from "react";
+
+// import {CacheProvider} from "@emotion/react";
+import {ColorScheme, useEmotionCache,} from "@mantine/core";
+import {useServerInsertedHTML} from "next/navigation";
+
+import Header from "@/components/nav/Header";
+// import NavBar from "@/components/NavBar";
 import Head from "next/head";
 import {Toaster} from 'react-hot-toast';
 
@@ -69,16 +70,16 @@ export default function RootLayout({
 
                     <AuthProvider>
                         <body className={`h-[calc(100vh-0.1rem)] ${colorScheme == 'dark' ? "bg-slate-900" : ""} `}>
-                        {/*<ChakraProvider>*/}
-                        <Header
-                            onCollapse={() => setCollapsed(!collapsed)}
-                        />
-                        <p>{collapsed}</p>
-                            {children}
-                                        {/*</ChakraProvider>*/}
-                        <Toaster
-                            position={"bottom-right"}
-                        />
+                            {/*<ChakraProvider>*/}
+                            <Header
+                                onCollapse={() => setCollapsed(!collapsed)}
+                            />
+                            <p>{collapsed}</p>
+                                {children}
+                                            {/*</ChakraProvider>*/}
+                            <Toaster
+                                position={"bottom-right"}
+                            />
                         </body>
                     </AuthProvider>
                 </html>

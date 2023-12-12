@@ -15,7 +15,7 @@ import {
 } from '@tabler/icons-react';
 import {usePathname} from 'next/navigation'
 import {auth} from "@/lib/firebase";
-import NavItem from '@/components/NavItem';
+import NavItem from '@/components/nav/NavItem';
 import {useMantineColorScheme} from "@mantine/core";
 // import Link from 'next/link';
 // import ThemeSwitcher from "@/components/ThemeSwitcher";

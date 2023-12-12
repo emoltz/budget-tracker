@@ -17,7 +17,6 @@ export default function Header({onCollapse}: Props) {
 
   const {colorScheme} = useMantineColorScheme();
   const landingPage = usePathname() === "/";
-//   console.log(pathname)
 
   return(
     <header className={`sticky self-start top-0 w-full flex flex-row px-6 py-3 gap-3 border-b items-center ${colorScheme == 'dark' ? "bg-slate-800 border-slate-600" : "bg-slate-100"} z-20`}>
@@ -43,7 +42,7 @@ export default function Header({onCollapse}: Props) {
             <ThemeSwitcher />
         </div>
         {landingPage ? 
-            <Link href="/dashboard">Dashboard</Link>
+            <Link className={`${colorScheme == 'dark'? "text-white" : ""}`} href="/dashboard">Dashboard</Link>
             : <Link href="/dashboard/profile" className="justify-self-end">
                 <Image 
                     maw={35} 
