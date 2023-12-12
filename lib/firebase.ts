@@ -495,12 +495,16 @@ export const useGoals = (user: User | null): Goal[] | null => {
                 // }
 
                 const goals: Goal[] = [];
-                goalsSnap.forEach((doc) => {
-                    const goalData = doc.data();
-                    goalData.goal_date = goalData.goal_date.toDate();
 
-                    goals.push(goalData as Goal);
-                });
+                // only parse goals if there are any - fetch result has length 1 by default
+                if (goalsSnap.size > 1) {
+                    goalsSnap.forEach((doc) => {
+                        const goalData = doc.data();
+                        goalData.goal_date = goalData.goal_date.toDate();
+
+                        goals.push(goalData as Goal);
+                    });
+                }
 
                 setGoals(goals);
             };

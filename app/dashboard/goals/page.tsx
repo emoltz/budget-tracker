@@ -3,12 +3,12 @@ import { useAuth } from "@/app/context";
 import { useState } from "react";
 import { useGoals, addNewGoal } from "@/lib/firebase";
 import { Goal } from "@/lib/Interfaces"
-import GoalCard from "@/components/GoalCard";
+import GoalCard from "./GoalCard";
+import AddGoalForm from "./AddEditGoalForm";
 
 import { Grid, Card, Flex, Button, Color, Select, SelectItem } from "@tremor/react";
 import {useMantineColorScheme} from "@mantine/core";
 
-import AddGoalForm from "@/components/AddEditGoalForm";
 
 function sortByAmt(a: Goal, b: Goal) {
     return a.amt_goal < b.amt_goal ? -1 : 1;
