@@ -5,7 +5,7 @@ import {Providers} from "./providers"
 import {useEffect, useState} from "react";
 
 // import {CacheProvider} from "@emotion/react";
-import {ColorScheme, useEmotionCache,} from "@mantine/core";
+import {ColorScheme, createEmotionCache,} from "@mantine/core";
 import {useServerInsertedHTML} from "next/navigation";
 
 import Header from "@/components/nav/Header";
@@ -19,7 +19,7 @@ export default function RootLayout({
         }: {
     children: React.ReactNode
 }) {
-    const cache = useEmotionCache();
+    const cache = createEmotionCache({ key: 'mantine', prepend: false });
     cache.compat = true;
 
     useServerInsertedHTML(() => (
