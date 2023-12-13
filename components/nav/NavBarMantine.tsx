@@ -13,7 +13,7 @@ import {
 } from '@tabler/icons-react';
 import Link from 'next/link';
 import {auth} from "@/lib/firebase";
-import ThemeSwitcher from "@/components/ThemeSwitcher";
+import ThemeSwitcher from "@/components/nav/ThemeSwitcher";
 
 const useStyles = createStyles((theme) => ({
     header: {

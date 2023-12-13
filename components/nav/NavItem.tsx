@@ -1,6 +1,5 @@
 "use client";
 import Link from 'next/link';
-import React from "react";
 import {useMantineColorScheme} from "@mantine/core";
 
 interface Props {
@@ -9,7 +8,6 @@ interface Props {
     href: string;
     isActive?: boolean;
     collapsed: boolean;
-    // children: React.ReactNode;
 }
 
 export default function NavItem({name, Icon, href, isActive, collapsed}: Props) {
@@ -28,9 +26,8 @@ export default function NavItem({name, Icon, href, isActive, collapsed}: Props) 
                 color={"gray"}
             />
             {!collapsed && <span className={`text-sm grow ${colorScheme == 'dark' ? 'text-amber-50' : ""}`}>
-          {name}
-        </span>}
-            {/*{children}*/}
+            {name}
+            </span>}
         </Link>
     )
 }
