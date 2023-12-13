@@ -2,7 +2,7 @@
 import { IconMenu2 } from '@tabler/icons-react'
 import Link from 'next/link';
 import {usePathname} from 'next/navigation'
-import ThemeSwitcher from "@/components/ThemeSwitcher";
+import ThemeSwitcher from "@/components/nav/ThemeSwitcher";
 import { useMantineColorScheme, Image } from "@mantine/core";
 import { useAuth } from "@/app/context";
 

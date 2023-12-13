@@ -56,7 +56,6 @@ export default function Home() {
                     summary={summary}
                 />}
             />
-            <Button onClick={open}>Open dialog</Button>
             <Dialog opened={opened} withCloseButton onClose={close} size="lg" radius="md">
                 <Text size="sm" mb="xs" fw={500}>
                     Welcome to Argonaut! Would you like a quick tour?
