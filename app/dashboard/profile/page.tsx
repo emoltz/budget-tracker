@@ -4,7 +4,7 @@ import { TextInput, Button, Image, Paper, Flex, Center, FileButton,
     Modal, Group } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useAuth } from "@/app/context";
-import LoginMantine from "@/components/LoginMantine";
+// import LoginMantine from "@/components/LoginMantine";
 import Loading from "@/app/loading";
 import { updateProfile, updateEmail, deleteUser, User, sendPasswordResetEmail, getAuth } from "firebase/auth";
 
@@ -39,9 +39,9 @@ export default function page(){
         return <Loading/>; // Or return a loading spinner
     }
 
-    if (!user) {
-        return <LoginMantine/>;
-    }
+    // if (!user) {
+    //     return <LoginMantine/>;
+    // }
 
     const profileURL = user?.photoURL ? user.photoURL : "/default_profile_pic.webp"
 
@@ -135,7 +135,7 @@ export default function page(){
                         </form>
 
                   
-                        {user.providerData[0]['providerId'] == 'password' && 
+                        {user?.providerData[0]['providerId'] == 'password' && 
                             <Button 
                                 onClick={() => {if (user?.email) {sendPasswordResetEmail(getAuth(), user.email)
                                     .then(() => {
@@ -172,7 +172,7 @@ export default function page(){
 interface ModalProps {
     opened: boolean, 
     close: () => void,
-    user: User
+    user: User | null
 }
 
 function DeleteAcctModal({ opened, close, user }: ModalProps) {

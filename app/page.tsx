@@ -3,6 +3,7 @@ import './globals.css';
 import React from 'react';
 import {useAuth} from "@/app/context";
 import {rem,} from '@mantine/core';
+import {useRouter} from 'next/navigation';
 
 import {Flex, Stack, Title, Text, Button, Dialog, Anchor, useMantineColorScheme} from "@mantine/core";
 import {useDisclosure} from '@mantine/hooks';
@@ -14,6 +15,11 @@ export default function Home() {
     const {user, loading} = useAuth();
     const [opened, { open, close }] = useDisclosure(true);
     const {colorScheme} = useMantineColorScheme();
+
+    const router = useRouter();
+    if (user) {
+        return router.push('/dashboard')
+    }
      // let userCookie = hasCookie("user");
     // if (userCookie === false) {
     //     open();  
@@ -38,8 +44,7 @@ export default function Home() {
                 </Stack>
                 <LoginMantine/>
             </Flex>
-            {/* <Button onClick={open}>Open dialog</Button> */}
-            <Dialog opened={opened} withCloseButton onClose={close} size="lg" radius="md">
+            {/* <Dialog opened={opened} withCloseButton onClose={close} size="lg" radius="md">
                 <Text size="sm" mb="xs" fw={500}>
                     Welcome to Argonaut! Would you like a quick tour?
                 </Text>
@@ -55,7 +60,7 @@ export default function Home() {
                         No thanks
                     </Anchor>
                 </Flex>
-            </Dialog>
+            </Dialog> */}
     </>
     )
 }

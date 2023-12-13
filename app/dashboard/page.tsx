@@ -31,9 +31,9 @@ export default function Home() {
         return <Loading/>; // Or return a loading spinner
     }
 
-    if (!user) {
-        return <LoginMantine/>;
-    }
+    // if (!user) {
+    //     return <LoginMantine/>;
+    // }
 
     // let userCookie = hasCookie("user");
     // if (userCookie === false) {
