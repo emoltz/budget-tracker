@@ -4,7 +4,7 @@ import { Button, Tabs, useMantineTheme } from "@mantine/core";
 import { useExpenses } from "@/lib/firebase";
 import { useAuth } from "@/app/context";
 import { DateData, Expense } from "@/lib/Interfaces";
-import React from 'react';
+import React, { useState } from 'react';
 import LoginMantine from "@/components/LoginMantine";
 import LoadingTable from "@/app/expenses/LoadingTable";
 import MonthlyExpenses from "@/components/MonthlyExpenses";
@@ -92,7 +92,7 @@ export default function Page() {
             >
                 <Tabs.List>
                     <Tabs.Tab value={"expenses"}>All Expenses</Tabs.Tab>
-                    <Tabs.Tab value={"monthly"}>Monthly</Tabs.Tab>
+                    {/* <Tabs.Tab value={"monthly"}>Monthly</Tabs.Tab> */}
                 </Tabs.List>
                 <Tabs.Panel value={"expenses"} pt={"xs"}>
 
@@ -145,29 +145,79 @@ function ExpensesTable() {
     }
     return (
         <>
-          <Table>
-            <TableHeader>
-                <TableRow>
-                    <TableHead className="w-[100px]">Name</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead className="text-right">Amount</TableHead>
-                    <TableHead className="text-center">Actions</TableHead>
-                </TableRow>
-            </TableHeader>
-            <TableBody>
-                {expenses.map((expense) => (
-                    <TableRow key={expense.id}>
-                        <TableCell className="font-medium">{expense.name}</TableCell>
-                        <TableCell>{expense.categoryID}</TableCell>
-                        <TableCell>{formatDate(expense.date)}</TableCell>
-                        <TableCell className="text-right">{formatCurrency(expense.amount)}</TableCell>
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead className="w-[100px]">Name</TableHead>
+                        <TableHead>Category</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead className="text-right">Amount</TableHead>
+                        <TableHead className="text-center">Actions</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {expenses.map((expense) => (
+                        <TableRow key={expense.id}>
+                        <EditableCell className="font-medium" value={expense.name} onValueChange={(newValue) => {/* update expense name */}} />
+                        <EditableCell value={expense.categoryID} onValueChange={(newValue) => {/* update expense categoryID */}} />
+                        <EditableCell value={formatDate(expense.date)} onValueChange={(newValue) => {/* update expense date */}} />
+                        <EditableCell className="text-right" value={formatCurrency(expense.amount)} onValueChange={(newValue) => {/* update expense amount */}} />
                         <TableCell className="text-center">...</TableCell>
                     </TableRow>
-                ))}
-            </TableBody>
-        </Table>
+                    ))}
+                </TableBody>
+            </Table>
 
         </>
     )
+}
+interface EditableCellProps {
+    value: string;
+    onValueChange: (value: string) => void;
+    className?: string;
+
+}
+
+function EditableCell({ value, onValueChange, className }: EditableCellProps) {
+    const [isEditing, setIsEditing] = useState(false);
+    const [newValue, setNewValue] = useState(value);
+
+    const handleDoubleClick = () => {
+        setIsEditing(true);
+    }
+
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setNewValue(event.target.value);
+    }
+
+    const handleBlur = () => {
+        setIsEditing(false);
+        onValueChange(newValue);
+    }
+
+    if (isEditing) {
+        return (
+            <TableCell
+                className={className}
+            >
+                <input
+                    type="text"
+                    value={newValue}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                />
+            </TableCell>
+        );
+    }
+
+    return (
+        <TableCell
+            onDoubleClick={handleDoubleClick}
+            className={className}>
+            {value}
+        </TableCell>
+    );
+
+
+
 }
