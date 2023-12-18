@@ -30,6 +30,7 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 import { CategoryPicker } from "@/components/CategoryPicker";
+import { Input } from "@/components/ui/input";
 
 
 export default function Page() {

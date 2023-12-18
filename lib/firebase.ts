@@ -208,7 +208,7 @@ export async function addOrUpdateExpense(user: User | null, expense: ExpenseClas
                 await updateDoc(expenseRef, {
                     name: expenseObject.name,
                     amount: expenseObject.amount,
-                    category: expenseObject.categoryID,
+                    categoryID: expenseObject.categoryID,
                 });
                 
                 console.log(`Expense document updated with ID: ${expenseObject.id}`);
