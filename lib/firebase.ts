@@ -178,33 +178,40 @@ export function useCategories(user: User | null): Category[] | null {
 }
 
 
-export async function addOrUpdateExpense(user: User | null, expense: ExpenseClass) {
+export async function addOrUpdateExpense(user: User | null, expense: ExpenseClass | Expense) {
     // TODO update. Should be `addOrUpdateExpense` and handle both cases
     // this function sends an expense to firebase
     // this function is not reactive. It is used to send a single expense to firebase
     if (user?.uid) {
         const db: Firestore = getFirestore();
-        const expenseObject = expense.toJson();
+        let expenseObject: Expense | ExpenseClass;
+        if (expense instanceof ExpenseClass){
+            expenseObject = expense.toJson();
+        }
+        else{
+            expenseObject = expense;
+        }
+        
 
         try {
             // get reference to expense's month
-            const monthString = createMonthYearString(expense.month, expense.year);
+            const monthString = createMonthYearString(expenseObject.month, expenseObject.year);
             const monthRef = doc(db, usersDirectory, user.uid, "Months", monthString);
 
             // Fetch the document from Firestore to check if it exists
-            const expenseRef = doc(monthRef, "Expenses", expense.id);
+            const expenseRef = doc(monthRef, "Expenses", expenseObject.id);
             const expenseDoc = await getDoc(expenseRef);
 
             // UPDATE EXPENSE
             if (expenseDoc.exists()) {
                 // Update the existing document
                 await updateDoc(expenseRef, {
-                    name: expense.name,
-                    amount: expense.amount,
-                    category: expense.categoryID,
+                    name: expenseObject.name,
+                    amount: expenseObject.amount,
+                    category: expenseObject.categoryID,
                 });
                 
-                console.log(`Expense document updated with ID: ${expense.id}`);
+                console.log(`Expense document updated with ID: ${expenseObject.id}`);
                 // TODO: account for an expense changing amounts or categories
 
             // ADD NEW EXPENSE

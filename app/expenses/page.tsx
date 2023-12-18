@@ -1,7 +1,7 @@
 "use client"
 import { IconArrowBigLeft, IconArrowBigRight } from "@tabler/icons-react";
 import { Button, Tabs, useMantineTheme } from "@mantine/core";
-import { useExpenses } from "@/lib/firebase";
+import { addOrUpdateExpense, useExpenses } from "@/lib/firebase";
 import { useAuth } from "@/app/context";
 import { DateData, Expense } from "@/lib/Interfaces";
 import React, { useState } from 'react';
@@ -169,13 +169,10 @@ function ExpensesTable() {
                 <TableBody>
                     {expenses.map((expense) => (
                         <TableRow key={expense.id}>
-                            <EditableCell className="font-medium" value={expense.name} onValueChange={(newValue) => {/* update expense name */ }} />
-
-                            <CategoryPicker className={"text-center align-middle"} value={expense.categoryID} onCategoryChange={(newValue) => {/* update expense category */ }} />
-
-
-                            <EditableCell className={"text-center align-middle"} value={formatDate(expense.date)} date={true} onValueChange={(newValue) => {/* update expense date */ }} />
-                            <EditableCell className="text-right" value={formatCurrency(expense.amount)} onValueChange={(newValue) => {/* update expense amount */ }} />
+                            <EditableCell className="font-medium" value={expense.name} onValueChange={(newValue) => { expense.name = newValue; addOrUpdateExpense(user, expense); }} />
+                            <CategoryPicker className={"text-center align-middle"} value={expense.categoryID} onCategoryChange={(newValue) => { expense.categoryID = newValue; addOrUpdateExpense(user, expense); }} />
+                            <EditableCell className={"text-center align-middle"} value={formatDate(expense.date)} date={true} onValueChange={(newValue) => { expense.date = newValue; addOrUpdateExpense(user, expense); }} />
+                            <EditableCell className="text-right" value={formatCurrency(expense.amount)} onValueChange={(newValue) => { expense.amount = newValue; addOrUpdateExpense(user, expense); }} />
                             <TableCell className="text-center">...</TableCell>
                         </TableRow>
                     ))}
