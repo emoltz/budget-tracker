@@ -1,17 +1,18 @@
-import {useAuth} from "@/app/context";
-import {getUserCategories} from "@/lib/firebase";
-import {Select} from "@mantine/core";
-import React, {useEffect, useState} from "react";
+import { useAuth } from "@/app/context";
+import { getUserCategories } from "@/lib/firebase";
+import { Select } from "@mantine/core";
+import React, { useEffect, useState } from "react";
 
 interface Props {
     onCategoryChange: (category: string) => void,
     dropdownPosition?: "top" | "bottom",
+    className?: string,
 
     [restProps: string]: any;
 }
 
-export function CategoryPicker({onCategoryChange, dropdownPosition, ...restProps}: Props) {
-    const {user, loading} = useAuth();
+export function CategoryPicker({ onCategoryChange, dropdownPosition, className, ...restProps }: Props) {
+    const { user, loading } = useAuth();
 
     //// const categories: Category[] = useCategories(user);
     // const data = userCategories.map((category) => category.category_name);
@@ -19,7 +20,7 @@ export function CategoryPicker({onCategoryChange, dropdownPosition, ...restProps
     ////const data: string[] = categories ? categories.map((category) => category.category_name) : [];
 
 
-    const [data, setData] = useState(["Test"]);
+    const [data, setData] = useState([""]);
 
     // not sure if there's a better way to get output from the async function
     useEffect(() => {
@@ -35,10 +36,11 @@ export function CategoryPicker({onCategoryChange, dropdownPosition, ...restProps
         )
     }
     return (
-        <Select data={data}
+        <div className={className}>
+            <Select data={data}
                 placeholder={"Select a category"}
                 maxDropdownHeight={160}
-                transitionProps={{duration: 150, transition: 'pop-top-left', timingFunction: 'ease'}}
+                transitionProps={{ duration: 150, transition: 'pop-top-left', timingFunction: 'ease' }}
                 dropdownComponent={"div"}
                 searchable
                 clearable
@@ -47,6 +49,8 @@ export function CategoryPicker({onCategoryChange, dropdownPosition, ...restProps
                 value={restProps["value"] || ""}
                 error={restProps["error"]}
                 dropdownPosition={dropdownPosition || "bottom"}
-        />
+            />
+        </div>
+
     )
 }

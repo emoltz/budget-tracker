@@ -29,6 +29,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
+import { CategoryPicker } from "@/components/CategoryPicker";
 
 
 export default function Page() {
@@ -169,8 +170,11 @@ function ExpensesTable() {
                     {expenses.map((expense) => (
                         <TableRow key={expense.id}>
                             <EditableCell className="font-medium" value={expense.name} onValueChange={(newValue) => {/* update expense name */ }} />
-                            <EditableCell value={expense.categoryID} onValueChange={(newValue) => {/* update expense categoryID */ }} />
-                            <EditableCell value={formatDate(expense.date)} onValueChange={(newValue) => {/* update expense date */ }} />
+
+                            <CategoryPicker className={"text-center align-middle"} value={expense.categoryID} onCategoryChange={(newValue) => {/* update expense category */ }} />
+
+
+                            <EditableCell className={"text-center align-middle"} value={formatDate(expense.date)} date={true} onValueChange={(newValue) => {/* update expense date */ }} />
                             <EditableCell className="text-right" value={formatCurrency(expense.amount)} onValueChange={(newValue) => {/* update expense amount */ }} />
                             <TableCell className="text-center">...</TableCell>
                         </TableRow>
@@ -185,10 +189,11 @@ interface EditableCellProps {
     value: string;
     onValueChange: (value: string) => void;
     className?: string;
+    date?: boolean;
 
 }
 
-function EditableCell({ value, onValueChange, className }: EditableCellProps) {
+function EditableCell({ value, onValueChange, className, date }: EditableCellProps) {
     const [isEditing, setIsEditing] = useState(false);
     const [newValue, setNewValue] = useState(value);
 
@@ -204,13 +209,27 @@ function EditableCell({ value, onValueChange, className }: EditableCellProps) {
         setIsEditing(false);
         onValueChange(newValue);
     }
+    if (date) {
+        return (
+            <TableCell
+                className={className}
+            >
+                <DatePicker
+                    currentDate={new Date(newValue)}
+                    onDateChange={(date) => {
+                        setNewValue(date.toISOString())
+                    }}
+                />
+            </TableCell>
+        )
+    }
 
     if (isEditing) {
         return (
             <TableCell
                 className={className}
             >
-                <input
+                <Input
                     type="text"
                     value={newValue}
                     onChange={handleChange}
@@ -239,6 +258,10 @@ interface DatePickerProps {
 
 function DatePicker({ currentDate, onDateChange }: DatePickerProps) {
     const [date, setDate] = useState<Date>()
+
+    React.useEffect(() => {
+        setDate(currentDate);
+    }, [currentDate]);
 
     return (
         <Popover>
