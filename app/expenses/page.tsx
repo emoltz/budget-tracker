@@ -19,6 +19,16 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { Timestamp, FieldValue } from "firebase/firestore";
+import { format } from "date-fns"
+import { Calendar as CalendarIcon } from "lucide-react"
+
+import { cn } from "@/lib/utils"
+import { Calendar } from "@/components/ui/calendar"
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover"
 
 
 export default function Page() {
@@ -158,12 +168,12 @@ function ExpensesTable() {
                 <TableBody>
                     {expenses.map((expense) => (
                         <TableRow key={expense.id}>
-                        <EditableCell className="font-medium" value={expense.name} onValueChange={(newValue) => {/* update expense name */}} />
-                        <EditableCell value={expense.categoryID} onValueChange={(newValue) => {/* update expense categoryID */}} />
-                        <EditableCell value={formatDate(expense.date)} onValueChange={(newValue) => {/* update expense date */}} />
-                        <EditableCell className="text-right" value={formatCurrency(expense.amount)} onValueChange={(newValue) => {/* update expense amount */}} />
-                        <TableCell className="text-center">...</TableCell>
-                    </TableRow>
+                            <EditableCell className="font-medium" value={expense.name} onValueChange={(newValue) => {/* update expense name */ }} />
+                            <EditableCell value={expense.categoryID} onValueChange={(newValue) => {/* update expense categoryID */ }} />
+                            <EditableCell value={formatDate(expense.date)} onValueChange={(newValue) => {/* update expense date */ }} />
+                            <EditableCell className="text-right" value={formatCurrency(expense.amount)} onValueChange={(newValue) => {/* update expense amount */ }} />
+                            <TableCell className="text-center">...</TableCell>
+                        </TableRow>
                     ))}
                 </TableBody>
             </Table>
@@ -219,5 +229,40 @@ function EditableCell({ value, onValueChange, className }: EditableCellProps) {
     );
 
 
+
+}
+
+interface DatePickerProps {
+    currentDate: Date;
+    onDateChange: (date: Date) => void;
+}
+
+function DatePicker({ currentDate, onDateChange }: DatePickerProps) {
+    const [date, setDate] = useState<Date>()
+
+    return (
+        <Popover>
+            <PopoverTrigger asChild>
+                <Button
+                    variant={"outline"}
+                    className={cn(
+                        "w-[280px] justify-start text-left font-normal",
+                        !date && "text-muted-foreground"
+                    )}
+                >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {date ? format(date, "PPP") : <span>Pick a date</span>}
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+                <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={setDate}
+                    initialFocus
+                />
+            </PopoverContent>
+        </Popover>
+    )
 
 }
