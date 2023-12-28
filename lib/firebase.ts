@@ -173,7 +173,7 @@ export function useCategories(user: User | null): Category[] | null {
             return () => unsubscribe();
         }
     }, [user]);
-
+    // console.log("useCategories")
     return categories;
 }
 
@@ -346,8 +346,9 @@ export function useSummary(user: User | null, month?: number, year?: number): Mo
                 unsubscribe();
             }
         } 
-    });
+    }, [user]);
 
+    // console.log("useSummary")
     return summary;
 }
 
